@@ -15,6 +15,10 @@ import org.reflections.util.ConfigurationBuilder;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * This maps commands names with instances of their respectieve command class,
+ * which has to be annotatd with @Command and implement CommandRunner
+ */
 public final class CommandMapper {
     //Command name - pair: commandRunner, command annotation (description)
     private final Map<String, Pair<CommandRunner, Command>> mappedCommands;
@@ -22,13 +26,22 @@ public final class CommandMapper {
     private final CommandExecutor commandExecutor;
     private final String packageToStartScanning;
 
-    public static CommandMapper create (String packageToStartScanning, String onWrongSender) {
-        return new CommandMapper(packageToStartScanning, onWrongSender);
+    /**
+     *
+     * @param packageToStartScanning Base package where your will be scanned for classes who represents commands.
+     * @param messageOnWrongSender The message that will be displayed when the sender is a console and not a player
+     * @param messageOnWrongCommand The message that is send to console use who is trying to run the command. Check @Command.
+     *
+     * Example: CommandMapper.create("es.jaimetruman.commands", "Command not found /help","You need to be a player to perform this command");
+     *
+     */
+    public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender) {
+        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender);
     }
 
-    private CommandMapper(String packageToStartScanning, String onWrongSender) {
+    private CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender) {
         this.mappedCommands = new HashMap<>();
-        this.commandExecutor = new DefaultCommandExcutorEntrypoint(onWrongSender);
+        this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound);
 
         this.packageToStartScanning = packageToStartScanning;
 
@@ -41,13 +54,13 @@ public final class CommandMapper {
     }
 
     private void scanForCommands () {
-        Set<Class<? extends CommandRunner>> checkedClasses = this.checkIfClassesExtendsCommand(
+        Set<Class<? extends CommandRunner>> checkedClasses = this.checkIfClassesImplementsCommandInterface(
                 reflections.getTypesAnnotatedWith(Command.class));
 
         this.createInstancesAndAdd(checkedClasses);
     }
 
-    private Set<Class<? extends CommandRunner>> checkIfClassesExtendsCommand (Set<Class<?>> classes) {
+    private Set<Class<? extends CommandRunner>> checkIfClassesImplementsCommandInterface(Set<Class<?>> classes) {
         Set<Class<? extends CommandRunner>> checkedClasses = new HashSet<>();
 
         for(Class<?> notCheckedClass : classes){
@@ -91,7 +104,7 @@ public final class CommandMapper {
         Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(commandExecutor);
     }
 
-    public Optional<Pair<CommandRunner, Command>> findByName (String commandName, String[] args) {
+    private Optional<Pair<CommandRunner, Command>> findByName (String commandName, String[] args) {
         Pair<CommandRunner, Command> command = this.mappedCommands.get(commandName);
 
         if(command != null){
@@ -112,9 +125,11 @@ public final class CommandMapper {
 
     class DefaultCommandExcutorEntrypoint implements CommandExecutor {
         private final String messageOnWrongSender;
+        private final String messageOnCommandNotFound;
 
-        public DefaultCommandExcutorEntrypoint(String messageOnWrongSender) {
+        public DefaultCommandExcutorEntrypoint(String messageOnWrongSender, String messageOnCommandNotFound) {
             this.messageOnWrongSender = messageOnWrongSender;
+            this.messageOnCommandNotFound = messageOnCommandNotFound;
         }
 
         @Override
@@ -132,7 +147,7 @@ public final class CommandMapper {
                 }
 
             } else {
-                sender.sendMessage(messageOnWrongSender);
+                sender.sendMessage(messageOnCommandNotFound);
             }
 
             return true;
