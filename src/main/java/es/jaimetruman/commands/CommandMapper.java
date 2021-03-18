@@ -32,8 +32,8 @@ public final class CommandMapper {
      * @param messageOnWrongSender The message that will be displayed when the sender is a console and not a player
      * @param messageOnWrongCommand The message that is send to console use who is trying to run the command. Check @Command.
      *
-     * Example: CommandMapper.create("es.jaimetruman.commands", "Command not found /help","You need to be a player to perform this command");
-     *
+     * Example:
+     * CommandMapper.create("es.jaimetruman.commands", "Command not found /help","You need to be a player to perform this command");
      */
     public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender) {
         return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender);
