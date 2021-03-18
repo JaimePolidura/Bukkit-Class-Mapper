@@ -27,7 +27,7 @@ String packageToStartScanning. This will represent your packages where your comm
 
 String messageOnWrongCommand. It represents what message will be sent to the player if the command is not found.
 
-String messageOnWrongSender. The message that will be sent to the user in the console if the command cannot be typed in the console. (see [USER=363717]@command[/USER])
+String messageOnWrongSender. The message that will be sent to the user in the console if the command cannot be typed in the console. (see @Command)
 
 ```java
 public class Main extends JavaPlugin {
@@ -46,7 +46,7 @@ public class Main extends JavaPlugin {
 
 Finally we will create the class which will represent the command. This class needs these things:
 
-1º)  Be annotated with [USER=363717]@command[/USER]. This annotation will have the basic description of your command. It includes two values.
+1º)  Be annotated with @Command. This annotation will have the basic description of your command. It includes two values.
 String name. This is required. It represents the name of the command. If you want your class to represent subcommands this will be as easy as do this @Command(name = “friend list”) main command: friend, subcommand: list
 
 boolean canBeTypedInConsole. This is not required. If you want your command to be typed in the console you would set this to true. As default this is set to false.
