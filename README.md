@@ -17,7 +17,7 @@ We will set up a basic helloWorld command. First we will have to declare in our 
 commands:
   helloworld:
     description: a test command
-    usage: /<command>[/code]
+    usage: /<command>
 ```
 
 ## COMMAND MAPPER
