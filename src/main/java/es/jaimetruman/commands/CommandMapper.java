@@ -123,7 +123,7 @@ public final class CommandMapper {
         }
     }
 
-    class DefaultCommandExcutorEntrypoint implements CommandExecutor {
+    private final class DefaultCommandExcutorEntrypoint implements CommandExecutor {
         private final String messageOnWrongSender;
         private final String messageOnCommandNotFound;
 
