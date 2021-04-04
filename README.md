@@ -54,7 +54,7 @@ public class HelloWorldCommand implements CommandRunner {
  
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-        commandSender.sendMessage("Hello " + sender.getName());
+        	commandSender.sendMessage("Hello " + sender.getName());
 	}
 }
 ```
@@ -67,7 +67,7 @@ public class FriendListCommand implements CommandRunner {
  
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
-        //TODO ...
+        	//TODO ...
 	}
 }
 ``` 
@@ -92,8 +92,8 @@ If you want a mob/entity in a fixed location that the player can interact with, 
 public class StatsMob implements OnPlayerInteractMob {
 	@Override
 	public void execute (PlayerInteractEntityEvent event) {
-	//….
-}
+		//TODO...
+	}
 }
 ```
  
