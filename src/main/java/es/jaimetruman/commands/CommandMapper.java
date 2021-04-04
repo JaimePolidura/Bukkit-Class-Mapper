@@ -1,6 +1,6 @@
 package es.jaimetruman.commands;
 
-import es.jaimetruman.Mapper;
+import es.jaimetruman.ClassScanner;
 import javafx.util.Pair;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
@@ -12,42 +12,26 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.stream.Stream;
 
-/**
- * This maps commands names with instances of their respectieve command class,
- * which has to be annotatd with @Command and implement CommandRunner
- */
-public final class CommandMapper extends Mapper {
+public final class CommandMapper extends ClassScanner {
     //Command name - pair: commandRunner, command annotation (description)
     private final Map<String, Pair<CommandRunner, Command>> mappedCommands;
     private final CommandExecutor commandExecutor;
 
-    /**
-     *
-     * @param packageToStartScanning Base package where your will be scanned for classes who represents commands.
-     * @param messageOnWrongSender The message that will be displayed when the sender is a console and not a player
-     * @param messageOnWrongCommand The message that is send to console use who is trying to run the command. Check @Command.
-     *
-     * Example:
-     * CommandMapper.create("es.jaimetruman.commands", "Command not found /help","You need to be a player to perform this command");
-     */
-    public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender) {
-        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender, ChatColor.DARK_RED + "You dont have permissions");
+    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender) {
+        this(packageToStartScanning, messageOnCommandNotFound, messageOnWrongSender, ChatColor.DARK_RED + "You dont have any permissions to execute that command");
     }
 
-    public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender, String onWrongPermissions) {
-        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender, onWrongPermissions);
-    }
-
-    private CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions) {
+    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions) {
         super(packageToStartScanning);
 
         this.mappedCommands = new HashMap<>();
         this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
 
-        this.scanForCommands();
+        this.scan();
     }
 
-    private void scanForCommands () {
+    @Override
+    public void scan () {
         Set<Class<? extends CommandRunner>> checkedClasses = this.checkIfClassesImplementsCommandInterface(
                 reflections.getTypesAnnotatedWith(Command.class));
 

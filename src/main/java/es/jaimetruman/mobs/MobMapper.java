@@ -1,6 +1,6 @@
 package es.jaimetruman.mobs;
 
-import es.jaimetruman.Mapper;
+import es.jaimetruman.ClassScanner;
 import javafx.util.Pair;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
@@ -9,48 +9,30 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.util.*;
 import java.util.stream.Stream;
 
-/**
- * This maps mobs names with instances of their respectieve mob class,
- * which has to be annotatd with @Mob and implement MobOnInteract
- */
-public final class MobMapper extends Mapper {
+
+public final class MobMapper extends ClassScanner {
     private final Map<Location, Pair<OnPlayerInteractMob, Mob>> mappedMobs;
     private final Plugin mainPluginClass;
     private final DefaultEntrypointPlayerInteractEntity defaultListener;
 
-    /**
-     *
-     * @param packageToStartScanning Base package where your will be scanned for classes who represents mobs.
-     * @param plugin Main plugin class (the one that extends javaplugin)
-     * Example:
-     * MobMapper.create("es.jaimetruman.mobs", MainPluginClass.getInstance());
-     */
-    public static MobMapper create (String packageToStartScanning, Plugin plugin) {
-        return new MobMapper(packageToStartScanning, plugin);
-    }
-
-    private MobMapper(String packageToStartScanning, Plugin plugin) {
+    public MobMapper(String packageToStartScanning, Plugin plugin) {
         super(packageToStartScanning);
 
         this.mappedMobs = new HashMap<>();
         this.defaultListener = new DefaultEntrypointPlayerInteractEntity();
         this.mainPluginClass = plugin;
 
-        this.scanFormMobClasses();
+        this.scan();
 
         plugin.getServer().getPluginManager().registerEvents(defaultListener, plugin);
     }
 
-    private void scanFormMobClasses() {
+    @Override
+    public void scan() {
         Set<Class<? extends OnPlayerInteractMob>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Mob.class));
 
