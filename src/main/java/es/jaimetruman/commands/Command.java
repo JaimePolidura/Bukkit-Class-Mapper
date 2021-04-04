@@ -23,4 +23,9 @@ public @interface Command {
      * set this to true
      */
     boolean canBeTypedInConsole() default false;
+
+    /**
+     * Permissions that the player needs to have to perform the command
+     */
+    String permissions() default "";
 }

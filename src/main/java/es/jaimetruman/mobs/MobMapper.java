@@ -1,5 +1,6 @@
 package es.jaimetruman.mobs;
 
+import es.jaimetruman.Mapper;
 import javafx.util.Pair;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
@@ -21,12 +22,10 @@ import java.util.stream.Stream;
  * This maps mobs names with instances of their respectieve mob class,
  * which has to be annotatd with @Mob and implement MobOnInteract
  */
-public final class MobMapper {
+public final class MobMapper extends Mapper {
     private final Map<Location, Pair<OnPlayerInteractMob, Mob>> mappedMobs;
     private final Plugin mainPluginClass;
-    private final Reflections reflections;
     private final DefaultEntrypointPlayerInteractEntity defaultListener;
-    private final String packageToStartScanning;
 
     /**
      *
@@ -40,16 +39,11 @@ public final class MobMapper {
     }
 
     private MobMapper(String packageToStartScanning, Plugin plugin) {
+        super(packageToStartScanning);
+
         this.mappedMobs = new HashMap<>();
         this.defaultListener = new DefaultEntrypointPlayerInteractEntity();
         this.mainPluginClass = plugin;
-
-        this.packageToStartScanning = packageToStartScanning;
-
-        this.reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(packageToStartScanning))
-                .setScanners(new TypeAnnotationsScanner(),
-                             new SubTypesScanner()));
 
         this.scanFormMobClasses();
 

@@ -1,16 +1,13 @@
 package es.jaimetruman.commands;
 
+import es.jaimetruman.Mapper;
 import javafx.util.Pair;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,12 +16,10 @@ import java.util.stream.Stream;
  * This maps commands names with instances of their respectieve command class,
  * which has to be annotatd with @Command and implement CommandRunner
  */
-public final class CommandMapper {
+public final class CommandMapper extends Mapper {
     //Command name - pair: commandRunner, command annotation (description)
     private final Map<String, Pair<CommandRunner, Command>> mappedCommands;
-    private final Reflections reflections;
     private final CommandExecutor commandExecutor;
-    private final String packageToStartScanning;
 
     /**
      *
@@ -36,19 +31,18 @@ public final class CommandMapper {
      * CommandMapper.create("es.jaimetruman.commands", "Command not found /help","You need to be a player to perform this command");
      */
     public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender) {
-        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender);
+        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender, ChatColor.DARK_RED + "You dont have permissions");
     }
 
-    private CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender) {
+    public static CommandMapper create (String packageToStartScanning, String messageOnWrongCommand, String messageOnWrongSender, String onWrongPermissions) {
+        return new CommandMapper(packageToStartScanning, messageOnWrongCommand, messageOnWrongSender, onWrongPermissions);
+    }
+
+    private CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions) {
+        super(packageToStartScanning);
+
         this.mappedCommands = new HashMap<>();
-        this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound);
-
-        this.packageToStartScanning = packageToStartScanning;
-
-        this.reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(packageToStartScanning))
-                .setScanners(new TypeAnnotationsScanner(),
-                             new SubTypesScanner()));
+        this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
 
         this.scanForCommands();
     }
@@ -126,29 +120,36 @@ public final class CommandMapper {
     private final class DefaultCommandExcutorEntrypoint implements CommandExecutor {
         private final String messageOnWrongSender;
         private final String messageOnCommandNotFound;
+        private final String messageOnNotHavePermissions;
 
-        public DefaultCommandExcutorEntrypoint(String messageOnWrongSender, String messageOnCommandNotFound) {
+        public DefaultCommandExcutorEntrypoint(String messageOnWrongSender, String messageOnCommandNotFound, String messageOnNotHavePermissions) {
             this.messageOnWrongSender = messageOnWrongSender;
             this.messageOnCommandNotFound = messageOnCommandNotFound;
+            this.messageOnNotHavePermissions = messageOnNotHavePermissions;
         }
 
         @Override
         public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
             Optional<Pair<CommandRunner, Command>> optionalCommandRunner = findByName(command.getName(), args);
 
-            if (optionalCommandRunner.isPresent()) {
-                Command commandData = optionalCommandRunner.get().getValue();
-                CommandRunner commandRunner = optionalCommandRunner.get().getKey();
-
-                if(!(sender instanceof Player) && !commandData.canBeTypedInConsole()){
-                    sender.sendMessage(messageOnWrongSender);
-                }else{
-                    commandRunner.execute(sender, args);
-                }
-
-            } else {
+            if(!optionalCommandRunner.isPresent()){
                 sender.sendMessage(messageOnCommandNotFound);
+                return true;
             }
+
+            Command commandData = optionalCommandRunner.get().getValue();
+            CommandRunner commandRunner = optionalCommandRunner.get().getKey();
+
+            if(!(sender instanceof Player) && !commandData.canBeTypedInConsole()){
+                sender.sendMessage(messageOnWrongSender);
+                return true;
+            }
+            if(!commandData.permissions().equals("") && !sender.hasPermission(commandData.permissions())){
+                sender.sendMessage(messageOnNotHavePermissions);
+                return true;
+            }
+
+            commandRunner.execute(sender, args);
 
             return true;
         }

@@ -1,21 +1,15 @@
 package es.jaimetruman.events;
 
-import lombok.SneakyThrows;
+import es.jaimetruman.Mapper;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.util.Set;
 
 
-public final class EventListenerMapper {
+public final class EventListenerMapper extends Mapper {
     private final String packageToScan;
-    private final Reflections reflections;
     private final Plugin plugin;
 
     public static EventListenerMapper startScanning (String packageToStart, Plugin plugin) {
@@ -23,13 +17,10 @@ public final class EventListenerMapper {
     }
 
     public EventListenerMapper(String packageToScan, Plugin plugin) {
+        super(packageToScan);
+
         this.packageToScan = packageToScan;
         this.plugin = plugin;
-
-        this.reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(packageToScan))
-                .setScanners(new TypeAnnotationsScanner(),
-                             new SubTypesScanner()));
 
         this.startScanning();
     }
