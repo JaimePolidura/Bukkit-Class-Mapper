@@ -2,6 +2,8 @@
 # INTRODUCTION
  
 This library will provide you a much faster way to develop your own plugins without the need to create complex classes or any other complex infrastructure.It will help you to declare your commands, events, mobs very easily keeping the SOLID principles.
+
+Download: https://www.spigotmc.org/resources/class-mapper-api.90302/
  
 # SETUP
  
