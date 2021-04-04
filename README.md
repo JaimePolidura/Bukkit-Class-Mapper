@@ -51,7 +51,6 @@ Finally we will create the class which will represent the command. This class ne
 ```java
 @Command(name = "helloworld")
 public class HelloWorldCommand implements CommandRunner {
- 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
         	commandSender.sendMessage("Hello " + sender.getName());
@@ -64,7 +63,6 @@ If you a subcommand that can be typed in the console you would something like th
 ```java
 @Command(name = "friend list", canBeTypedInConsole = true, permissions = "bukkit.broadcast.user")
 public class FriendListCommand implements CommandRunner {
- 
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
         	//TODO ...
