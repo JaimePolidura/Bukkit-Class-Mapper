@@ -1,12 +1,8 @@
 package es.jaimetruman.mobs;
 
 import javafx.util.Pair;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.SneakyThrows;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -26,7 +22,7 @@ import java.util.stream.Stream;
  * which has to be annotatd with @Mob and implement MobOnInteract
  */
 public final class MobMapper {
-    private final Map<Location, Pair<MobOnInteract, Mob>> mappedMobs;
+    private final Map<Location, Pair<OnPlayerInteractMob, Mob>> mappedMobs;
     private final Plugin mainPluginClass;
     private final Reflections reflections;
     private final DefaultEntrypointPlayerInteractEntity defaultListener;
@@ -61,18 +57,18 @@ public final class MobMapper {
     }
 
     private void scanFormMobClasses() {
-        Set<Class<? extends MobOnInteract>> checkedClasses = this.checkIfClassesImplementsMobInterface(
+        Set<Class<? extends OnPlayerInteractMob>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Mob.class));
 
         this.createInstancesAndAdd(checkedClasses);
     }
 
-    private Set<Class<? extends MobOnInteract>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
-        Set<Class<? extends MobOnInteract>> checkedClasses = new HashSet<>();
+    private Set<Class<? extends OnPlayerInteractMob>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
+        Set<Class<? extends OnPlayerInteractMob>> checkedClasses = new HashSet<>();
 
         for(Class<?> notCheckedClass : classes){
-            if(MobOnInteract.class.isAssignableFrom(notCheckedClass)){
-                checkedClasses.add((Class<? extends MobOnInteract>) notCheckedClass);
+            if(OnPlayerInteractMob.class.isAssignableFrom(notCheckedClass)){
+                checkedClasses.add((Class<? extends OnPlayerInteractMob>) notCheckedClass);
             }else{
                 System.out.println("Couldn't initialize mob in class " + notCheckedClass + ". This class should implement MobOnInteract interface");
             }
@@ -81,15 +77,15 @@ public final class MobMapper {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd (Set<Class<? extends MobOnInteract>> classes) {
-        for(Class<? extends MobOnInteract> classToAdd : classes){
+    private void createInstancesAndAdd (Set<Class<? extends OnPlayerInteractMob>> classes) {
+        for(Class<? extends OnPlayerInteractMob> classToAdd : classes){
             Mob annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
 
             saveMobClassInstance(classToAdd, annotation);
         }
     }
 
-    private Mob getMobExecutorAnnotationFromClass(Class<? extends MobOnInteract> classToFind) {
+    private Mob getMobExecutorAnnotationFromClass(Class<? extends OnPlayerInteractMob> classToFind) {
         return (Mob) Stream.of(classToFind.getAnnotations())
                 .filter(annotation -> annotation instanceof Mob)
                 .findAny()
@@ -97,8 +93,8 @@ public final class MobMapper {
     }
 
     @SneakyThrows
-    private void saveMobClassInstance(Class<? extends MobOnInteract> mobClass, Mob mobMeta) {
-        MobOnInteract mobClassInstance = mobClass.newInstance();
+    private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta) {
+        OnPlayerInteractMob mobClassInstance = mobClass.newInstance();
 
         int x = mobMeta.x();
         int y = mobMeta.y();
@@ -109,7 +105,7 @@ public final class MobMapper {
         this.mappedMobs.put(mobLocation, new Pair<>(mobClassInstance, mobMeta));
     }
 
-    private Optional<Pair<MobOnInteract, Mob>> findByCords(Location location) {
+    private Optional<Pair<OnPlayerInteractMob, Mob>> findByCords(Location location) {
         return Optional.ofNullable(this.mappedMobs.get(location));
     }
 
@@ -125,7 +121,7 @@ public final class MobMapper {
 
         private void searchAndExecuteMob (PlayerInteractEntityEvent event) {
             Location location = transformLocationToWorldNull(event.getRightClicked().getLocation());
-            Optional<Pair<MobOnInteract, Mob>> mobOptional = findByCords(location);
+            Optional<Pair<OnPlayerInteractMob, Mob>> mobOptional = findByCords(location);
 
             if(mobOptional.isPresent()){
                 mobOptional.get().getKey().execute(event);

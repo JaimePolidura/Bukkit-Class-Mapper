@@ -7,6 +7,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
  * implement this interface. When the mob is clicked, the code in the method
  * will be executed
  */
-public interface MobOnInteract {
+public interface OnPlayerInteractMob {
     void execute(PlayerInteractEntityEvent event);
 }
