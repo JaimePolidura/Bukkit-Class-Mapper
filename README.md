@@ -88,13 +88,13 @@ int period. The period when it will be executed. This is in minecraft ticks (eve
 (Optional) int delay. When the task is loaded it will have an initial delay before running. This is set to 0 by default. This is in minecraft ticks as well.
 2º) Finally the class needs to implement TaskRunner interface, which will have void run() method which will be executed when the task starts.
 
-´´´java
+```java
 @Task(period = 40) //It will be executed every 2 seconds
 public class TestTask extends TaskRunner {
-   @Override
-   public void run () {
-       //TODO...
-   }
+   	@Override
+   	public void run () {
+       		//TODO...
+   	}
 }
 ´´´
 
@@ -103,10 +103,10 @@ If you want an initial delay of 1 minute and a period of 30 seconds:
 ```java
 @Task(period = 30 * BukkitTimeUnit.SECOND, delay = BukkitTimeUnit.MINUTE)
 public class TestTask extends TaskRunner {
-    @Override
-    public void run () {
-         //TODO...
-    }
+ 	@Override
+    	public void run () {
+        	 //TODO...
+    	}
 }
 ```
  
