@@ -4,13 +4,13 @@ package es.jaimetruman;
 import es.jaimetruman.commands.CommandMapper;
 import es.jaimetruman.events.EventListenerMapper;
 import es.jaimetruman.mobs.MobMapper;
-import lombok.NonNull;
+import es.jaimetruman.task.TaskMapper;
 import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class Mapper  {
+public final class Mapper  {
     private final Set<ClassScanner> mappers;
     private final String commonPackage;
     private final Plugin plugin;
@@ -29,6 +29,12 @@ public class Mapper  {
 
     public Mapper eventListenerMapper () {
         this.mappers.add(new EventListenerMapper(commonPackage, plugin));
+
+        return this;
+    }
+
+    public Mapper taskMapper () {
+        this.mappers.add(new TaskMapper(commonPackage, plugin));
 
         return this;
     }
