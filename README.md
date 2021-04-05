@@ -44,9 +44,9 @@ We will set up a basic helloWorld command. First we will have to declare in our 
 Finally we will create the class which will represent the command. This class needs these things:
  
 1. Be annotated with @command. This annotation will have the basic description of your command. It includes two values.
-  * String name. This is required. It represents the name of the command. 
-  * boolean canBeTypedInConsole (Optional). If you want your command to be typed in the console you would set this to true. As default this is set to false.
-  * (Optional) String permissions (Optional). Not required. The permissions that the player will need to have to execute the command.
+  	* String name. This is required. It represents the name of the command. 
+  	* boolean canBeTypedInConsole (Optional). If you want your command to be typed in the console you would set this to true. As default this is set to false.
+  	* (Optional) String permissions (Optional). Not required. The permissions that the player will need to have to execute the command.
 
 2. The class needs to implement the CommandRunner interface. This interface will have one method: void execute (CommandSender sender, String[] args). This method will be executed when the command is typed.
  
