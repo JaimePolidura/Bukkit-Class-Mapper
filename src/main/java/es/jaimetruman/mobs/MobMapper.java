@@ -59,6 +59,8 @@ public final class MobMapper extends ClassScanner {
 
             saveMobClassInstance(classToAdd, annotation);
         }
+
+        System.out.println("Mapped all mob classes");
     }
 
     private Mob getMobExecutorAnnotationFromClass(Class<? extends OnPlayerInteractMob> classToFind) {

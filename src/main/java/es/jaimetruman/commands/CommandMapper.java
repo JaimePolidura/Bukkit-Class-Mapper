@@ -58,6 +58,8 @@ public final class CommandMapper extends ClassScanner {
 
             saveCommand(classToAdd, annotation);
         }
+
+        System.out.println("Mapped all command classes");
     }
 
     private Command getCommandExecutorAnnotationFromClass (Class<? extends CommandRunner> classToFind) {

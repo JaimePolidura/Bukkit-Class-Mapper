@@ -5,6 +5,7 @@ import es.jaimetruman.commands.CommandMapper;
 import es.jaimetruman.events.EventListenerMapper;
 import es.jaimetruman.mobs.MobMapper;
 import es.jaimetruman.task.TaskMapper;
+import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;

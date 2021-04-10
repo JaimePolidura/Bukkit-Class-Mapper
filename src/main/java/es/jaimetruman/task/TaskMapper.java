@@ -49,6 +49,8 @@ public final class TaskMapper extends ClassScanner {
                 //TODO
             }
         }
+
+        System.out.println("Mapped all task classes");
     }
 
     private Task getMobExecutorAnnotationFromClass(Class<? extends TaskRunner> classToFind) {

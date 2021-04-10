@@ -34,5 +34,7 @@ public final class EventListenerMapper extends ClassScanner {
                 //Ignored
             }
         }
+
+        System.out.println("Mapped all event listener classes");
     }
 }
