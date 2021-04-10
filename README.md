@@ -12,12 +12,12 @@ Base package. It will represent the package of your code, where it will scan for
 Plugin instance. The main plugin class (the one that extends JavaPlugin).
  
 Now you have to declare what you want to use the plugin for. 
-  .mobMapper(). It will scan for classes that represent mobs that the player can interact with (see below Mobs).
-  .eventListenerMapper(). It will scan event listener classes and will register them for you.
-  .commandMapper(<messageOnWrongSender>, <messageOnWrongCommand>, [messageOnWrongPermission]).
-    - messageOnWrongSender. The error message when the command is typed in the console.
-    - messageOnWrongCommand. The error message when the command is not found.
-    - messageOnWrongPermission [Optional]. The error message when the player does not have the permission.
+  * .mobMapper(). It will scan for classes that represent mobs that the player can interact with (see below Mobs).
+  * .eventListenerMapper(). It will scan event listener classes and will register them for you.
+  * .commandMapper(<messageOnWrongSender>, <messageOnWrongCommand>, [messageOnWrongPermission]).
+    * messageOnWrongSender. The error message when the command is typed in the console.
+    * messageOnWrongCommand. The error message when the command is not found.
+    * messageOnWrongPermission [Optional]. The error message when the player does not have the permission.
  
 Finally you have to put .startScanning() to scan all your classes.
  
@@ -43,12 +43,12 @@ We will set up a basic helloWorld command. First we will have to declare in our 
  
 Finally we will create the class which will represent the command. This class needs these things:
  
-1º)  Be annotated with @command. This annotation will have the basic description of your command. It includes two values.
-  String name. This is required. It represents the name of the command. 
-  boolean canBeTypedInConsole (Optional). If you want your command to be typed in the console you would set this to true. As default this is set to false.
-  (Optional) String permissions (Optional). Not required. The permissions that the player will need to have to execute the command.
+1. Be annotated with @command. This annotation will have the basic description of your command. It includes two values.
+  	* String name. This is required. It represents the name of the command. 
+  	* boolean canBeTypedInConsole (Optional). If you want your command to be typed in the console you would set this to true. As default this is set to false.
+  	* (Optional) String permissions (Optional). Not required. The permissions that the player will need to have to execute the command.
 
-2º)  The class needs to implement the CommandRunner interface. This interface will have one method: void execute (CommandSender sender, String[] args). This method will be executed when the command is typed.
+2. The class needs to implement the CommandRunner interface. This interface will have one method: void execute (CommandSender sender, String[] args). This method will be executed when the command is typed.
  
 ```java
 @Command(name = "helloworld")
@@ -83,10 +83,10 @@ The commandMapper class needs to be a singleton (only one instance) which means 
 
 You can create your own task (the ones that extends BukktiRunnable) without taking care to start them. To do it, every task will represent a task. This class needs to:
 
-1º) Be annotated with @Task annotation. This will have two values
-int period. The period when it will be executed. This is in minecraft ticks (every second = 20)
-(Optional) int delay. When the task is loaded it will have an initial delay before running. This is set to 0 by default. This is in minecraft ticks as well.
-2º) Finally the class needs to implement TaskRunner interface, which will have void run() method which will be executed when the task starts.
+1. Be annotated with @Task annotation. This will have two values
+	* int period. The period when it will be executed. This is in minecraft ticks (every second = 20)
+	* (Optional) int delay. When the task is loaded it will have an initial delay before running. This is set to 0 by default. This is in minecraft ticks as well.
+2. Finally the class needs to implement TaskRunner interface, which will have void run() method which will be executed when the task starts.
 
 ```java
 @Task(period = 40) //It will be executed every 2 seconds
@@ -115,9 +115,9 @@ public class TestTask extends TaskRunner {
  
 If you want a mob/entity in a fixed location that the player can interact with, you can use this part of the plugin. This is needed:
  
-  1º) Be annotated with  @Mob annotation. You will have to specify the x, y, z location.
+ 1. Be annotated with  @Mob annotation. You will have to specify the x, y, z location.
  
-  2º) Implement the OnPlayerInteractMob, it will have this method. void execute(PlayerInteractEvent event). It will get executed when the player interacts with the mob. Example.
+ 2. Implement the OnPlayerInteractMob, it will have this method. void execute(PlayerInteractEvent event). It will get executed when the player interacts with the mob. Example.
  
 ```java
 @Mob(x = 0, y = 70, z = 0)
