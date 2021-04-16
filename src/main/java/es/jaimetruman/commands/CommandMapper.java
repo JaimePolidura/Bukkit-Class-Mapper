@@ -26,8 +26,6 @@ public final class CommandMapper extends ClassScanner {
 
         this.mappedCommands = new HashMap<>();
         this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
-
-        this.scan();
     }
 
     @Override

@@ -13,7 +13,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 import java.util.stream.Stream;
 
-
 public final class MobMapper extends ClassScanner {
     private final Map<Location, Pair<OnPlayerInteractMob, Mob>> mappedMobs;
     private final Plugin mainPluginClass;
@@ -25,8 +24,6 @@ public final class MobMapper extends ClassScanner {
         this.mappedMobs = new HashMap<>();
         this.defaultListener = new DefaultEntrypointPlayerInteractEntity();
         this.mainPluginClass = plugin;
-
-        this.scan();
 
         plugin.getServer().getPluginManager().registerEvents(defaultListener, plugin);
     }

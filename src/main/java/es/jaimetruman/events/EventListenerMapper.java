@@ -17,8 +17,6 @@ public final class EventListenerMapper extends ClassScanner {
 
         this.packageToScan = packageToScan;
         this.plugin = plugin;
-
-        this.scan();
     }
 
     @Override
