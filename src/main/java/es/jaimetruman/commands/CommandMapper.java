@@ -70,7 +70,7 @@ public final class CommandMapper extends ClassScanner {
     @SneakyThrows
     private void saveCommand (Class<? extends CommandRunner> commandClass, Command annotation) {
         CommandRunner command = commandClass.newInstance();
-        String commandName = annotation.name();
+        String commandName = annotation.value();
 
         this.registerCommandBukkit(commandName);
 

@@ -44,7 +44,7 @@ public final class TaskMapper extends ClassScanner {
                 Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
                 TaskRunner taskRunner = classToAdd.newInstance();
 
-                Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.period());
+                Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.value());
             } catch (InstantiationException | IllegalAccessException e) {
                 //TODO
             }

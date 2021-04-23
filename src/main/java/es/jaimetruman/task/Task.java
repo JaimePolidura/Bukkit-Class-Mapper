@@ -8,7 +8,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Task {
-    int period();
+    /**
+     * Period
+     */
+    int value();
 
     int delay() default 0;
 }

@@ -16,7 +16,7 @@ public @interface Command {
      * Name of the command. If you want to declare a subcommand,
      * you would do this for example: "profile account"
      */
-    String name();
+    String value();
 
     /**
      * If you want your command to be able to run in the console you would
