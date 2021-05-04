@@ -7,7 +7,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ public class ItemBuilder {
 
         return this;
     }
-
     public ItemBuilder lore(String lore) {
         this.itemMeta.setLore(Collections.singletonList(lore));
 

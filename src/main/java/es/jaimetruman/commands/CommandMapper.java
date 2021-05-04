@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,16 +17,18 @@ public final class CommandMapper extends ClassScanner {
     //Command name - pair: commandRunner, command annotation (description)
     private final Map<String, Pair<CommandRunner, Command>> mappedCommands;
     private final CommandExecutor commandExecutor;
+    private final Plugin plugin;
 
-    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender) {
-        this(packageToStartScanning, messageOnCommandNotFound, messageOnWrongSender, ChatColor.DARK_RED + "You dont have any permissions to execute that command");
+    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, Plugin plugin) {
+        this(packageToStartScanning, messageOnCommandNotFound, messageOnWrongSender, ChatColor.DARK_RED + "You dont have any permissions to execute that command", plugin);
     }
 
-    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions) {
+    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions, Plugin plugin) {
         super(packageToStartScanning);
 
         this.mappedCommands = new HashMap<>();
         this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
+        this.plugin = plugin;
     }
 
     @Override
@@ -133,7 +136,11 @@ public final class CommandMapper extends ClassScanner {
                 return true;
             }
 
-            commandRunner.execute(sender, args);
+            if(commandData.isAsyncn()) {
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunner.execute(sender, args), 0L);
+            }else{
+                commandRunner.execute(sender, args);
+            }
 
             return true;
         }

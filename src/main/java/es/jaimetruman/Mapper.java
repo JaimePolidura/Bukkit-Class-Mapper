@@ -21,6 +21,15 @@ public final class Mapper  {
         this.plugin = plugin;
     }
 
+    public Mapper all (String onWrongCommand, String onWrongSender) {
+        this.commandMapper(onWrongCommand, onWrongSender);
+        this.taskMapper();
+        this.eventListenerMapper();
+        this.mobMapper();
+
+        return this;
+    }
+
     public Mapper mobMapper () {
         this.mappers.add(new MobMapper(commonPackage, plugin));
 
@@ -40,13 +49,13 @@ public final class Mapper  {
     }
 
     public Mapper commandMapper (String onWrongCommand, String onWrongSender, String onWrongPermissions) {
-        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender, onWrongPermissions));
+        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender, onWrongPermissions, plugin));
 
         return this;
     }
 
     public Mapper commandMapper (String onWrongCommand, String onWrongSender) {
-        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender));
+        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender, plugin));
 
         return this;
     }
@@ -57,5 +66,9 @@ public final class Mapper  {
 
     public static Mapper build (String commonPackage, Plugin plugin) {
         return new Mapper(commonPackage, plugin);
+    }
+
+    public static Mapper build (Plugin plugin) {
+        return new Mapper(plugin.getClass().getPackage().getName(), plugin);
     }
 }

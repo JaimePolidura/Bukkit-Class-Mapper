@@ -28,4 +28,9 @@ public @interface Command {
      * Permissions that the player needs to have to perform the command
      */
     String permissions() default "";
+
+    /**
+     * If you want your command to be executed in other thread, set this to true
+     */
+    boolean isAsyncn() default false;
 }
