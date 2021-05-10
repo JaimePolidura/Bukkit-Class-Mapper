@@ -37,7 +37,7 @@ You still have to declare your commands in plugin.yml.
 
  
 ```java
-@Command(name = "helloworld")
+@Command("helloworld")
 public class HelloWorldCommand implements CommandRunner {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
@@ -49,7 +49,7 @@ public class HelloWorldCommand implements CommandRunner {
 If you a subcommand that can be typed in the console, with permissions and runned in other thread:
  
 ```java
-@Command(name = "friend list", canBeTypedInConsole = true, permissions = "bukkit.broadcast.user", asynch = true)
+@Command(value = "friend list", canBeTypedInConsole = true, permissions = "bukkit.broadcast.user", asynch = true)
 public class FriendListCommand implements CommandRunner {
     @Override
     public void execute(CommandSender commandSender, String[] strings) {
@@ -63,7 +63,7 @@ public class FriendListCommand implements CommandRunner {
 You can create your own task (the ones that extends BukktiRunnable) without taking care to start them. The time will be in ticks (every 20 ticks it is 1 second)
 
 ```java
-@Task(period = 40) //It will be executed every 2 seconds
+@Task(40) //It will be executed every 2 seconds
 public class TestTask extends TaskRunner {
     @Override
     public void run () {
@@ -77,10 +77,10 @@ If you want an initial delay of 1 minute and a period of 30 seconds:
 ```java
 @Task(period = 30 * BukkitTimeUnit.SECOND, delay = BukkitTimeUnit.MINUTE)
 public class TestTask extends TaskRunner {
- 	@Override
-    	public void run () {
-        	 //TODO...
-    	}
+      @Override
+      public void run () {
+      	//TODO...
+      }
 }
 ``` 
  
