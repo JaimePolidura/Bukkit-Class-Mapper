@@ -24,8 +24,16 @@ public final class CommandRegistry {
 
         return commandFound ?
                 Optional.of(command) :
-                args.length > 0 ? //Maybe it is a subcommand
-                        Optional.ofNullable(this.commands.get(String.format("%s %s", commandName, args[0]))) :
+                args.length > 0 ?
+                        findSubCommand(commandName, args) :
                         Optional.empty();
+    }
+
+    private Optional<Pair<CommandRunner, Command>> findSubCommand(String commandName, String[] args){
+        Pair<CommandRunner, Command> subCommandData = this.commands.get(String.format("%s %s", commandName, args[0]));
+
+        return subCommandData != null && subCommandData.getValue().isSubCommand() ?
+                Optional.of(subCommandData) :
+                Optional.empty();
     }
 }

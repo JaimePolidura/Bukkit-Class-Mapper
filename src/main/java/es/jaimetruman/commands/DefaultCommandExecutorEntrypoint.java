@@ -37,10 +37,10 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private void tryToExecuteCommand(CommandSender sender, String commandName, String[] args) throws Exception{
-        Pair<CommandRunner, Command> commandDataPair = validateOrThrowException(sender, commandName, args);
+        validateOrThrowException(sender, commandName, args);
 
-        CommandRunner commandRunner = commandDataPair.getKey();
-        Command commandInfo = commandDataPair.getValue();
+        CommandRunner commandRunner = getCommandRunnerInstance(commandName, args);
+        Command commandInfo = getCommandData(commandName, args);
 
         if(commandInfo.isAsync()) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunner.execute(sender, args), 0L);
@@ -49,7 +49,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         }
     }
 
-    private Pair<CommandRunner, Command> validateOrThrowException(CommandSender sender, String commandName, String[] args) throws Exception{
+    private void validateOrThrowException(CommandSender sender, String commandName, String[] args) throws Exception{
         Optional<Pair<CommandRunner, Command>> optionalCommandRunner = commandRegistry.findByName(commandName, args);
 
         if(!optionalCommandRunner.isPresent()){
@@ -57,7 +57,6 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         }
 
         Command commandData = optionalCommandRunner.get().getValue();
-        CommandRunner commandRunner = optionalCommandRunner.get().getKey();
 
         if(!(sender instanceof Player) && !commandData.canBeTypedInConsole()){
             throw new Exception(messageOnWrongSender);
@@ -65,7 +64,13 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         if(!commandData.permissions().equals("") && !sender.hasPermission(commandData.permissions())){
             throw new Exception(messageOnNotHavePermissions);
         }
+    }
 
-        return optionalCommandRunner.get();
+    private Command getCommandData(String commandName, String[] args){
+        return this.commandRegistry.findByName(commandName, args).get().getValue();
+    }
+
+    private CommandRunner getCommandRunnerInstance(String commandName, String[] args){
+        return this.commandRegistry.findByName(commandName, args).get().getKey();
     }
 }

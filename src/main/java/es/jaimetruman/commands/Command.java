@@ -35,6 +35,11 @@ public @interface Command {
     boolean isAsync() default false;
 
     /**
+     * Set this to true, if it is a subcommand
+     */
+    boolean isSubCommand() default false;
+
+    /**
      * All args names that will be mapped to the classname with the same. Example
      */
     String[] args() default "";
