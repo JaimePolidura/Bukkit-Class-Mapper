@@ -2,10 +2,15 @@ package es.jaimetruman;
 
 
 import es.jaimetruman.commands.CommandMapper;
+import es.jaimetruman.commands.CommandRegistry;
+import es.jaimetruman.commands.DefaultCommandExecutorEntrypoint;
 import es.jaimetruman.events.EventListenerMapper;
 import es.jaimetruman.mobs.MobMapper;
 import es.jaimetruman.task.TaskMapper;
+import lombok.val;
+import lombok.var;
 import org.bukkit.plugin.Plugin;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,8 +26,8 @@ public final class Mapper  {
         this.plugin = plugin;
     }
 
-    public Mapper all (String onWrongCommand, String onWrongSender) {
-        this.commandMapper(onWrongCommand, onWrongSender);
+    public Mapper all (String onWrongCommand, String onWrongSender, String onWrongPermissions) {
+        this.commandMapper(onWrongCommand, onWrongSender, onWrongPermissions);
         this.taskMapper();
         this.eventListenerMapper();
         this.mobMapper();
@@ -49,13 +54,11 @@ public final class Mapper  {
     }
 
     public Mapper commandMapper (String onWrongCommand, String onWrongSender, String onWrongPermissions) {
-        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender, onWrongPermissions, plugin));
+        CommandRegistry commandRegistry = new CommandRegistry();
+        DefaultCommandExecutorEntrypoint defaultCommandExecutorEntrypoint = new DefaultCommandExecutorEntrypoint(
+                commandRegistry, onWrongSender, onWrongCommand, onWrongPermissions, plugin);
 
-        return this;
-    }
-
-    public Mapper commandMapper (String onWrongCommand, String onWrongSender) {
-        this.mappers.add(new CommandMapper(commonPackage, onWrongCommand, onWrongSender, plugin));
+        this.mappers.add(new CommandMapper(commonPackage, defaultCommandExecutorEntrypoint, commandRegistry));
 
         return this;
     }

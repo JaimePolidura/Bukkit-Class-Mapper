@@ -15,20 +15,15 @@ import java.util.stream.Stream;
 
 public final class CommandMapper extends ClassScanner {
     //Command name - pair: commandRunner, command annotation (description)
-    private final CommandExecutor commandExecutor;
-    private final Plugin plugin;
+    private final DefaultCommandExecutorEntrypoint commandExecutorEntrypoint;
     private final CommandRegistry commandRegistry;
 
-    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, Plugin plugin) {
-        this(packageToStartScanning, messageOnCommandNotFound, messageOnWrongSender, ChatColor.DARK_RED + "You dont have any permissions to execute that command", plugin);
-    }
-
-    public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions, Plugin plugin) {
+    public CommandMapper(String packageToStartScanning, DefaultCommandExecutorEntrypoint defaultCommandExecutorEntrypoint,
+                         CommandRegistry commandRegistry) {
         super(packageToStartScanning);
 
-        this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
-        this.plugin = plugin;
-        this.commandRegistry = new CommandRegistry();
+        this.commandRegistry = commandRegistry;
+        this.commandExecutorEntrypoint = defaultCommandExecutorEntrypoint;
     }
 
     @Override
@@ -82,48 +77,6 @@ public final class CommandMapper extends ClassScanner {
 
     private void registerCommandBukkit (String commandName) {
         //Just in case we are passing a subcommand
-        Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(commandExecutor);
-    }
-
-    private final class DefaultCommandExcutorEntrypoint implements CommandExecutor {
-        private final String messageOnWrongSender;
-        private final String messageOnCommandNotFound;
-        private final String messageOnNotHavePermissions;
-
-        public DefaultCommandExcutorEntrypoint(String messageOnWrongSender, String messageOnCommandNotFound, String messageOnNotHavePermissions) {
-            this.messageOnWrongSender = messageOnWrongSender;
-            this.messageOnCommandNotFound = messageOnCommandNotFound;
-            this.messageOnNotHavePermissions = messageOnNotHavePermissions;
-        }
-
-        @Override
-        public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-            Optional<Pair<CommandRunner, Command>> optionalCommandRunner = commandRegistry.findByName(command.getName(), args);
-
-            if(!optionalCommandRunner.isPresent()){
-                sender.sendMessage(messageOnCommandNotFound);
-                return true;
-            }
-
-            Command commandData = optionalCommandRunner.get().getValue();
-            CommandRunner commandRunner = optionalCommandRunner.get().getKey();
-
-            if(!(sender instanceof Player) && !commandData.canBeTypedInConsole()){
-                sender.sendMessage(messageOnWrongSender);
-                return true;
-            }
-            if(!commandData.permissions().equals("") && !sender.hasPermission(commandData.permissions())){
-                sender.sendMessage(messageOnNotHavePermissions);
-                return true;
-            }
-
-            if(commandData.isAsync()) {
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunner.execute(sender, args), 0L);
-            }else{
-                commandRunner.execute(sender, args);
-            }
-
-            return true;
-        }
+        Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(this.commandExecutorEntrypoint);
     }
 }

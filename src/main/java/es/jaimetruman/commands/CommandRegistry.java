@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class CommandRegistry {
+public final class CommandRegistry {
     //Command name -> <instance of commandrunner, command info>
     private final Map<String, Pair<CommandRunner, Command>> commands;
 
