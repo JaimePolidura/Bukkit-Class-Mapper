@@ -15,9 +15,9 @@ import java.util.stream.Stream;
 
 public final class CommandMapper extends ClassScanner {
     //Command name - pair: commandRunner, command annotation (description)
-    private final Map<String, Pair<CommandRunner, Command>> mappedCommands;
     private final CommandExecutor commandExecutor;
     private final Plugin plugin;
+    private final CommandRegistry commandRegistry;
 
     public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, Plugin plugin) {
         this(packageToStartScanning, messageOnCommandNotFound, messageOnWrongSender, ChatColor.DARK_RED + "You dont have any permissions to execute that command", plugin);
@@ -26,9 +26,9 @@ public final class CommandMapper extends ClassScanner {
     public CommandMapper(String packageToStartScanning, String messageOnCommandNotFound, String messageOnWrongSender, String onWrongPermissions, Plugin plugin) {
         super(packageToStartScanning);
 
-        this.mappedCommands = new HashMap<>();
         this.commandExecutor = new DefaultCommandExcutorEntrypoint(messageOnWrongSender, messageOnCommandNotFound, onWrongPermissions);
         this.plugin = plugin;
+        this.commandRegistry = new CommandRegistry();
     }
 
     @Override
@@ -72,36 +72,17 @@ public final class CommandMapper extends ClassScanner {
 
     @SneakyThrows
     private void saveCommand (Class<? extends CommandRunner> commandClass, Command annotation) {
-        CommandRunner command = commandClass.newInstance();
+        CommandRunner commandRunnerInstance = commandClass.newInstance();
         String commandName = annotation.value();
 
         this.registerCommandBukkit(commandName);
 
-        this.mappedCommands.put(commandName, new Pair<>(command, annotation));
+        this.commandRegistry.put(commandRunnerInstance, annotation);
     }
 
     private void registerCommandBukkit (String commandName) {
         //Just in case we are passing a subcommand
         Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(commandExecutor);
-    }
-
-    private Optional<Pair<CommandRunner, Command>> findByName (String commandName, String[] args) {
-        Pair<CommandRunner, Command> command = this.mappedCommands.get(commandName);
-
-        if(command != null){
-            return Optional.of(command);
-        }else if (args == null || args.length == 0) {
-            return Optional.empty();
-        }
-
-        //Maybe he typed a subcommand.
-        Pair<CommandRunner, Command> subCommand = this.mappedCommands.get(String.format("%s %s", commandName, args[0]));
-
-        if(subCommand != null){
-            return Optional.ofNullable(subCommand);
-        }else{
-            return Optional.empty();
-        }
     }
 
     private final class DefaultCommandExcutorEntrypoint implements CommandExecutor {
@@ -117,7 +98,7 @@ public final class CommandMapper extends ClassScanner {
 
         @Override
         public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-            Optional<Pair<CommandRunner, Command>> optionalCommandRunner = findByName(command.getName(), args);
+            Optional<Pair<CommandRunner, Command>> optionalCommandRunner = commandRegistry.findByName(command.getName(), args);
 
             if(!optionalCommandRunner.isPresent()){
                 sender.sendMessage(messageOnCommandNotFound);
@@ -136,7 +117,7 @@ public final class CommandMapper extends ClassScanner {
                 return true;
             }
 
-            if(commandData.isAsyncn()) {
+            if(commandData.isAsync()) {
                 Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunner.execute(sender, args), 0L);
             }else{
                 commandRunner.execute(sender, args);

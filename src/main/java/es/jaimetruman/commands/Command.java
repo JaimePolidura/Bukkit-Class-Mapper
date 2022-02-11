@@ -32,5 +32,10 @@ public @interface Command {
     /**
      * If you want your command to be executed in other thread, set this to true
      */
-    boolean isAsyncn() default false;
+    boolean isAsync() default false;
+
+    /**
+     * All args names that will be mapped to the classname with the same. Example
+     */
+    String[] args() default "";
 }
