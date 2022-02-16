@@ -31,6 +31,8 @@ public final class CommandMapper extends ClassScanner {
         Set<Class<? extends CommandRunner>> checkedClasses = this.checkIfClassesImplementsCommandInterface(
                 reflections.getTypesAnnotatedWith(Command.class));
 
+        System.out.println("----> "+  checkedClasses.size());
+
         this.createInstancesAndAdd(checkedClasses);
     }
 

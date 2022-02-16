@@ -1,16 +1,21 @@
 package es.jaimetruman.commands;
 
+import es.jaimetruman.commands.newversion.CommandArgsObjectBuilder;
 import javafx.util.Pair;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
+
+import static org.bukkit.Bukkit.*;
 
 public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private final CommandRegistry commandRegistry;
+    private final CommandArgsObjectBuilder commandArgsObjectBuilder;
     private final String messageOnWrongSender;
     private final String messageOnCommandNotFound;
     private final String messageOnNotHavePermissions;
@@ -23,6 +28,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         this.messageOnCommandNotFound = messageOnCommandNotFound;
         this.messageOnNotHavePermissions = messageOnNotHavePermissions;
         this.plugin = plugin;
+        this.commandArgsObjectBuilder = new CommandArgsObjectBuilder();
     }
 
     @Override
@@ -30,26 +36,22 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         try{
             tryToExecuteCommand(sender, command.getName(), args);
         }catch (Exception e) {
-            sender.sendMessage(e.getMessage());
-        }finally {
-            return true;
+            sender.sendMessage(ChatColor.DARK_RED + e.getMessage());
         }
+
+        return true;
     }
 
     private void tryToExecuteCommand(CommandSender sender, String commandName, String[] args) throws Exception{
-        validateOrThrowException(sender, commandName, args);
+        validateInput(sender, commandName, args);
 
         CommandRunner commandRunner = getCommandRunnerInstance(commandName, args);
         Command commandInfo = getCommandData(commandName, args);
 
-        if(commandInfo.isAsync()) {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunner.execute(sender, args), 0L);
-        }else{
-            commandRunner.execute(sender, args);
-        }
+        executeCommand(commandInfo, sender, args, commandRunner);
     }
 
-    private void validateOrThrowException(CommandSender sender, String commandName, String[] args) throws Exception{
+    private void validateInput(CommandSender sender, String commandName, String[] args) throws Exception{
         Optional<Pair<CommandRunner, Command>> optionalCommandRunner = commandRegistry.findByName(commandName, args);
 
         if(!optionalCommandRunner.isPresent()){
@@ -72,5 +74,43 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private CommandRunner getCommandRunnerInstance(String commandName, String[] args){
         return this.commandRegistry.findByName(commandName, args).get().getKey();
+    }
+
+    private void executeCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
+        boolean commandOfNoArgs = commandRunner instanceof CommandRunnerNonArgs;
+
+        if(commandOfNoArgs)
+            executeNonArgsCommnad(commandInfo, sender, commandRunner);
+        else
+            executeArgsCommand(commandInfo, sender, args, commandRunner);
+    }
+
+    private void executeNonArgsCommnad(Command commandInfo, CommandSender sender, CommandRunner commandRunner){
+        CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandRunner;
+
+        if(commandInfo.isAsync()) {
+            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerNonArgs.execute(sender), 0L);
+        }else {
+            commandRunnerNonArgs.execute(sender);
+        }
+    }
+
+    private void executeArgsCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
+        CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandRunner;
+        Object objectArgs = buildObjectArgs(commandInfo, commandRunner, args);
+
+        if(commandInfo.isAsync()){
+            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(objectArgs, sender), 0L);
+        }else{
+            commandRunnerArgs.execute(objectArgs, sender);
+        }
+    }
+
+    private Object buildObjectArgs(Command commandInfo, CommandRunner commandRunner, String[] inputArgs) throws Exception {
+        CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandRunner;
+        ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
+        Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
+
+        return commandArgsObjectBuilder.build(commandInfo, inputArgs, classObjectArg);
     }
 }
