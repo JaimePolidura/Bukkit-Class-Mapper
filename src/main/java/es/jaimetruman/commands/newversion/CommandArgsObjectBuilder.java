@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CommandArgsObjectBuilder {
@@ -14,8 +13,6 @@ public class CommandArgsObjectBuilder {
         try{
             return tryToBuild(commandInfo, actualArgs, classObjectArgs);
         }catch (Exception e) {
-            e.printStackTrace();
-
             String usage = Bukkit.getPluginCommand(commandInfo.value().split(" ")[0]).getUsage();
 
             throw new Exception(String.format("Incorrect use: %s", usage));
@@ -61,17 +58,17 @@ public class CommandArgsObjectBuilder {
     private String normalizeArgName(String arg){
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (int i = 0; i < arg.length(); i++) {
-            if(arg.charAt(i) != '.'){
+        for (int i = 0; i < arg.length(); i++)
+            if(arg.charAt(i) != '.')
                 stringBuilder.append(arg.charAt(i));
-            }
-        }
 
-        String res = stringBuilder.toString();
-
-        return res.contains("[") ?
+        String toReturn = stringBuilder.toString().contains("[") ?
                 StringUtils.substringBetween(stringBuilder.toString(), "[", "]") :
-                res ;
+                stringBuilder.toString();
+
+        return toReturn.contains("¡") ?
+                toReturn.substring(0, toReturn.indexOf("¡")) :
+                toReturn;
     }
 
     private <T> void setField(T newInstance, String argName, String actualArg) throws Exception {
@@ -117,7 +114,7 @@ public class CommandArgsObjectBuilder {
     private void checkIfArgumentMissingOrThrowException(List<String> argumentsAdded, String[] unnormalizedRequiredArguments, Object instance) throws Exception {
         for (String unnormalizedRequiredArgument : unnormalizedRequiredArguments) {
             if(!argumentsAdded.contains(unnormalizedRequiredArgument) && isRequired(unnormalizedRequiredArgument)){
-                throw new IllegalArgumentException("skjaslkjaslk");
+                throw new IllegalArgumentException();
             }else if(!argumentsAdded.contains(unnormalizedRequiredArgument) && hasDefaultValue(unnormalizedRequiredArgument)){
                 setField(instance, normalizeArgName(unnormalizedRequiredArgument), getDefaultValue(unnormalizedRequiredArgument));
             }

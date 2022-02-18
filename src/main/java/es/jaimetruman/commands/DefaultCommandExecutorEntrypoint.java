@@ -112,8 +112,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
         Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
 
-        return commandArgsObjectBuilder.
-                build(commandInfo, inputArgs, classObjectArg);
+        return commandArgsObjectBuilder.build(commandInfo, inputArgs, classObjectArg);
     }
 
     private String[] getActualArgsWithoutSubcommand(Command commandInfo, String[] actualArgs){
