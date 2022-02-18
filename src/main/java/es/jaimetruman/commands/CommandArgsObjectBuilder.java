@@ -1,4 +1,4 @@
-package es.jaimetruman.commands.newversion;
+package es.jaimetruman.commands;
 
 import es.jaimetruman.commands.Command;
 import org.apache.commons.lang.StringUtils;
