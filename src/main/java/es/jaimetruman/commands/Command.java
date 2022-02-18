@@ -43,6 +43,4 @@ public @interface Command {
      * All args names that will be mapped to the classname with the same. Example
      */
     String[] args() default "";
-
-    String usage() default "";
 }

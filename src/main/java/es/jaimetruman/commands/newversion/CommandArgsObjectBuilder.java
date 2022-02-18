@@ -2,9 +2,11 @@ package es.jaimetruman.commands.newversion;
 
 import es.jaimetruman.commands.Command;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandArgsObjectBuilder {
@@ -14,7 +16,9 @@ public class CommandArgsObjectBuilder {
         }catch (Exception e) {
             e.printStackTrace();
 
-            throw new Exception("Incorrect use: " + commandInfo.usage());
+            String usage = Bukkit.getPluginCommand(commandInfo.value().split(" ")[0]).getUsage();
+
+            throw new Exception(String.format("Incorrect use: %s", usage));
         }
     }
 
@@ -126,10 +130,6 @@ public class CommandArgsObjectBuilder {
 
     private boolean hasDefaultValue(String arg){
         return arg.contains("!");
-    }
-
-    private boolean isOptional(String arg){
-        return arg.contains("[");
     }
 
     private boolean isRequired(String arg){

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.bukkit.Bukkit.*;
@@ -97,7 +98,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private void executeArgsCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandRunner;
-        Object objectArgs = buildObjectArgs(commandInfo, commandRunner, args);
+        Object objectArgs = buildObjectArgs(commandInfo, commandRunner, getActualArgsWithoutSubcommand(commandInfo, args));
 
         if(commandInfo.isAsync()){
             getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(objectArgs, sender), 0L);
@@ -111,6 +112,13 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
         Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
 
-        return commandArgsObjectBuilder.build(commandInfo, inputArgs, classObjectArg);
+        return commandArgsObjectBuilder.
+                build(commandInfo, inputArgs, classObjectArg);
+    }
+
+    private String[] getActualArgsWithoutSubcommand(Command commandInfo, String[] actualArgs){
+        return commandInfo.isSubCommand() ?
+                Arrays.copyOfRange(actualArgs, 1, actualArgs.length) :
+                actualArgs;
     }
 }
