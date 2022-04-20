@@ -94,7 +94,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             commandRunnerNonArgs.execute(sender);
         }
     }
-
+    
     private void executeArgsCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandRunner;
         Object objectArgs = buildObjectArgs(commandInfo, commandRunner, getActualArgsWithoutSubcommand(commandInfo, args));

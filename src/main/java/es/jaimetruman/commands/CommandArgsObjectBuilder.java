@@ -1,12 +1,12 @@
 package es.jaimetruman.commands;
 
-import es.jaimetruman.commands.Command;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CommandArgsObjectBuilder {
     public <T> T build(Command commandInfo, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
@@ -92,9 +92,11 @@ public class CommandArgsObjectBuilder {
             return Long.parseLong(arg);
         }else if(fieldTypeName.equalsIgnoreCase("float") || fieldTypeName.equalsIgnoreCase("java.lang.Float")){
             return Float.parseFloat(arg);
+        }else if(fieldTypeName.equalsIgnoreCase("java.util.UUID")){
+            return UUID.fromString(String.valueOf(arg));
         }
 
-        return arg;
+        return field;
     }
 
     private AnnalizyngArgState getCurrentState(int indexOfActualArgs, String requiredArg, String[] actualArgs){
