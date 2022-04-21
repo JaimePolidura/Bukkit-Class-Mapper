@@ -1,14 +1,8 @@
 package es.jaimetruman.commands;
 
 import es.jaimetruman.ClassScanner;
-import javafx.util.Pair;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -28,15 +22,13 @@ public final class CommandMapper extends ClassScanner {
 
     @Override
     public void scan () {
-        Set<Class<? extends CommandRunner>> checkedClasses = this.checkIfClassesImplementsCommandInterface(
+        Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
-        System.out.println("----> "+  checkedClasses.size());
-
-        this.createInstancesAndAdd(checkedClasses);
+        this.createInstancesAndSave(commandRunnerClasses);
     }
 
-    private Set<Class<? extends CommandRunner>> checkIfClassesImplementsCommandInterface(Set<Class<?>> classes) {
+    private Set<Class<? extends CommandRunner>> getCommandRunnerClasses(Set<Class<?>> classes) {
         Set<Class<? extends CommandRunner>> checkedClasses = new HashSet<>();
 
         for(Class<?> notCheckedClass : classes){
@@ -50,17 +42,15 @@ public final class CommandMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd (Set<Class<? extends CommandRunner>> classes) {
-        for(Class<? extends CommandRunner> classToAdd : classes){
-            Command annotation = this.getCommandExecutorAnnotationFromClass(classToAdd);
+    private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses) {
+        for(Class<? extends CommandRunner> classToSave : commandRunnersClasses){
+            Command annotation = this.getCommandAnnotationFromClass(classToSave);
 
-            saveCommand(classToAdd, annotation);
+            saveCommand(classToSave, annotation);
         }
-
-        System.out.println("Mapped all command classes");
     }
 
-    private Command getCommandExecutorAnnotationFromClass (Class<? extends CommandRunner> classToFind) {
+    private Command getCommandAnnotationFromClass(Class<? extends CommandRunner> classToFind) {
         return (Command) Stream.of(classToFind.getAnnotations())
                 .filter(annotation -> annotation instanceof Command)
                 .findAny()

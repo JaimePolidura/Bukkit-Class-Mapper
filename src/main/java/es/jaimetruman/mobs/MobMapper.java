@@ -98,9 +98,7 @@ public final class MobMapper extends ClassScanner {
             Location location = transformLocationToWorldNull(event.getRightClicked().getLocation());
             Optional<Pair<OnPlayerInteractMob, Mob>> mobOptional = findByCords(location);
 
-            if(mobOptional.isPresent()){
-                mobOptional.get().getKey().execute(event);
-            }
+            mobOptional.ifPresent(onPlayerInteractMobMobPair -> onPlayerInteractMobMobPair.getKey().execute(event));
         }
 
         // Needed to perform a search in the hashmap because we dont sabe world objects

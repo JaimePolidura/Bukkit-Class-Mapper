@@ -9,18 +9,20 @@ import java.util.List;
 import java.util.UUID;
 
 public class CommandArgsObjectBuilder {
-    public <T> T build(Command commandInfo, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
+    public <T> T build(CommandData commandData, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
         try{
-            return tryToBuild(commandInfo, actualArgs, classObjectArgs);
+            return tryToBuild(commandData, actualArgs, classObjectArgs);
         }catch (Exception e) {
-            String usage = Bukkit.getPluginCommand(commandInfo.value().split(" ")[0]).getUsage();
+            e.printStackTrace();
+
+            String usage = Bukkit.getPluginCommand(commandData.getCommand().split(" ")[0]).getUsage();
 
             throw new Exception(String.format("Incorrect use: %s", usage));
         }
     }
 
-    private <T> T tryToBuild(Command commandInfo, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
-        String[] requiredArgs = commandInfo.args();
+    private <T> T tryToBuild(CommandData commandData, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
+        String[] requiredArgs = commandData.getArgs();
         T newInstance = classObjectArgs.newInstance();
         StringBuilder stringBuilderText = new StringBuilder();
         int requiredArgIndex = 0;
@@ -50,7 +52,7 @@ public class CommandArgsObjectBuilder {
             }
         }
 
-        checkIfArgumentMissingOrThrowException(argumensAdded, commandInfo.args(), newInstance);
+        checkIfArgumentMissingOrThrowException(argumensAdded, commandData.getArgs(), newInstance);
 
         return newInstance;
     }
@@ -90,8 +92,10 @@ public class CommandArgsObjectBuilder {
             return Short.parseShort(arg);
         }else if(fieldTypeName.equalsIgnoreCase("long") || fieldTypeName.equalsIgnoreCase("java.lang.Long")){
             return Long.parseLong(arg);
-        }else if(fieldTypeName.equalsIgnoreCase("float") || fieldTypeName.equalsIgnoreCase("java.lang.Float")){
+        }else if(fieldTypeName.equalsIgnoreCase("float") || fieldTypeName.equalsIgnoreCase("java.lang.Float")) {
             return Float.parseFloat(arg);
+        }else if(fieldTypeName.equalsIgnoreCase("java.lang.String")){
+            return String.valueOf(arg);
         }else if(fieldTypeName.equalsIgnoreCase("java.util.UUID")){
             return UUID.fromString(String.valueOf(arg));
         }

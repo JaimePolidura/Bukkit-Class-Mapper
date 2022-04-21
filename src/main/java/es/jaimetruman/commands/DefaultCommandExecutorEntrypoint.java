@@ -1,6 +1,8 @@
 package es.jaimetruman.commands;
 
-import javafx.util.Pair;
+import es.jaimetruman.commands.exceptions.CommandNotFound;
+import es.jaimetruman.commands.exceptions.InvalidPermissions;
+import es.jaimetruman.commands.exceptions.InvalidSenderType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,7 +11,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.bukkit.Bukkit.*;
 
@@ -21,12 +22,12 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private final String messageOnNotHavePermissions;
     private final Plugin plugin;
 
-    public DefaultCommandExecutorEntrypoint(CommandRegistry commandRegistry, String messageOnWrongSender, String messageOnCommandNotFound,
-                                            String messageOnNotHavePermissions, Plugin plugin) {
+    public DefaultCommandExecutorEntrypoint(CommandRegistry commandRegistry, String messageOnCommandNotFound,
+                                            Plugin plugin, String messageOnNotHavingPermissinos) {
         this.commandRegistry = commandRegistry;
-        this.messageOnWrongSender = messageOnWrongSender;
+        this.messageOnWrongSender = "You need to be a player to execute this command";
+        this.messageOnNotHavePermissions = messageOnNotHavingPermissinos;
         this.messageOnCommandNotFound = messageOnCommandNotFound;
-        this.messageOnNotHavePermissions = messageOnNotHavePermissions;
         this.plugin = plugin;
         this.commandArgsObjectBuilder = new CommandArgsObjectBuilder();
     }
@@ -34,7 +35,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
         try{
-            tryToExecuteCommand(sender, command.getName(), args);
+            execute(sender, command.getName(), args);
         }catch (Exception e) {
             sender.sendMessage(ChatColor.DARK_RED + e.getMessage());
         }
@@ -42,80 +43,61 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         return true;
     }
 
-    private void tryToExecuteCommand(CommandSender sender, String commandName, String[] args) throws Exception{
-        validateInput(sender, commandName, args);
+    private void execute(CommandSender sender, String commandName, String[] args) throws Exception{
+        CommandData commandData = this.findCommand(commandName, args);
+        this.ensureCorrectSenderType(sender, commandData);
+        this.ensureCorrectPermissions(sender, commandData);
 
-        CommandRunner commandRunner = getCommandRunnerInstance(commandName, args);
-        Command commandInfo = getCommandData(commandName, args);
-
-        executeCommand(commandInfo, sender, args, commandRunner);
-    }
-
-    private void validateInput(CommandSender sender, String commandName, String[] args) throws Exception{
-        Optional<Pair<CommandRunner, Command>> optionalCommandRunner = commandRegistry.findByName(commandName, args);
-
-        if(!optionalCommandRunner.isPresent()){
-            throw new Exception(messageOnCommandNotFound);
-        }
-
-        Command commandData = optionalCommandRunner.get().getValue();
-
-        if(!(sender instanceof Player) && !commandData.canBeTypedInConsole()){
-            throw new Exception(messageOnWrongSender);
-        }
-        if(!commandData.permissions().equals("") && !sender.hasPermission(commandData.permissions())){
-            throw new Exception(messageOnNotHavePermissions);
-        }
-    }
-
-    private Command getCommandData(String commandName, String[] args){
-        return this.commandRegistry.findByName(commandName, args).get().getValue();
-    }
-
-    private CommandRunner getCommandRunnerInstance(String commandName, String[] args){
-        return this.commandRegistry.findByName(commandName, args).get().getKey();
-    }
-
-    private void executeCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
-        boolean commandOfNoArgs = commandRunner instanceof CommandRunnerNonArgs;
-
-        if(commandOfNoArgs)
-            executeNonArgsCommnad(commandInfo, sender, commandRunner);
+        if(commandData.isWithoutArgs())
+            executeNonArgsCommnad(commandData, sender);
         else
-            executeArgsCommand(commandInfo, sender, args, commandRunner);
+            executeArgsCommand(commandData, sender, args);
     }
 
-    private void executeNonArgsCommnad(Command commandInfo, CommandSender sender, CommandRunner commandRunner){
-        CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandRunner;
+    private void ensureCorrectSenderType(CommandSender sender, CommandData commandData){
+        if(!(sender instanceof Player) && !commandData.canBeTypedInConsole())
+            throw new InvalidSenderType(messageOnWrongSender);
+    }
 
-        if(commandInfo.isAsync()) {
+    private void ensureCorrectPermissions(CommandSender sender, CommandData commandData) {
+        if(!commandData.getPermissions().equals("") && !sender.hasPermission(commandData.getPermissions()))
+            throw new InvalidPermissions(messageOnNotHavePermissions);
+    }
+
+    private CommandData findCommand(String commandName, String[] args){
+        return commandRegistry.findByName(commandName, args)
+                .orElseThrow(() -> new CommandNotFound(messageOnCommandNotFound));
+    }
+
+    private void executeNonArgsCommnad(CommandData commandData, CommandSender sender){
+        CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandData.getRunner();
+
+        if(commandData.isAsync())
             getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerNonArgs.execute(sender), 0L);
-        }else {
+        else
             commandRunnerNonArgs.execute(sender);
-        }
     }
-    
-    private void executeArgsCommand(Command commandInfo, CommandSender sender, String[] args, CommandRunner commandRunner) throws Exception {
-        CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandRunner;
-        Object objectArgs = buildObjectArgs(commandInfo, commandRunner, getActualArgsWithoutSubcommand(commandInfo, args));
 
-        if(commandInfo.isAsync()){
+    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception {
+        CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
+        Object objectArgs = buildObjectArgs(commandData, getActualArgsWithoutSubcommand(commandData, args));
+
+        if(commandData.isAsync())
             getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(objectArgs, sender), 0L);
-        }else{
+        else
             commandRunnerArgs.execute(objectArgs, sender);
-        }
     }
 
-    private Object buildObjectArgs(Command commandInfo, CommandRunner commandRunner, String[] inputArgs) throws Exception {
-        CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandRunner;
+    private Object buildObjectArgs(CommandData commandData, String[] inputArgs) throws Exception {
+        CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
         ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
         Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
 
-        return commandArgsObjectBuilder.build(commandInfo, inputArgs, classObjectArg);
+        return commandArgsObjectBuilder.build(commandData, inputArgs, classObjectArg);
     }
 
-    private String[] getActualArgsWithoutSubcommand(Command commandInfo, String[] actualArgs){
-        return commandInfo.isSubCommand() ?
+    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs){
+        return commandInfo.isSubcommand() ?
                 Arrays.copyOfRange(actualArgs, 1, actualArgs.length) :
                 actualArgs;
     }
