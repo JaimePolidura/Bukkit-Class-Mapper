@@ -1,6 +1,5 @@
 package es.jaimetruman.commands;
 
-import org.bukkit.Bukkit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -45,4 +44,9 @@ public @interface Command {
      * Returns the help method for that command
      */
     String helperCommand() default "";
+
+    /**
+     * Returns an explanation for the command
+     */
+    String explanation() default "";
 }

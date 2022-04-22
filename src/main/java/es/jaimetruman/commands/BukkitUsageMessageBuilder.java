@@ -1,17 +1,13 @@
 package es.jaimetruman.commands;
 
 public final class BukkitUsageMessageBuilder {
-    public String build(String command, String[] args, String helperCommand){
+    public String build(String command, String[] args){
         String commandUsageWithoutArgs = String.format("/%s ", command);
         String[] normalizedArgs = this.normalizeCommandsArgs(args);
 
-        String commnandUsage = hasArgs(args) ?
+        return hasArgs(args) ?
                 commandUsageWithoutArgs + String.join(" ", normalizedArgs) :
                 commandUsageWithoutArgs;
-
-        return helperCommand.equals("") ?
-                commnandUsage :
-                String.format("%s %s", commnandUsage, "For more information: " + helperCommand);
     }
 
     private boolean hasArgs(String[] args){

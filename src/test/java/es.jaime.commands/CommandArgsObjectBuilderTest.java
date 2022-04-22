@@ -110,7 +110,7 @@ public class CommandArgsObjectBuilderTest {
     private CommandData getCommandInfoAnnotation(String[] args){
         return new CommandData(
                 "hola",true, "", false, args, null,
-                "", "");
+                "", "", "explanation");
     }
 
     public static class SimpleCommand {

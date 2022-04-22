@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.bukkit.Bukkit.*;
 
@@ -45,6 +46,11 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private void execute(CommandSender sender, String commandName, String[] args) throws Exception{
+        if(isCommandTypeSubcommandHelp(commandName, args)){
+            this.sendHelpMessage(sender, commandName);
+            return;
+        }
+
         CommandData commandData = this.findCommand(commandName, args);
         this.ensureCorrectSenderType(sender, commandData);
         this.ensureCorrectPermissions(sender, commandData);
@@ -53,6 +59,10 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             executeNonArgsCommnad(commandData, sender);
         else
             executeArgsCommand(commandData, sender, args);
+    }
+
+    private boolean isCommandTypeSubcommandHelp(String command, String[] args){
+        return this.commandRegistry.findSubcommandsByCommandName(command) != null && (args.length == 0 || args[0].equals("help"));
     }
 
     private void ensureCorrectSenderType(CommandSender sender, CommandData commandData){
@@ -70,7 +80,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
                 .orElseThrow(() -> new CommandNotFound(messageOnCommandNotFound));
     }
 
-    private void executeNonArgsCommnad(CommandData commandData, CommandSender sender){
+    private void executeNonArgsCommnad(CommandData commandData, CommandSender sender) throws Exception{
         CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandData.getRunner();
 
         if(commandData.isAsync())
@@ -79,8 +89,8 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             commandRunnerNonArgs.execute(sender);
     }
 
-    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) {
-        Object argsCommand = this.tryToBuildArgObject(commandData, args);
+    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception{
+        Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
         if(commandData.isAsync())
@@ -89,7 +99,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             commandRunnerArgs.execute(argsCommand, sender);
     }
 
-    private Object tryToBuildArgObject(CommandData commandData, String[] args){
+    private Object tryToBuildArgObject(CommandData commandData, String[] args) throws Exception{
         try{
             CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
             ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
@@ -97,14 +107,29 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
         }catch (Exception e){
-            //TODO
-            throw new InvalidUsage(commandData.getUsage());
+            String incorrectUsageMessage =!commandData.getHelperCommand().equals("") ?
+                    String.format("%s For more information %s", commandData.getUsage(), commandData.getHelperCommand()):
+                    commandData.getUsage();
+
+            throw new InvalidUsage(incorrectUsageMessage);
         }
     }
 
-    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs){
+    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs) throws Exception{
         return commandInfo.isSubcommand() ?
                 Arrays.copyOfRange(actualArgs, 1, actualArgs.length) :
                 actualArgs;
+    }
+
+    private void sendHelpMessage(CommandSender sender, String commandName){
+        String message = this.commandRegistry.findSubcommandsByCommandName(commandName).stream()
+                .map(this::buildHelpMessageForSubcommand)
+                .collect(Collectors.joining("\n\n"));
+
+        sender.sendMessage(message);
+    }
+
+    private String buildHelpMessageForSubcommand(CommandData subcCommand){
+        return String.format("%s %s", ChatColor.AQUA + subcCommand.getUsage(), ChatColor.GOLD + subcCommand.getExplanation());
     }
 }
