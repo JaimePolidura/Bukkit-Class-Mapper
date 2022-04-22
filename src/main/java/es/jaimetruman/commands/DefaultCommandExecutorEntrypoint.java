@@ -1,6 +1,7 @@
 package es.jaimetruman.commands;
 
 import es.jaimetruman.commands.exceptions.CommandNotFound;
+import es.jaimetruman.commands.exceptions.InvalidUsage;
 import es.jaimetruman.commands.exceptions.InvalidPermissions;
 import es.jaimetruman.commands.exceptions.InvalidSenderType;
 import org.bukkit.ChatColor;
@@ -78,22 +79,27 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             commandRunnerNonArgs.execute(sender);
     }
 
-    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception {
+    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) {
+        Object argsCommand = this.tryToBuildArgObject(commandData, args);
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
-        Object objectArgs = buildObjectArgs(commandData, getActualArgsWithoutSubcommand(commandData, args));
 
         if(commandData.isAsync())
-            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(objectArgs, sender), 0L);
+            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(argsCommand, sender), 0L);
         else
-            commandRunnerArgs.execute(objectArgs, sender);
+            commandRunnerArgs.execute(argsCommand, sender);
     }
 
-    private Object buildObjectArgs(CommandData commandData, String[] inputArgs) throws Exception {
-        CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
-        ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
-        Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
+    private Object tryToBuildArgObject(CommandData commandData, String[] args){
+        try{
+            CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
+            ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
+            Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
 
-        return commandArgsObjectBuilder.build(commandData, inputArgs, classObjectArg);
+            return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
+        }catch (Exception e){
+            //TODO
+            throw new InvalidUsage(commandData.getUsage());
+        }
     }
 
     private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs){

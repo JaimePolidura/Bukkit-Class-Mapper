@@ -1,5 +1,7 @@
 package es.jaimetruman.commands;
 
+import org.bukkit.Bukkit;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,12 +37,12 @@ public @interface Command {
     boolean isAsync() default false;
 
     /**
-     * Set this to true, if it is a subcommand
-     */
-    boolean isSubCommand() default false;
-
-    /**
      * All args names that will be mapped to the classname with the same. Example
      */
     String[] args() default "";
+
+    /**
+     * Returns the help method for that command
+     */
+    String helperCommand() default "";
 }

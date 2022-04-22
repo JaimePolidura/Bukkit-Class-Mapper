@@ -10,15 +10,7 @@ import java.util.UUID;
 
 public class CommandArgsObjectBuilder {
     public <T> T build(CommandData commandData, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
-        try{
-            return tryToBuild(commandData, actualArgs, classObjectArgs);
-        }catch (Exception e) {
-            e.printStackTrace();
-
-            String usage = Bukkit.getPluginCommand(commandData.getCommand().split(" ")[0]).getUsage();
-
-            throw new Exception(String.format("Incorrect use: %s", usage));
-        }
+        return tryToBuild(commandData, actualArgs, classObjectArgs);
     }
 
     private <T> T tryToBuild(CommandData commandData, String[] actualArgs, Class<T> classObjectArgs) throws Exception {
