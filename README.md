@@ -33,8 +33,12 @@ public class PluginMain extends JavaPlugin {
  
 # COMMAND MAPPER
 
-You still have to declare your commands in plugin.yml.
-
+A single command can be run in a separate class called command runner. To achieve this:
+1º) The command should be declared in plugin.yaml as usual
+2º) The command runner class will have to be annotated with @Command annoation, which will include data of the command (name, permissions, usage etc).
+3º) You will have to implement an interface: 
+	- If the command has no arguments, it will have to implement CommandRunnerNonArgs, with method: void execute(CommandSender sender)
+	- If the command has arguments, it will have to import CommandRunnerArgs void execute(T args, CommandSender sender). The args will be mapped to T args object via usage property in @Command 
  
 ```java
 @Command("helloworld")
