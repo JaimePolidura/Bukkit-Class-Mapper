@@ -116,8 +116,9 @@ User can "/balance pay 12 otherplayer" or "/balance pay 12 otherplayer reason" b
 
 ```
 ### Default value for optional arguments
-To specify a default value for an optional with ¡a default value!
+To specify a default value for an optional argument: ¡a default value!
 - This only works for optional arguments (the ones with "[arg name]")
+- It will have to go at the end of the usage arg
 
 ```java
 @Command(value = "balance pay", usage = {"money", "to", " [reason]¡why not!"})
@@ -129,9 +130,24 @@ public class PayCommandRunner implements CommandRunner<PayCommand> {
 	}
 }
 ```
+### Long text argument
+To specify an argument which will be composed of words separeted with space ..."arg name"
+- It will be mapped to an string not an array.
+- It will have to go before the arg name declaration
+- It can be used in optional args & not optional args
+- Only the las argument can be a "long text"
 
-	
- 
+```java
+@Command(value = "balance pay", usage = {"money", "to", " ...[reason]¡why not!"})
+public class PayCommandRunner implements CommandRunner<PayCommand> {
+	@Override
+	public void execute(PayCommand command, CommandSender sender) {
+		//if reason not specify command.getReason() will return "why not"
+		//if user types "/balance pay 10 otherplayer I love you" command.getReason() will return "I love you"
+        	commandSender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+	}
+}
+```	
 # TASK MAPPER
 
 You can create your own task (the ones that extends BukktiRunnable) without taking care to start them. The time will be in ticks (every 20 ticks it is 1 second)
