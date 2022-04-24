@@ -150,9 +150,9 @@ public class PayCommandRunner implements CommandRunner<PayCommand> {
 In non obligatory arguments:
 ```java
 @Command(value = "message", usage = {"to", "...message"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunner<MessageCommand> {
 	@Override
-	public void execute(PayCommand command, CommandSender sender) {
+	public void execute(MessageCommand command, CommandSender sender) {
 		//Player can do: "/message otherplayer hello bro"
 	}
 }
