@@ -20,10 +20,10 @@ public class PluginMain extends JavaPlugin {
     @Override
     public void onEnable() {
         String onWrongCommand = ChatColor.DARK_RED + "Command not found";
-        String onWrongSender = ChatColor.DARK_RED + "You have to be in the server";
+        String onWrongPermissions = ChatColor.DARK_RED + "You have enough permissions";
  
         Mapper.build("es.jaime", this)
-                .commandMapper(onWrongCommand, onWrongSender)
+                .commandMapper(onWrongCommand, onWrongPermissions)
                 .mobMapper()
                 .eventListenerMapper()
                 .startScanning();
@@ -32,7 +32,7 @@ public class PluginMain extends JavaPlugin {
 ``` 
  
 # COMMAND MAPPER
-A single command can be run in a separate class called command runner. To achieve this:
+A single command can be run in a class called command runner. To achieve this:
 1. The command should be declared in plugin.yaml as usual
 2. The command runner class will have to be annotated with @Command annoation, which will include data of the command (name, permissions, usage etc).
 3. You will have to implement an interface: 
@@ -54,14 +54,13 @@ public class HelloWorldCommand implements CommandRunnerNonArgs {
 public class PayCommandRunner implements CommandRunner<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
-        	commandSender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
 	}
 }
 	
 class PayCommand {
 	private double money;
 	private String to;
-	
 	//Getters...
 }
 ```
@@ -84,7 +83,7 @@ If a command has arguments the args can be mapped to an object. The object field
 public class PayCommandRunner implements CommandRunner<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
-        	commandSender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
 	}
 }
 	
@@ -109,7 +108,7 @@ public class PayCommandRunner implements CommandRunner<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
 		//command.getReason() can be null
-        	commandSender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
 	}
 }
 User can "/balance pay 12 otherplayer" or "/balance pay 12 otherplayer reason" both will work
@@ -147,7 +146,18 @@ public class PayCommandRunner implements CommandRunner<PayCommand> {
         	commandSender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
 	}
 }
+```
+In non obligatory arguments:
+```java
+@Command(value = "message", usage = {"to", "...message"})
+public class PayCommandRunner implements CommandRunner<PayCommand> {
+	@Override
+	public void execute(PayCommand command, CommandSender sender) {
+		//Player can do: "/message otherplayer hello bro"
+	}
+}
 ```	
+
 # TASK MAPPER
 
 You can create your own task (the ones that extends BukktiRunnable) without taking care to start them. The time will be in ticks (every 20 ticks it is 1 second)
