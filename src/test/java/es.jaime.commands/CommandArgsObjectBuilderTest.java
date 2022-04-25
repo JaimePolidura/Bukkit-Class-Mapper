@@ -71,7 +71,7 @@ public class CommandArgsObjectBuilderTest {
         assertEquals(commandObject1.getPlayer(), "jaime");
         assertEquals(commandObject1.getDescription(), "descripccion");
 
-        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion de la hostia"},
+        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion", "de", "la", "hostia"},
                 TextArgCommand.class);
         assertEquals(commandObject2.getPlayer(), "jaime");
         assertEquals(commandObject2.getDescription(), "descripccion de la hostia");
@@ -86,7 +86,7 @@ public class CommandArgsObjectBuilderTest {
         assertEquals(commandObject1.getPlayer(), "jaime");
         assertNull(commandObject1.getDescription());
 
-        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion de la hostia"},
+        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion", "de", "la", "hostia"},
                 TextArgCommand.class);
         assertEquals(commandObject2.getPlayer(), "jaime");
         assertEquals(commandObject2.getDescription(), "descripccion de la hostia");
@@ -101,7 +101,7 @@ public class CommandArgsObjectBuilderTest {
         assertEquals(commandObject1.getPlayer(), "jaime");
         assertEquals(commandObject1.getDescription(), "pordefecto");
 
-        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion de la hostia"},
+        TextArgCommand commandObject2 = this.commandArgsObjectBuilder.build(commandData, new String[]{"jaime", "descripccion", "de", "la", "hostia"},
                 TextArgCommand.class);
         assertEquals(commandObject2.getPlayer(), "jaime");
         assertEquals(commandObject2.getDescription(), "descripccion de la hostia");
@@ -112,6 +112,7 @@ public class CommandArgsObjectBuilderTest {
                 "hola",true, "", false, args, null,
                 "", "", "explanation", false);
     }
+
 
     public static class SimpleCommand {
         @Getter private UUID id;

@@ -35,6 +35,7 @@ public class ItemBuilder {
 
         return this;
     }
+
     public ItemBuilder lore(String lore) {
         this.itemMeta.setLore(Collections.singletonList(lore));
 

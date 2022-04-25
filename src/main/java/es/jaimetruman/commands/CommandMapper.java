@@ -1,6 +1,7 @@
 package es.jaimetruman.commands;
 
 import es.jaimetruman.ClassScanner;
+import es.jaimetruman.commands.commandrunners.CommandRunner;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 
@@ -20,6 +21,8 @@ public final class CommandMapper extends ClassScanner {
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
         this.commandRegistry = commandRegistry;
         this.commandExecutorEntrypoint = defaultCommandExecutorEntrypoint;
+
+        this.scan();
     }
 
     @Override
@@ -69,11 +72,11 @@ public final class CommandMapper extends ClassScanner {
     }
 
     private void addCommandToRegistry(CommandRunner commandRunnerInstance, Command commandInfo){
+        String usageMessage = this.bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args());
+
         this.commandRegistry.put(new CommandData(commandInfo.value(), commandInfo.canBeTypedInConsole(),
                 commandInfo.permissions(), commandInfo.isAsync(), commandInfo.args(), commandRunnerInstance,
-                commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args()),
-                commandInfo.explanation(),
-                commandInfo.isHelper()));
+                usageMessage, commandInfo.helperCommand(), commandInfo.explanation(), commandInfo.isHelper()));
     }
 
     private void registerCommandBukkit (String commandName) {

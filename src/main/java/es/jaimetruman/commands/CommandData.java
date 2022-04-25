@@ -1,5 +1,8 @@
 package es.jaimetruman.commands;
 
+import es.jaimetruman.commands.commandrunners.CommandRunner;
+import es.jaimetruman.commands.commandrunners.CommandRunnerArgs;
+import es.jaimetruman.commands.commandrunners.CommandRunnerNonArgs;
 import lombok.Getter;
 
 public final class CommandData {

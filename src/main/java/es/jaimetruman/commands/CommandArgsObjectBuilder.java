@@ -1,7 +1,6 @@
 package es.jaimetruman.commands;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -96,26 +95,26 @@ public class CommandArgsObjectBuilder {
     }
 
     private AnnalizyngArgState getCurrentState(int indexOfActualArgs, String requiredArg, String[] actualArgs){
-        if(isLongText(requiredArg) && indexOfActualArgs + 1 >= actualArgs.length){
+        boolean lastArg = indexOfActualArgs + 1 >= actualArgs.length;
+
+        if(isLongText(requiredArg) && lastArg)
             return AnnalizyngArgState.TEXT_END;
-        }else if(isLongText(requiredArg)){
+        else if(isLongText(requiredArg))
             return AnnalizyngArgState.TEXT;
-        }else{
+        else
             return AnnalizyngArgState.NORMAL;
-        }
     }
 
     private boolean isLongText(String reqArg){
-        return reqArg.endsWith("...");
+        return reqArg.startsWith("...");
     }
 
     private void checkIfArgumentMissingOrThrowException(List<String> argumentsAdded, String[] unnormalizedRequiredArguments, Object instance) throws Exception {
         for (String unnormalizedRequiredArgument : unnormalizedRequiredArguments) {
-            if(!argumentsAdded.contains(unnormalizedRequiredArgument) && isRequired(unnormalizedRequiredArgument)){
+            if(!argumentsAdded.contains(unnormalizedRequiredArgument) && isRequired(unnormalizedRequiredArgument))
                 throw new IllegalArgumentException();
-            }else if(!argumentsAdded.contains(unnormalizedRequiredArgument) && hasDefaultValue(unnormalizedRequiredArgument)){
+            else if(!argumentsAdded.contains(unnormalizedRequiredArgument) && hasDefaultValue(unnormalizedRequiredArgument))
                 setField(instance, normalizeArgName(unnormalizedRequiredArgument), getDefaultValue(unnormalizedRequiredArgument));
-            }
         }
     }
 

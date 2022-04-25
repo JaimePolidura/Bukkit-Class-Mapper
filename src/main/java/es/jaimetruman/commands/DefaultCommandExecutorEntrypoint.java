@@ -1,5 +1,7 @@
 package es.jaimetruman.commands;
 
+import es.jaimetruman.commands.commandrunners.CommandRunnerArgs;
+import es.jaimetruman.commands.commandrunners.CommandRunnerNonArgs;
 import es.jaimetruman.commands.exceptions.CommandNotFound;
 import es.jaimetruman.commands.exceptions.InvalidUsage;
 import es.jaimetruman.commands.exceptions.InvalidPermissions;
@@ -40,6 +42,8 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         try{
             execute(sender, command.getName(), args);
         }catch (Exception e) {
+            e.printStackTrace();
+
             sender.sendMessage(ChatColor.DARK_RED + e.getMessage());
         }
 
@@ -112,15 +116,17 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
         }catch (Exception e){
-            String incorrectUsageMessage =!commandData.getHelperCommand().equals("") ?
-                    String.format("%s For more information %s", commandData.getUsage(), commandData.getHelperCommand()):
-                    commandData.getUsage();
+            e.printStackTrace();
+
+            String incorrectUsageMessage = !commandData.getHelperCommand().equals("") ?
+                    String.format("Incorrect usage: %s For more information /%s", commandData.getUsage(), commandData.getHelperCommand()):
+                    String.format("Incorrect usage: %s", commandData.getUsage());
 
             throw new InvalidUsage(incorrectUsageMessage);
         }
     }
 
-    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs) throws Exception {
+    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs) {
         return commandInfo.isSubcommand() ?
                 Arrays.copyOfRange(actualArgs, 1, actualArgs.length) :
                 actualArgs;
@@ -144,7 +150,8 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
                     String.format("%s%s", ChatColor.AQUA, mainCommand.getHelperCommand()) :
                     this.buildHelpMessageForCommand(mainCommand);
 
-            sender.sendMessage(commandHelp + "\n\n");
+            sender.sendMessage(commandHelp);
+            sender.sendMessage(" ");
         }
     }
 

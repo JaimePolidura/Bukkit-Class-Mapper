@@ -1,4 +1,4 @@
-package es.jaimetruman.commands;
+package es.jaimetruman.commands.commandrunners;
 
 import org.bukkit.command.CommandSender;
 
