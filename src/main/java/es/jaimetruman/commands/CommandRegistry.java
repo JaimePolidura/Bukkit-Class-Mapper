@@ -3,11 +3,10 @@ package es.jaimetruman.commands;
 import java.util.*;
 
 public final class CommandRegistry {
-    //Command name -> commandData
     private final Map<String, CommandData> allCommands;
-    // Command name -> set os subcommands commandata
     private final Map<String, Set<CommandData>> subcommands;
     private final Map<String, CommandData> mainCommands;
+
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
 
     public CommandRegistry(){
@@ -17,35 +16,28 @@ public final class CommandRegistry {
         this.mainCommands = new HashMap<>();
     }
 
-    public void put(CommandRunner commandRunnerInstance, Command commandInfo){
-        String[] args = commandInfo.args();
-        String command = commandInfo.value();
-        CommandData commandData = new CommandData( command, commandInfo.canBeTypedInConsole(),
-                commandInfo.permissions(), commandInfo.isAsync(), args, commandRunnerInstance,
-                commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(command, args),
-                commandInfo.explanation(),
-                commandInfo.isHelper());
+    public void put(CommandData commandData){
+        String commandName = commandData.getCommand();
 
-        this.allCommands.put(commandInfo.value(), commandData);
+        this.allCommands.put(commandName, commandData);
 
         if(commandData.isSubcommand()){
             addToSubCommandList(commandData);
-            this.addSubcommandMainCommandToMainCommandList(commandRunnerInstance, commandInfo);
+            this.addSubcommandMainCommandToMainCommandList(commandData);
         }else{
-            this.mainCommands.put(commandInfo.value(), commandData);
+            this.mainCommands.put(commandName, commandData);
         }
     }
 
-    private void addSubcommandMainCommandToMainCommandList(CommandRunner commandRunnerInstance, Command commandInfo){
-        String mainCommandName = commandInfo.value().split(" ")[0];
-        String[] args = commandInfo.args();
+    private void addSubcommandMainCommandToMainCommandList(CommandData commandData){
+        String mainCommandName = commandData.getCommand().split(" ")[0];
+        String[] args = commandData.getArgs();
 
         this.mainCommands.putIfAbsent(mainCommandName, new CommandData(
-                mainCommandName, commandInfo.canBeTypedInConsole(),
-                commandInfo.permissions(), commandInfo.isAsync(), args, commandRunnerInstance,
-                commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(mainCommandName, args),
-                commandInfo.explanation(),
-                commandInfo.isHelper())
+                mainCommandName, commandData.canBeTypedInConsole(),
+                commandData.getPermissions(), commandData.isAsync(), args, commandData.getRunner(),
+                commandData.getHelperCommand(), this.bukkitUsageMessageBuilder.build(mainCommandName, args),
+                commandData.getExplanation(), commandData.isHelper())
         );
     }
 
@@ -56,8 +48,8 @@ public final class CommandRegistry {
     private void addToSubCommandList(CommandData commandData) {
         String mainCommand = commandData.getCommand().split(" ")[0];
 
-        this.subcommands.putIfAbsent(mainCommand, new HashSet<>())
-                .add(commandData);
+        this.subcommands.putIfAbsent(mainCommand, new HashSet<>());
+        this.subcommands.get(mainCommand).add(commandData);
     }
 
     public Optional<CommandData> findByName(String commandName, String[] args){

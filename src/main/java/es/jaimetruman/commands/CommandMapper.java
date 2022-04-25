@@ -11,11 +11,13 @@ public final class CommandMapper extends ClassScanner {
     //Command name - pair: commandRunner, command annotation (description)
     private final DefaultCommandExecutorEntrypoint commandExecutorEntrypoint;
     private final CommandRegistry commandRegistry;
+    private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
 
     public CommandMapper(String packageToStartScanning, DefaultCommandExecutorEntrypoint defaultCommandExecutorEntrypoint,
                          CommandRegistry commandRegistry) {
         super(packageToStartScanning);
 
+        this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
         this.commandRegistry = commandRegistry;
         this.commandExecutorEntrypoint = defaultCommandExecutorEntrypoint;
     }
@@ -58,13 +60,20 @@ public final class CommandMapper extends ClassScanner {
     }
 
     @SneakyThrows
-    private void saveCommand (Class<? extends CommandRunner> commandClass, Command annotation) {
+    private void saveCommand (Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation) {
         CommandRunner commandRunnerInstance = commandClass.newInstance();
-        String commandName = annotation.value();
+        String commandName = commandInfoAnnotation.value();
 
+        this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
         this.registerCommandBukkit(commandName);
+    }
 
-        this.commandRegistry.put(commandRunnerInstance, annotation);
+    private void addCommandToRegistry(CommandRunner commandRunnerInstance, Command commandInfo){
+        this.commandRegistry.put(new CommandData(commandInfo.value(), commandInfo.canBeTypedInConsole(),
+                commandInfo.permissions(), commandInfo.isAsync(), commandInfo.args(), commandRunnerInstance,
+                commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args()),
+                commandInfo.explanation(),
+                commandInfo.isHelper()));
     }
 
     private void registerCommandBukkit (String commandName) {

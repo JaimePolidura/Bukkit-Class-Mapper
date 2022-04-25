@@ -106,7 +106,7 @@ You can specify optional arguments with [argument] Some Considartions:
 @Command(value = "balance pay", usage = {"money", "to", " [reason]"})
 public class PayCommandRunner implements CommandRunner<PayCommand> {
 	@Override
-	public void execute(PayCommand command, CommandSender sender) {
+	public void execute(PayCommand command, CommandSender sender) {        
 		//command.getReason() can be null
         	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
 	}
