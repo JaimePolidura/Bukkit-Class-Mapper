@@ -7,7 +7,7 @@ This library will provide you a much faster way to develop your own plugins with
 - [Commands](#COMMAND MAPPER)
 	- [@Command](##@Command)
 	- [Arguments](## Map objects to command args)
-		- [Optional args](### Optional arguments)
+		- [Optional args](### (Optional arguments))
 		- [Default values](### Default value for optional arguments)
 		- [Long text args](### Long text argument)
 		- [Help command](### Auto generated help command)
