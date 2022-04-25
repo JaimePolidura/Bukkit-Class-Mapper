@@ -34,6 +34,21 @@ public final class CommandData {
         this.args = args;
     }
 
+    public CommandData(String command, boolean canBeTypedInConsole, String permissions, boolean isAsync,
+                       String[] args, CommandRunner runner, String usage, String helperCommand, String explanation,
+                       boolean isHelper, boolean isSubcommand) {
+        this.command = command;
+        this.canBeTypedInConsole = canBeTypedInConsole;
+        this.permissions = permissions;
+        this.isAsync = isAsync;
+        this.runner = runner;
+        this.usage = usage;
+        this.helperCommand = helperCommand;
+        this.explanation = explanation;
+        this.isHelper = isHelper;
+        this.isSubcommand = isSubcommand;
+        this.args = args;
+    }
 
     public boolean isWithoutArgs(){
         return runner instanceof CommandRunnerNonArgs;

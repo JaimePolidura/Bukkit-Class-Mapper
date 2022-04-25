@@ -62,10 +62,8 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
         if(commandData.isHelper())
             executeHelperCommand(sender);
-
         else if(commandData.isWithoutArgs())
             executeNonArgsCommnad(commandData, sender);
-
         else
             executeArgsCommand(commandData, sender, args);
     }
@@ -147,7 +145,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
         for (CommandData mainCommand : allMainCommands) {
             String commandHelp = mainCommand.isSubcommand() ?
-                    String.format("%s%s", ChatColor.AQUA, mainCommand.getHelperCommand()) :
+                    String.format("%s/%s help", ChatColor.AQUA, mainCommand.getCommand()) :
                     this.buildHelpMessageForCommand(mainCommand);
 
             sender.sendMessage(commandHelp);

@@ -37,7 +37,7 @@ public final class CommandRegistry {
                 mainCommandName, commandData.canBeTypedInConsole(),
                 commandData.getPermissions(), commandData.isAsync(), args, commandData.getRunner(),
                 commandData.getHelperCommand(), this.bukkitUsageMessageBuilder.build(mainCommandName, args),
-                commandData.getExplanation(), commandData.isHelper())
+                commandData.getExplanation(), commandData.isHelper(), true)
         );
     }
 

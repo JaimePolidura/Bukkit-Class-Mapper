@@ -3,7 +3,6 @@ package es.jaime.commands;
 import es.jaimetruman.commands.CommandData;
 import es.jaimetruman.commands.CommandRegistry;
 import lombok.val;
-import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
