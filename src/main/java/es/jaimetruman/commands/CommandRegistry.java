@@ -4,15 +4,17 @@ import java.util.*;
 
 public final class CommandRegistry {
     //Command name -> commandData
-    private final Map<String, CommandData> commands;
+    private final Map<String, CommandData> allCommands;
     // Command name -> set os subcommands commandata
     private final Map<String, Set<CommandData>> subcommands;
+    private final Map<String, CommandData> mainCommands;
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
 
     public CommandRegistry(){
-        this.commands = new HashMap<>();
+        this.allCommands = new HashMap<>();
         this.subcommands = new HashMap<>();
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
+        this.mainCommands = new HashMap<>();
     }
 
     public void put(CommandRunner commandRunnerInstance, Command commandInfo){
@@ -21,13 +23,30 @@ public final class CommandRegistry {
         CommandData commandData = new CommandData( command, commandInfo.canBeTypedInConsole(),
                 commandInfo.permissions(), commandInfo.isAsync(), args, commandRunnerInstance,
                 commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(command, args),
-                commandInfo.explanation()
-        );
+                commandInfo.explanation(),
+                commandInfo.isHelper());
 
-        this.commands.put(commandInfo.value(), commandData);
+        this.allCommands.put(commandInfo.value(), commandData);
 
-        if(commandData.isSubcommand())
+        if(commandData.isSubcommand()){
             addToSubCommandList(commandData);
+            this.addSubcommandMainCommandToMainCommandList(commandRunnerInstance, commandInfo);
+        }else{
+            this.mainCommands.put(commandInfo.value(), commandData);
+        }
+    }
+
+    private void addSubcommandMainCommandToMainCommandList(CommandRunner commandRunnerInstance, Command commandInfo){
+        String mainCommandName = commandInfo.value().split(" ")[0];
+        String[] args = commandInfo.args();
+
+        this.mainCommands.putIfAbsent(mainCommandName, new CommandData(
+                mainCommandName, commandInfo.canBeTypedInConsole(),
+                commandInfo.permissions(), commandInfo.isAsync(), args, commandRunnerInstance,
+                commandInfo.helperCommand(), this.bukkitUsageMessageBuilder.build(mainCommandName, args),
+                commandInfo.explanation(),
+                commandInfo.isHelper())
+        );
     }
 
     public Set<CommandData> findSubcommandsByCommandName(String mainCommand){
@@ -42,7 +61,7 @@ public final class CommandRegistry {
     }
 
     public Optional<CommandData> findByName(String commandName, String[] args){
-        CommandData commandData = this.commands.get(commandName);
+        CommandData commandData = this.allCommands.get(commandName);
         boolean commandFound = commandData != null;
 
         return commandFound ?
@@ -53,10 +72,14 @@ public final class CommandRegistry {
     }
 
     private Optional<CommandData> findSubCommand(String commandName, String[] args){
-        CommandData subCommandData = this.commands.get(String.format("%s %s", commandName, args[0]));
+        CommandData subCommandData = this.allCommands.get(String.format("%s %s", commandName, args[0]));
 
         return subCommandData != null && subCommandData.isSubcommand() ?
                 Optional.of(subCommandData) :
                 Optional.empty();
+    }
+
+    public Collection<CommandData> getMainCommands() {
+        return this.mainCommands.values();
     }
 }

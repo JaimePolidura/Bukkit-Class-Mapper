@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.bukkit.Bukkit.*;
@@ -47,7 +48,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private void execute(CommandSender sender, String commandName, String[] args) throws Exception{
         if(isCommandTypeSubcommandHelp(commandName, args)){
-            this.sendHelpMessage(sender, commandName);
+            this.sendSubCommandHelpMessage(sender, commandName);
             return;
         }
 
@@ -55,8 +56,12 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         this.ensureCorrectSenderType(sender, commandData);
         this.ensureCorrectPermissions(sender, commandData);
 
-        if(commandData.isWithoutArgs())
+        if(commandData.isHelper())
+            executeHelperCommand(sender);
+
+        else if(commandData.isWithoutArgs())
             executeNonArgsCommnad(commandData, sender);
+
         else
             executeArgsCommand(commandData, sender, args);
     }
@@ -115,21 +120,35 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         }
     }
 
-    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs) throws Exception{
+    private String[] getActualArgsWithoutSubcommand(CommandData commandInfo, String[] actualArgs) throws Exception {
         return commandInfo.isSubcommand() ?
                 Arrays.copyOfRange(actualArgs, 1, actualArgs.length) :
                 actualArgs;
     }
 
-    private void sendHelpMessage(CommandSender sender, String commandName){
+    private void sendSubCommandHelpMessage(CommandSender sender, String commandName){
         String message = this.commandRegistry.findSubcommandsByCommandName(commandName).stream()
-                .map(this::buildHelpMessageForSubcommand)
+                .map(this::buildHelpMessageForCommand)
                 .collect(Collectors.joining("\n\n"));
 
         sender.sendMessage(message);
     }
 
-    private String buildHelpMessageForSubcommand(CommandData subcCommand){
-        return String.format("%s %s", ChatColor.AQUA + subcCommand.getUsage(), ChatColor.GOLD + subcCommand.getExplanation());
+    private void executeHelperCommand(CommandSender sender) {
+        Set<CommandData> allMainCommands = this.commandRegistry.getMainCommands().stream()
+                .filter(command -> !command.isHelper())
+                .collect(Collectors.toSet());
+
+        for (CommandData mainCommand : allMainCommands) {
+            String commandHelp = mainCommand.isSubcommand() ?
+                    String.format("%s%s", ChatColor.AQUA, mainCommand.getHelperCommand()) :
+                    this.buildHelpMessageForCommand(mainCommand);
+
+            sender.sendMessage(commandHelp + "\n\n");
+        }
+    }
+
+    private String buildHelpMessageForCommand(CommandData command){
+        return String.format("%s %s", ChatColor.AQUA + command.getUsage(), ChatColor.GOLD + command.getExplanation());
     }
 }
