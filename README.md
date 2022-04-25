@@ -4,8 +4,8 @@
 This library will provide you a much faster way to develop your own plugins without the need to create complex classes or any other complex infrastructure.It will help you to declare your commands, events, mobs very easily keeping the SOLID principles.
 
 - [Setup](#SETUP)
-- [Commands](#(COMMAND MAPPER))
-	- [@Command](## (Define command))
+- [Commands](# (COMMAND MAPPER))
+	- [Define command](## (Define command))
 	- [Arguments](## (Map objects to command args))
 		- [Optional args](### (Optional arguments))
 		- [Default values](### (Default value for optional arguments))
@@ -77,7 +77,7 @@ class PayCommand {
 }
 ```
 	
-## @Command
+## Define command
 This annotation will contain information about the command and how it will be runned. Properties:
 
 - String value() Indicates the command name or subcommand. Example @Command(value = "pay") -> "/pay" Or @Command(value = "balance pay") "/balance pay" subcommand.
