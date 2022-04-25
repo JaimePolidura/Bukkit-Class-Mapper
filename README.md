@@ -4,16 +4,16 @@
 This library will provide you a much faster way to develop your own plugins without the need to create complex classes or any other complex infrastructure.It will help you to declare your commands, events, mobs very easily keeping the SOLID principles.
 
 - [Setup](#SETUP)
-- [Commands](#COMMAND MAPPER)
-	- [@Command](##(Define command))
+- [Commands](#(COMMAND MAPPER))
+	- [@Command](## (Define command))
 	- [Arguments](## (Map objects to command args))
 		- [Optional args](### (Optional arguments))
 		- [Default values](### (Default value for optional arguments))
 		- [Long text args](### (Long text argument))
 		- [Help command](### (Auto generated help command))
-- [Tasks](#TASK MAPPER)
-- [Mob](#MOB MAPPER)
-- [Events listener](#EVENT LISTENER)
+- [Tasks](# (TASK MAPPER))
+- [Mob](# (MOB MAPPER))
+- [Events listener](# (EVENT LISTENER))
 
 # SETUP
  
