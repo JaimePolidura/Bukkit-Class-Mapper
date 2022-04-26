@@ -17,22 +17,24 @@ This library will provide you a much faster way to develop your own plugins with
 
 # SETUP
 
+Maven
+
 ```xml
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+<repositories>
+	<repository>
+		<id>jitpack.io</id>
+		<url>https://jitpack.io</url>
+	</repository>
+</repositories>
 	
-	<dependency>
-	    <groupId>com.github.JaimeTruman</groupId>
-	    <artifactId>Bukkit-Class-Mapper</artifactId>
-	    <version>Tag</version>
-	</dependency>
+<dependency>
+	<groupId>com.github.JaimeTruman</groupId>
+	<artifactId>Bukkit-Class-Mapper</artifactId>
+	<version>Tag</version>
+</dependency>
 ```
 
-Download: https://www.spigotmc.org/resources/class-mapper-api.90302/
+Download binary: https://www.spigotmc.org/resources/class-mapper-api.90302/
  
 To make this library work you have declare: Mapper.build(<base package>, <plugin instance>)
 Base package. It will represent the package of your code, where it will scan for your classes
