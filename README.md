@@ -112,7 +112,7 @@ If a command has arguments the args can be mapped to an object. The object field
 public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
-        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo.getName(), command.getMoney));
 	}
 }
 	
