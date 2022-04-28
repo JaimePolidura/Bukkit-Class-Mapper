@@ -95,7 +95,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         else
             commandRunnerNonArgs.execute(sender);
     }
-
+    
     private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception{
         Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
@@ -114,11 +114,13 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
         }catch (Exception e){
-            e.printStackTrace();
-
             String incorrectUsageMessage = !commandData.getHelperCommand().equals("") ?
                     String.format("Incorrect usage: %s For more information /%s", commandData.getUsage(), commandData.getHelperCommand()):
                     String.format("Incorrect usage: %s", commandData.getUsage());
+
+            incorrectUsageMessage = incorrectUsageMessage.equalsIgnoreCase("Player needs to be online") ?
+                    e.getMessage() :
+                    incorrectUsageMessage;
 
             throw new InvalidUsage(incorrectUsageMessage);
         }

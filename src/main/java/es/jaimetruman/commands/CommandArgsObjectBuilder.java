@@ -1,6 +1,9 @@
 package es.jaimetruman.commands;
 
+import es.jaimetruman.commands.exceptions.InvalidUsage;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -70,25 +73,31 @@ public class CommandArgsObjectBuilder {
         field.set(newInstance, parseStringToFieldType(field, actualArg));
     }
 
-    private static Object parseStringToFieldType(Field field, String arg){
+    private static Object parseStringToFieldType(Field field, String argValue){
         String fieldTypeName = field.getType().getName();
 
         if(fieldTypeName.equalsIgnoreCase("double") || fieldTypeName.equalsIgnoreCase("java.lang.Double")){
-            return Double.parseDouble(arg);
+            return Double.parseDouble(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("int") || fieldTypeName.equalsIgnoreCase("java.lang.Integer")){
-            return Integer.parseInt(arg);
+            return Integer.parseInt(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("boolean") || fieldTypeName.equalsIgnoreCase("java.lang.Boolean")){
-            return Boolean.parseBoolean(arg);
+            return Boolean.parseBoolean(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("short") || fieldTypeName.equalsIgnoreCase("java.lang.Short")){
-            return Short.parseShort(arg);
+            return Short.parseShort(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("long") || fieldTypeName.equalsIgnoreCase("java.lang.Long")){
-            return Long.parseLong(arg);
+            return Long.parseLong(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("float") || fieldTypeName.equalsIgnoreCase("java.lang.Float")) {
-            return Float.parseFloat(arg);
+            return Float.parseFloat(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("java.lang.String")){
-            return String.valueOf(arg);
+            return String.valueOf(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("java.util.UUID")){
-            return UUID.fromString(String.valueOf(arg));
+            return UUID.fromString(String.valueOf(argValue));
+        }else if(fieldTypeName.equalsIgnoreCase("org.bukkit.entity.Player")){
+            Player player = Bukkit.getPlayerExact(argValue);
+
+            if(player == null) throw new InvalidUsage("Player needs to be online");
+
+            return player;
         }
 
         return field;
