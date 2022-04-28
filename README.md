@@ -118,14 +118,14 @@ public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	
 class PayCommand {
 	private double money;
-	private String to;
+	private Player to; //Needs to be online
 	//Getters...
 }
 ```
 Some considerations of the object that will map the args: 
 - It will need to have atleast one non args constructor.
 - Inheretance fields & final fields are not supported.
-- Supported types: double, int, boolean, short, long, float, String, UUID
+- Supported types: double, int, boolean, short, long, float, String, UUID, Player
 
 ### Optional arguments
 You can specify optional arguments with [argument] Some Considartions:
