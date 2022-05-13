@@ -1,11 +1,13 @@
 package es.jaimetruman.menus.eventlisteners;
 
 import es.jaimetruman.menus.InstanceProvider;
+import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.OpenMenuRepository;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.function.Consumer;
 
 public class OnInventoryClose implements Listener {
     private final OpenMenuRepository openMenuRepository;
@@ -16,11 +18,17 @@ public class OnInventoryClose implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event){
-        this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName());
+        this.openMenuRepository.findByPlayerName(event.getPlayer().getName()).ifPresent(menu -> {
+            this.executeRegisteredMenuEventListener(event, menu);
+
+            this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName());
+        });
     }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event){
-        this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName());
+    private void executeRegisteredMenuEventListener(InventoryCloseEvent event, Menu menu){
+        Consumer<InventoryCloseEvent> onCloseEventListener = menu.configuration().getOnCloseEventListener();
+
+        if(onCloseEventListener != null)
+            onCloseEventListener.accept(event);
     }
 }

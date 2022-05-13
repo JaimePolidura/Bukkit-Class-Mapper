@@ -5,6 +5,7 @@ import es.jaimetruman.commands.CommandMapper;
 import es.jaimetruman.commands.CommandRegistry;
 import es.jaimetruman.commands.DefaultCommandExecutorEntrypoint;
 import es.jaimetruman.events.EventListenerMapper;
+import es.jaimetruman.menus.MenuEventListenerClassMapper;
 import es.jaimetruman.mobs.MobMapper;
 import es.jaimetruman.task.TaskMapper;
 import org.bukkit.plugin.Plugin;
@@ -12,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class Mapper  {
+public class Mapper  {
     private final Set<ClassScanner> mappers;
     private final String commonPackage;
     private final Plugin plugin;
@@ -28,6 +29,13 @@ public final class Mapper  {
         this.taskMapper();
         this.eventListenerMapper();
         this.mobMapper();
+        this.menus();
+
+        return this;
+    }
+
+    public Mapper menus(){
+        this.mappers.add(new MenuEventListenerClassMapper(this.commonPackage, this.plugin));
 
         return this;
     }

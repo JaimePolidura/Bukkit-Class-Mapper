@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public final class CommandMapper extends ClassScanner {
-    //Command name - pair: commandRunner, command annotation (description)
     private final DefaultCommandExecutorEntrypoint commandExecutorEntrypoint;
     private final CommandRegistry commandRegistry;
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;

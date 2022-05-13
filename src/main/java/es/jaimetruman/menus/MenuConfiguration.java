@@ -7,8 +7,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -31,6 +33,11 @@ public class MenuConfiguration {
         private ItemAdder itemAdder;
         private String title;
         private boolean fixedItems;
+
+        public MenuConfigurationBuilder(){
+            this.items = new HashMap<>();
+            this.onClickEventListeners = new HashMap<>();
+        }
 
         public MenuConfiguration build(){
             return new MenuConfiguration(items, itemAdder, onClickEventListeners,

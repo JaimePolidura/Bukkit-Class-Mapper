@@ -2,43 +2,46 @@ package es.jaimetruman.menus;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class MenuInventoryBuilder {
-    private final InventoryTypeService inventoryTypeService;
-
-    public MenuInventoryBuilder() {
-        this.inventoryTypeService = InstanceProvider.INVENTORY_TYPE_SERVICE;
-    }
-
     public Inventory build(MenuConfiguration configuration, int[][] items){
-        InventoryType inventoryType = this.inventoryTypeService.getByArray(items);
-        Inventory inventory = Bukkit.createInventory(null, inventoryType, configuration.getTitle());
+        SupportedInventoryType supportedInventoryType = SupportedInventoryType.getByArray(items);
+        Inventory inventory = this.createBaseInventory(configuration, supportedInventoryType);
+        boolean hasItemAdder = configuration.getItemAdder() != null;
+        int totalRows = items.length;
+        int totalColumns = items[0].length;
 
-        for(int i = 0; i < items.length; i++){
-            for(int j = 0; j < items[i].length; j++){
-                int itemNum = items[i][j];
+        for(int row = 0; row < totalRows; row++){
+            for(int column = 0; column < totalColumns; column++){
+                int itemNum = items[row][column];
+                int actualSlot = row * totalColumns + column;
 
-                if(itemNum == configuration.getItemAdder().getItemNum()){
+                if(hasItemAdder && itemNum == configuration.getItemAdder().getItemNum()){
                     for (ItemStack item : configuration.getItemAdder().getItems()) {
                         inventory.addItem(item);
-                        j++;
+                        column++;
 
-                        if(j >= items[i].length){
-                            i++;
-                            j = 0;
+                        if(column >= items[row].length){
+                            row++;
+                            column = 0;
                         }
                     }
                 }else{
                     ItemStack itemToAdd = configuration.getItems().get(itemNum);
-                    inventory.addItem(itemToAdd == null ? new ItemStack(Material.AIR) : itemToAdd);
+                    inventory.setItem(actualSlot, itemToAdd == null ? new ItemStack(Material.AIR) : itemToAdd);
                 }
 
             }
         }
 
         return inventory;
+    }
+
+    private Inventory createBaseInventory(MenuConfiguration configuration, SupportedInventoryType supportedInventoryType) {
+        return supportedInventoryType.getSize() % 9 == 0 ?
+                Bukkit.createInventory(null, supportedInventoryType.getSize(), configuration.getTitle()) :
+                Bukkit.createInventory(null, supportedInventoryType.getBukkitInventoryType(), configuration.getTitle());
     }
 }
