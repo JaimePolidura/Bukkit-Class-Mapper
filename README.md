@@ -2,10 +2,39 @@
 # INTRODUCTION
  
 This library will provide you a much faster way to develop your own plugins without the need to create complex classes or any other complex infrastructure.It will help you to declare your commands, events, mobs very easily keeping the SOLID principles.
- 
+
+- [Setup](#SETUP)
+- [Commands](# (COMMAND MAPPER))
+	- [Define command](## (Define command))
+	- [Arguments](## (Map objects to command args))
+		- [Optional args](### (Optional arguments))
+		- [Default values](### (Default value for optional arguments))
+		- [Long text args](### (Long text argument))
+		- [Help command](### (Auto generated help command))
+- [Tasks](# (TASK MAPPER))
+- [Mob](# (MOB MAPPER))
+- [Events listener](# (EVENT LISTENER))
+
 # SETUP
- 
-Download: https://www.spigotmc.org/resources/class-mapper-api.90302/
+
+Maven
+
+```xml
+<repositories>
+	<repository>
+		<id>jitpack.io</id>
+		<url>https://jitpack.io</url>
+	</repository>
+</repositories>
+	
+<dependency>
+	<groupId>com.github.JaimeTruman</groupId>
+	<artifactId>Bukkit-Class-Mapper</artifactId>
+	<version>2.4.1</version>
+</dependency>
+```
+
+Download binary: https://www.spigotmc.org/resources/class-mapper-api.90302/
  
 To make this library work you have declare: Mapper.build(<base package>, <plugin instance>)
 Base package. It will represent the package of your code, where it will scan for your classes
@@ -51,10 +80,10 @@ public class HelloWorldCommand implements CommandRunnerNonArgs {
 
 ```java
 @Command(value = "pay", usage = {"money", "to"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
-        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You paid %s %d$", command.getTo, command.getMoney));
 	}
 }
 	
@@ -65,7 +94,7 @@ class PayCommand {
 }
 ```
 	
-## @Command
+## Define command
 This annotation will contain information about the command and how it will be runned. Properties:
 
 - String value() Indicates the command name or subcommand. Example @Command(value = "pay") -> "/pay" Or @Command(value = "balance pay") "/balance pay" subcommand.
@@ -80,23 +109,23 @@ This annotation will contain information about the command and how it will be ru
 If a command has arguments the args can be mapped to an object. The object fields will have to match the args property in @Command. Example: 
 ```java
 @Command(value = "pay", usage = {"money", "to"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
-        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo, command.getMoney));
+        	sender.sendMessage(String.format("You will pay %s %d$", command.getTo.getName(), command.getMoney));
 	}
 }
 	
 class PayCommand {
 	private double money;
-	private String to;
+	private Player to; //Needs to be online
 	//Getters...
 }
 ```
 Some considerations of the object that will map the args: 
 - It will need to have atleast one non args constructor.
 - Inheretance fields & final fields are not supported.
-- Supported types: double, int, boolean, short, long, float, String, UUID
+- Supported types: double, int, boolean, short, long, float, String, UUID, Player
 
 ### Optional arguments
 You can specify optional arguments with [argument] Some Considartions:
@@ -104,7 +133,7 @@ You can specify optional arguments with [argument] Some Considartions:
 
 ```java
 @Command(value = "balance pay", usage = {"money", "to", " [reason]"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {        
 		//command.getReason() can be null
@@ -121,7 +150,7 @@ To specify a default value for an optional argument: ¡a default value!
 
 ```java
 @Command(value = "balance pay", usage = {"money", "to", "[reason]¡why not!"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
 		//if reason not specify command.getReason() will return "why not"
@@ -138,7 +167,7 @@ To specify an argument which will be composed of words separeted with space ..."
 
 ```java
 @Command(value = "balance pay", usage = {"money", "to", " ...[reason]¡why not!"})
-public class PayCommandRunner implements CommandRunner<PayCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<PayCommand> {
 	@Override
 	public void execute(PayCommand command, CommandSender sender) {
 		//if reason not specify command.getReason() will return "why not"
@@ -150,13 +179,26 @@ public class PayCommandRunner implements CommandRunner<PayCommand> {
 In non obligatory arguments:
 ```java
 @Command(value = "message", usage = {"to", "...message"})
-public class PayCommandRunner implements CommandRunner<MessageCommand> {
+public class PayCommandRunner implements CommandRunnerArgs<MessageCommand> {
 	@Override
 	public void execute(MessageCommand command, CommandSender sender) {
 		//Player can do: "/message otherplayer hello bro"
 	}
 }
 ```	
+### Auto generated help command
+You can make an special command that will iterate to all your commands and display the usage & explanation. To declare this special command:
+- Implement CommandRunner (you can aswell implement CommandRunnerArgs or CommandRunnerNonArgs both run() method wont do anything)
+- @Command should have isHelper set to true
+
+```java
+@Command(value = "helpme", isHelper = true, canBeTypedInConsole = true)
+public final class HelpMeCommand implements CommandRunner {
+	//Nothing necesary
+}
+```
+
+For subcommands help is also generated without having to declare any command. To access the help: /<subcommand> help
 
 # TASK MAPPER
 
