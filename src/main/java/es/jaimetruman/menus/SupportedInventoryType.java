@@ -2,6 +2,7 @@ package es.jaimetruman.menus;
 
 import lombok.Getter;
 import org.bukkit.event.inventory.InventoryType;
+import sun.security.rsa.RSAUtil;
 
 import java.util.Arrays;
 
@@ -38,8 +39,8 @@ public enum SupportedInventoryType {
 
     public static int getColumnBySlotAndInventoryType(int slot, InventoryType inventoryType){
         int cols = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
-        int rows = SupportedInventoryType.valueOf(inventoryType.toString()).getRows();
+        int actualRow = getRowBySlotAndInventoryType(slot, inventoryType);
 
-        return cols - (slot / rows);
+        return slot - (actualRow * cols);
     }
 }
