@@ -13,7 +13,7 @@ public class MenuService {
     }
 
     public void open(Player player, Menu menu){
-        Inventory inventory = this.inventoryBuilder.build(menu.configuration(), menu.items());
+        Inventory inventory = this.inventoryBuilder.build(menu);
         player.openInventory(inventory);
 
         this.openMenuRepository.save(player.getName(), menu);

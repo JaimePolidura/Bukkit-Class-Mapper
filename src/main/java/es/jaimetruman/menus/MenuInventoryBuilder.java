@@ -6,7 +6,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class MenuInventoryBuilder {
-    public Inventory build(MenuConfiguration configuration, int[][] items){
+    public Inventory build(Menu menu){
+        MenuConfiguration configuration = menu.configuration();
+        int[][] items = menu.getItems();
         SupportedInventoryType supportedInventoryType = SupportedInventoryType.getByArray(items);
         Inventory inventory = this.createBaseInventory(configuration, supportedInventoryType);
         boolean hasItemAdder = configuration.getItemAdder() != null;
@@ -22,6 +24,7 @@ public class MenuInventoryBuilder {
                     for (ItemStack item : configuration.getItemAdder().getItems()) {
                         inventory.addItem(item);
                         column++;
+                        menu.getItems()[row][column] = itemNum;
 
                         if(column >= items[row].length){
                             row++;

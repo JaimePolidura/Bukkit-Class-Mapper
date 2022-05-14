@@ -33,7 +33,7 @@ public class OnInventoryClick implements Listener {
             int colmn = SupportedInventoryType.getColumnBySlotAndInventoryType(event.getSlot(), inventoryType);
 
             Consumer<InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
-                    .get(menu.items()[row][colmn]);
+                    .get(menu.getItems()[row][colmn]);
 
             if (eventConsumer != null){
                 eventConsumer.accept(event);

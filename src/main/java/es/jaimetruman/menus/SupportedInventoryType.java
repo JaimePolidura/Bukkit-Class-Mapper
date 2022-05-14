@@ -2,13 +2,14 @@ package es.jaimetruman.menus;
 
 import lombok.Getter;
 import org.bukkit.event.inventory.InventoryType;
-import sun.security.rsa.RSAUtil;
 
 import java.util.Arrays;
 
 public enum SupportedInventoryType {
-    HOPPER(InventoryType.HOPPER, 1, 5);
-
+    HOPPER(InventoryType.HOPPER, 1, 5),
+    CHEST(InventoryType.CHEST, 3, 9),
+    BIG_CHEST(InventoryType.CHEST, 6, 9);
+    
     @Getter private final InventoryType bukkitInventoryType;
     @Getter private final int rows;
     @Getter private final int columns;

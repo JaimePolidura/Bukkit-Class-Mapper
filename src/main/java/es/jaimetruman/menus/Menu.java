@@ -1,9 +1,13 @@
 package es.jaimetruman.menus;
 
-import org.bukkit.event.inventory.InventoryType;
+import lombok.Getter;
 
 public abstract class Menu {
-    public Menu(){
+    @Getter
+    private final int[][] items;
+
+    protected Menu() {
+        this.items = this.items();
     }
 
     public abstract int[][] items();

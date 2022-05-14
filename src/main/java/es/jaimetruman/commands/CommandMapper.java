@@ -20,12 +20,12 @@ public final class CommandMapper extends ClassScanner {
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
         this.commandRegistry = commandRegistry;
         this.commandExecutorEntrypoint = defaultCommandExecutorEntrypoint;
-
-        this.scan();
     }
 
     @Override
     public void scan () {
+        System.out.println("hola");
+
         Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
