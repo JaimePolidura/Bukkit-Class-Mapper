@@ -18,4 +18,10 @@ public class MenuService {
 
         this.openMenuRepository.save(player.getName(), menu);
     }
+
+    public void close(Player player){
+        this.openMenuRepository.findByPlayerName(player.getName()).ifPresent(menu -> {
+            player.closeInventory();
+        });
+    }
 }
