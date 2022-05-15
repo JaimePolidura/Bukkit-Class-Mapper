@@ -7,16 +7,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class MenuConfiguration {
-    @Getter private final Map<Integer, ItemStack> items;
-    @Getter private final ItemAdder itemAdder;
+    @Getter private final Map<Integer, List<ItemStack>> items;
     @Getter private final Map<Integer, Consumer<InventoryClickEvent>> onClickEventListeners;
     @Getter private final Consumer<InventoryCloseEvent> onCloseEventListener;
     @Getter private final String title;
@@ -27,10 +23,9 @@ public class MenuConfiguration {
     }
 
     public static class MenuConfigurationBuilder{
-        private Map<Integer, ItemStack> items;
+        private Map<Integer, List<ItemStack>> items;
         private Map<Integer, Consumer<InventoryClickEvent>> onClickEventListeners;
         private Consumer<InventoryCloseEvent> onCloseEventListener;
-        private ItemAdder itemAdder;
         private String title;
         private boolean fixedItems;
 
@@ -40,8 +35,8 @@ public class MenuConfiguration {
         }
 
         public MenuConfiguration build(){
-            return new MenuConfiguration(items, itemAdder, onClickEventListeners,
-                    onCloseEventListener, title, fixedItems);
+            return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
+                    title, fixedItems);
         }
 
         public MenuConfigurationBuilder fixedItems(){
@@ -50,22 +45,28 @@ public class MenuConfiguration {
         }
 
         public MenuConfigurationBuilder items(Map<Integer, ItemStack> items){
-            this.items.putAll(items);
+            for (Map.Entry<Integer, ItemStack> itemsEntry : items.entrySet()){
+                this.items.put(itemsEntry.getKey(), Collections.singletonList(itemsEntry.getValue()));
+            }
+
             return this;
         }
 
         public MenuConfigurationBuilder item(int itemNum, ItemStack item){
-            this.items.put(itemNum, item);
+            this.items.put(itemNum, Collections.singletonList(item));
             return this;
         }
 
         public MenuConfigurationBuilder basicItems(Map<Integer, Material> items){
-            this.items.forEach((itemId, itemMaterial) -> this.items.put(itemId, new ItemStack(itemMaterial)));
+            items.forEach((itemNum, itemMaterial) -> {
+                this.items.put(itemNum, Collections.singletonList(new ItemStack(itemMaterial)));
+            });
+
             return this;
         }
 
         public MenuConfigurationBuilder basicItem(int itemNum, Material itemMaterial){
-            this.items.put(itemNum, new ItemStack(itemMaterial));
+            this.items.put(itemNum, Collections.singletonList(new ItemStack(itemMaterial)));
             return this;
         }
 
@@ -74,8 +75,8 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder itemAdder(int itemNum, List<ItemStack> itemAdder){
-            this.itemAdder = new ItemAdder(itemNum, itemAdder);
+        public MenuConfigurationBuilder items(int itemNum, List<ItemStack> items){
+            this.items.put(itemNum, items);
             return this;
         }
 
@@ -88,11 +89,5 @@ public class MenuConfiguration {
             this.title = title;
             return this;
         }
-    }
-
-    @AllArgsConstructor
-    public static class ItemAdder{
-        @Getter private final int itemNum;
-        @Getter private final List<ItemStack> items;
     }
 }
