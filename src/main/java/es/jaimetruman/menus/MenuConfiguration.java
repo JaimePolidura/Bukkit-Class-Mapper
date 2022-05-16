@@ -17,6 +17,7 @@ public class MenuConfiguration {
     @Getter private final Consumer<InventoryCloseEvent> onCloseEventListener;
     @Getter private final String title;
     @Getter private final boolean fixedItems;
+    @Getter private final int breakpointItemNum;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
@@ -28,15 +29,17 @@ public class MenuConfiguration {
         private Consumer<InventoryCloseEvent> onCloseEventListener;
         private String title;
         private boolean fixedItems;
+        private int breakpointItemNum;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
             this.onClickEventListeners = new HashMap<>();
+            this.breakpointItemNum = -1;
         }
 
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
-                    title, fixedItems);
+                    title, fixedItems, breakpointItemNum);
         }
 
         public MenuConfigurationBuilder fixedItems(){
@@ -87,6 +90,23 @@ public class MenuConfiguration {
 
         public MenuConfigurationBuilder title(String title){
             this.title = title;
+            return this;
+        }
+
+        public MenuConfigurationBuilder breakpoint(int itemNum){
+            this.breakpointItemNum = itemNum;
+            return this;
+        }
+
+        public MenuConfigurationBuilder breakpoint(int itemNum, Material material){
+            this.breakpointItemNum = itemNum;
+            this.items.put(itemNum, Collections.singletonList(new ItemStack(material)));
+            return this;
+        }
+
+        public MenuConfigurationBuilder breakpoint(int itemNum, ItemStack item){
+            this.breakpointItemNum = itemNum;
+            this.items.put(itemNum, Collections.singletonList(item));
             return this;
         }
     }

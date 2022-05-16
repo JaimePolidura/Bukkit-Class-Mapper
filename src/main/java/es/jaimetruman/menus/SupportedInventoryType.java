@@ -15,7 +15,7 @@ public enum SupportedInventoryType {
     @Getter private final int columns;
     @Getter private final int size;
 
-    SupportedInventoryType(InventoryType type, int columns, int rows) {
+    SupportedInventoryType(InventoryType type, int rows, int columns) {
         this.bukkitInventoryType = type;
         this.rows = rows;
         this.columns = columns;
@@ -23,9 +23,9 @@ public enum SupportedInventoryType {
     }
 
     public static SupportedInventoryType getByArray(int[][] array){
-        int columns = array.length;
-        int rows = array[0].length;
-        
+        int columns = array[0].length;
+        int rows = array.length;
+
         return Arrays.stream(SupportedInventoryType.values())
                 .filter(inventoryType-> inventoryType.columns == columns && inventoryType.rows == rows)
                 .findFirst()
@@ -33,15 +33,15 @@ public enum SupportedInventoryType {
     }
 
     public static int getRowBySlotAndInventoryType(int slot, InventoryType inventoryType){
-        int rows = SupportedInventoryType.valueOf(inventoryType.toString()).getRows();
+        int columns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
 
-        return slot / rows;
+        return (slot) / columns;
     }
 
     public static int getColumnBySlotAndInventoryType(int slot, InventoryType inventoryType){
         int cols = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
         int actualRow = getRowBySlotAndInventoryType(slot, inventoryType);
 
-        return slot - (actualRow * cols);
+        return (slot) - (cols * actualRow);
     }
 }

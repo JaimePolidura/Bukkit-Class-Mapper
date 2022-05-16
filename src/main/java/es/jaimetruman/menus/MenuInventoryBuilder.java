@@ -17,30 +17,41 @@ public class MenuInventoryBuilder {
         List<ItemStack> itemsOverflow = new LinkedList<>();
         int totalColumns = menu.getItems()[0].length;
         int totalRows = menu.getItems().length;
+        int breakpointItemNum = menu.configuration().getBreakpointItemNum();
 
         for (int i = 0; i < itemssList.size(); i++) {
             int actualItemNum = itemssList.get(i);
-            int row = i / totalColumns;
-            int column = i - (totalColumns * row);
             List<ItemStack> itemsToAdd = menu.configuration().getItems().get(actualItemNum);
 
-            if(itemsToAdd != null){
-                for (int j = 0; j < itemsToAdd.size(); j++) {
-                    if(itemsToAdd.size() > 1 && j > 0) i++;
+            if(itemsToAdd == null || itemsToAdd.size() == 0) continue;
 
-                    ItemStack itemToAdd = itemsToAdd.get(j);
+            for (int j = 0; j < itemsToAdd.size(); j++) {
+                if(itemsToAdd.size() > 1 && j > 0) i++;
 
-                    inventory.setItem(i, itemToAdd);
+                int row = SupportedInventoryType.getRowBySlotAndInventoryType(i, inventory.getType());
+                int column = SupportedInventoryType.getColumnBySlotAndInventoryType(i, inventory.getType());
+                boolean isInBreakpoint = menu.getItems()[row][column] == breakpointItemNum;
 
-                    if(i >= itemssList.size()){
-                        itemsOverflow.add(itemToAdd);
-                    }else {
-                        menu.getItems()[row][column] = actualItemNum;
-                    }
+                if(isInBreakpoint){
+                    inventory.setItem(i, menu.configuration().getItems().get(breakpointItemNum) == null ?
+                                    new ItemStack(Material.AIR) :
+                                    menu.configuration().getItems().get(breakpointItemNum).get(0)
+                    );
+
+                    itemsOverflow.addAll(itemsToAdd.subList(j, itemsToAdd.size()));
+
+                    break;
                 }
-            }else{
-                inventory.addItem(new ItemStack(Material.AIR));
-                menu.getItems()[row][column] = actualItemNum;
+
+                ItemStack itemToAdd = itemsToAdd.get(j);
+                boolean itemOverflow = i >= itemssList.size();
+
+                if(itemOverflow){
+                    itemsOverflow.add(itemToAdd);
+                }else{
+                    menu.getItems()[row][column] = actualItemNum;
+                    inventory.setItem(i, itemToAdd);
+                }
             }
         }
 
