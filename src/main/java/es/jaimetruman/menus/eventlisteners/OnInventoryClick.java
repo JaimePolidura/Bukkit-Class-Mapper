@@ -1,6 +1,7 @@
 package es.jaimetruman.menus.eventlisteners;
 
 import es.jaimetruman.menus.InstanceProvider;
+import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.SupportedInventoryType;
 import es.jaimetruman.menus.OpenMenuRepository;
 import org.bukkit.event.EventHandler;
@@ -25,19 +26,28 @@ public class OnInventoryClick implements Listener {
         String playerName = event.getWhoClicked().getName();
 
         this.openMenuRepository.findByPlayerName(playerName).ifPresent(menu -> {
-            if(menu.configuration().isFixedItems())
-                event.setCancelled(true);
-
             InventoryType inventoryType = event.getClickedInventory().getType();
             int row = SupportedInventoryType.getRowBySlotAndInventoryType(event.getSlot(), inventoryType);
             int column = SupportedInventoryType.getColumnBySlotAndInventoryType(event.getSlot(), inventoryType);
+            int itemNumClicked = menu.items()[row][column];
+
+            if(menu.configuration().isFixedItems())
+                event.setCancelled(true);
 
             Consumer<InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
                     .get(menu.getItems()[row][column]);
 
-            if (eventConsumer != null){
+            if (eventConsumer != null)
                 eventConsumer.accept(event);
+
+            if (hasClickedPaginationsItems(menu, itemNumClicked)){
+
             }
         });
+    }
+
+    private boolean hasClickedPaginationsItems(Menu menu, int itemNumClicked) {
+        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNumClicked &&
+                menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNumClicked;
     }
 }

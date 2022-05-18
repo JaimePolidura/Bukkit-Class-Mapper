@@ -1,5 +1,7 @@
 package es.jaimetruman.menus;
 
+import es.jaimetruman.menus.inventorybuilder.MenuInventory;
+import es.jaimetruman.menus.inventorybuilder.MenuInventoryBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -13,8 +15,8 @@ public class MenuService {
     }
 
     public void open(Player player, Menu menu){
-        Inventory inventory = this.inventoryBuilder.build(menu);
-        player.openInventory(inventory);
+        MenuInventory inventory = this.inventoryBuilder.build(menu);
+        player.openInventory(inventory.getInventory());
 
         this.openMenuRepository.save(player.getName(), menu);
     }

@@ -1,5 +1,8 @@
-package es.jaimetruman.menus;
+package es.jaimetruman.menus.inventorybuilder;
 
+import es.jaimetruman.menus.Menu;
+import es.jaimetruman.menus.SupportedInventoryType;
+import es.jaimetruman.menus.configuration.MenuConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -10,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MenuInventoryBuilder {
-    public Inventory build(Menu menu){
+    public MenuInventory build(Menu menu){
         SupportedInventoryType supportedInventoryType = SupportedInventoryType.getByArray(menu.getItems());
         Inventory inventory = this.createBaseInventory(menu.configuration(), supportedInventoryType);
         List<Integer> itemssList = bidimensionalArrayToLinearArray(menu.getItems());
@@ -55,7 +58,7 @@ public class MenuInventoryBuilder {
             }
         }
 
-        return inventory;
+        return new MenuInventory(inventory, itemsOverflow);
     }
 
     private Inventory createBaseInventory(MenuConfiguration configuration, SupportedInventoryType supportedInventoryType) {
