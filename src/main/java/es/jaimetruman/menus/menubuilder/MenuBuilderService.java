@@ -36,9 +36,8 @@ public class MenuBuilderService {
 
                 int row = SupportedInventoryType.getRowBySlotAndInventoryType(i, inventoryOfPageZero.getType());
                 int column = SupportedInventoryType.getColumnBySlotAndInventoryType(i, inventoryOfPageZero.getType());
-                boolean isInBreakpoint = menu.getItemsNums()[row][column] == breakpointItemNum;
 
-                if(isInBreakpoint){
+                if(isBreakpoint(menu, row, column)){
                     inventoryOfPageZero.setItem(i, menu.configuration().getItems().get(breakpointItemNum) == null ?
                                     new ItemStack(Material.AIR) :
                                     menu.configuration().getItems().get(breakpointItemNum).get(0)
@@ -65,8 +64,6 @@ public class MenuBuilderService {
 
         pages.add(new Page(inventoryOfPageZero, menu.getItemsNums()));
 
-        System.out.println(new Page(inventoryOfPageZero, menu.getItemsNums()));
-
         if(!itemsOverflow.isEmpty())
             pages.addAll(createMorePages(itemsOverflow, menu, supportedInventoryType, itemNumOverflow));
 
@@ -76,27 +73,69 @@ public class MenuBuilderService {
     private List<Page> createMorePages(List<ItemStack> itemsOverflow, Menu menu, SupportedInventoryType inventoryType, int itemNum) {
         List<Page> pages = new ArrayList<>();
         int maxItemsPerPage = menu.items().length * menu.items()[0].length;
-        int pagesToAdd = pages.size() % maxItemsPerPage == 0 ?
-                pages.size() / maxItemsPerPage :
-                (pages.size() / maxItemsPerPage) + 1;
+        int breakpointItemNum = menu.configuration().getBreakpointItemNum();
+        int pagesToAdd = itemsOverflow.size() % maxItemsPerPage == 0 ?
+                itemsOverflow.size() / maxItemsPerPage :
+                (itemsOverflow.size() / maxItemsPerPage) + 1;
 
         for (int i = 0; i < pagesToAdd; i++) {
             Inventory inventory = this.createBaseInventory(menu.configuration(), inventoryType);
             List<ItemStack> itemsToAdd = sublist(itemsOverflow, i * maxItemsPerPage, i * maxItemsPerPage + maxItemsPerPage);
             int[][] itemsNums = new int[menu.items().length][menu.items()[0].length];
+            boolean hasPassedBreakpoint = false;
 
-            for (int j = 0; j < itemsToAdd.size(); j++) {
+            for (int j = 0; j < maxItemsPerPage; j++) {
+                ItemStack itemToAdd = j >= itemsToAdd.size() ? null : itemsToAdd.get(j);
                 int row = SupportedInventoryType.getRowBySlotAndInventoryType(j, inventoryType.getBukkitInventoryType());
                 int column = SupportedInventoryType.getColumnBySlotAndInventoryType(j, inventoryType.getBukkitInventoryType());
 
-                inventory.addItem(itemsToAdd.get(j));
-                itemsNums[row][column] = itemNum;
+                if(this.isBreakpoint(menu, row, column)) {
+                    inventory.addItem(menu.configuration().getItems().get(breakpointItemNum) == null ?
+                            new ItemStack(Material.AIR) :
+                            menu.configuration().getItems().get(breakpointItemNum).get(0)
+                    );
+                    itemsNums[row][column] = breakpointItemNum;
+                    hasPassedBreakpoint = true;
+
+                }else if(isGoBackward(menu, row, column)){
+                    int itemNumOriginal = menu.items()[row][column];
+                    inventory.setItem(j, menu.configuration().getMenuPaginationConfiguration().getBackward().getItemStack());
+                    itemsNums[row][column] = itemNumOriginal;
+
+                }else if(isGoForward(menu, row, column)) {
+                    int itemNumOriginal = menu.items()[row][column];
+                    inventory.setItem(j, menu.configuration().getMenuPaginationConfiguration().getForward().getItemStack());
+                    itemsNums[row][column] = itemNumOriginal;
+
+                }else if(hasPassedBreakpoint || itemToAdd == null){
+                    itemsNums[row][column] = 0;
+
+                }else{
+                    inventory.addItem(itemToAdd);
+                    itemsNums[row][column] = itemNum;
+                }
             }
 
             pages.add(new Page(inventory, itemsNums));
         }
 
         return pages;
+    }
+
+    private boolean isGoForward(Menu menu, int row, int column){
+        int itemNum = menu.items()[row][column];
+
+        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNum;
+    }
+
+    private boolean isGoBackward(Menu menu, int row, int column){
+        int itemNum = menu.items()[row][column];
+
+        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNum;
+    }
+
+    private boolean isBreakpoint(Menu menu, int row, int column) {
+        return menu.getItemsNums()[row][column] == menu.configuration().getBreakpointItemNum();
     }
 
     private Inventory createBaseInventory(MenuConfiguration configuration, SupportedInventoryType supportedInventoryType) {

@@ -36,7 +36,7 @@ public abstract class Menu {
         return this.pages.get(this.actualPage);
     }
 
-    public Page backward(int pageNumber){
+    public Page backward(){
         if(this.actualPage == 0) return this.pages.get(0);
 
         this.actualPage--;

@@ -1,9 +1,6 @@
 package es.jaimetruman.menus.eventlisteners;
 
-import es.jaimetruman.menus.InstanceProvider;
-import es.jaimetruman.menus.Menu;
-import es.jaimetruman.menus.SupportedInventoryType;
-import es.jaimetruman.menus.OpenMenuRepository;
+import es.jaimetruman.menus.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,9 +37,8 @@ public class OnInventoryClick implements Listener {
             if (eventConsumer != null)
                 eventConsumer.accept(event);
 
-            if (hasClickedPaginationsItems(menu, itemNumClicked)){
+            if (hasClickedPaginationsItems(menu, itemNumClicked))
                 performPaginationControlledClicked(menu, itemNumClicked, event);
-            }
         });
     }
 
@@ -59,8 +55,12 @@ public class OnInventoryClick implements Listener {
     }
 
     private void goForward(Menu menu, InventoryClickEvent event) {
+        Page page = menu.forward();
+        event.getWhoClicked().openInventory(page.getInventory());
     }
 
     private void goBackward(Menu menu, InventoryClickEvent event) {
+        Page page = menu.backward();
+        event.getWhoClicked().openInventory(page.getInventory());
     }
 }
