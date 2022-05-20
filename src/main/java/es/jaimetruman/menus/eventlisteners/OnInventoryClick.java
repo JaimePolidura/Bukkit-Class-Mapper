@@ -52,6 +52,8 @@ public class OnInventoryClick implements Listener {
             this.goBackward(menu, event);
         else
             this.goForward(menu, event);
+
+        this.openMenuRepository.save(event.getWhoClicked().getName(), menu);
     }
 
     private void goForward(Menu menu, InventoryClickEvent event) {

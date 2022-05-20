@@ -30,7 +30,7 @@ public abstract class Menu {
     }
 
     public Page forward(){
-        if(this.actualPage >= this.pages.size()) return this.pages.get(this.pages.size() - 1);
+        if(this.actualPage + 1 >= this.pages.size()) return this.pages.get(this.pages.size() - 1);
 
         this.actualPage++;
         return this.pages.get(this.actualPage);
