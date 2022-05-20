@@ -35,19 +35,32 @@ public class OnInventoryClick implements Listener {
                 event.setCancelled(true);
 
             Consumer<InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
-                    .get(menu.getItems()[row][column]);
+                    .get(menu.getItemsNums()[row][column]);
 
             if (eventConsumer != null)
                 eventConsumer.accept(event);
 
             if (hasClickedPaginationsItems(menu, itemNumClicked)){
-
+                performPaginationControlledClicked(menu, itemNumClicked, event);
             }
         });
     }
 
     private boolean hasClickedPaginationsItems(Menu menu, int itemNumClicked) {
-        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNumClicked &&
-                menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNumClicked;
+        return menu.configuration().isPaginated() && (menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNumClicked ||
+                menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNumClicked);
+    }
+
+    private void performPaginationControlledClicked(Menu menu, int itemNumClicked, InventoryClickEvent event) {
+        if(itemNumClicked == menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum())
+            this.goBackward(menu, event);
+        else
+            this.goForward(menu, event);
+    }
+
+    private void goForward(Menu menu, InventoryClickEvent event) {
+    }
+
+    private void goBackward(Menu menu, InventoryClickEvent event) {
     }
 }

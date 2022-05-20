@@ -25,7 +25,7 @@ public class MenuConfiguration {
     }
 
     public boolean isPaginated(){
-        return this.menuPaginationConfiguration == null;
+        return this.menuPaginationConfiguration != null;
     }
 
     public static class MenuConfigurationBuilder{

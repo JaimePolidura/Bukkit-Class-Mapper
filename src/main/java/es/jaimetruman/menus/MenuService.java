@@ -1,22 +1,23 @@
 package es.jaimetruman.menus;
 
-import es.jaimetruman.menus.inventorybuilder.MenuInventory;
-import es.jaimetruman.menus.inventorybuilder.MenuInventoryBuilder;
+import es.jaimetruman.menus.menubuilder.MenuBuildResult;
+import es.jaimetruman.menus.menubuilder.MenuBuilderService;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 public class MenuService {
-    private final MenuInventoryBuilder inventoryBuilder;
+    private final MenuBuilderService inventoryBuilder;
     private final OpenMenuRepository openMenuRepository;
 
     public MenuService() {
         this.openMenuRepository = InstanceProvider.OPEN_MENUS_REPOSITORY;
-        this.inventoryBuilder = new MenuInventoryBuilder();
+        this.inventoryBuilder = new MenuBuilderService();
     }
 
     public void open(Player player, Menu menu){
-        MenuInventory inventory = this.inventoryBuilder.build(menu);
-        player.openInventory(inventory.getInventory());
+        MenuBuildResult menuBuildResult = this.inventoryBuilder.build(menu);
+        menu.addAll(menuBuildResult.getPages());
+
+        player.openInventory(menu.getActualPageInventory());
 
         this.openMenuRepository.save(player.getName(), menu);
     }
