@@ -20,14 +20,19 @@ public class MenuConfiguration {
     @Getter private final String title;
     @Getter private final boolean fixedItems;
     @Getter private final int breakpointItemNum;
-    @Getter private final PaginationConfiguration menuPaginationConfiguration;
+    @Getter private final PaginationConfiguration paginationConfiguration;
+    @Getter private final ConfirmationConfiguration confirmationConfiguration;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
     }
 
     public boolean isPaginated(){
-        return this.menuPaginationConfiguration != null;
+        return this.paginationConfiguration != null;
+    }
+
+    public boolean isConfirmation(){
+        return this.confirmationConfiguration != null;
     }
 
     public static class MenuConfigurationBuilder{
@@ -35,6 +40,7 @@ public class MenuConfiguration {
         private Map<Integer, BiConsumer<Player, InventoryClickEvent>> onClickEventListeners;
         private Consumer<InventoryCloseEvent> onCloseEventListener;
         private PaginationConfiguration menuPaginationConfiguration;
+        private ConfirmationConfiguration confirmationConfiguration;
         private String title;
         private boolean fixedItems;
         private int breakpointItemNum;
@@ -47,11 +53,23 @@ public class MenuConfiguration {
 
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
-                    title, fixedItems, breakpointItemNum, menuPaginationConfiguration);
+                    title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration);
         }
 
         public MenuConfigurationBuilder fixedItems(){
             this.fixedItems = true;
+            return this;
+        }
+
+        public MenuConfigurationBuilder confirmation(ConfirmationConfiguration configuration){
+            this.confirmationConfiguration = configuration;
+            this.items.put(configuration.getAccept().getItemNum(), Collections.singletonList(configuration.getAccept().getItemStack()));
+            this.onClickEventListeners.put(configuration.getAccept().getItemNum(), configuration.getAccept().getOnClick());
+
+            this.items.put(configuration.getCancel().getItemNum(), Collections.singletonList(configuration.getCancel().getItemStack()));
+            this.onClickEventListeners.put(configuration.getCancel().getItemNum(), configuration.getCancel().getOnClick());
+
+
             return this;
         }
 

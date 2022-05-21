@@ -44,18 +44,31 @@ public class OnInventoryClick implements Listener {
 
             if (hasClickedPaginationsItems(menu, itemNumClicked))
                 performPaginationControlledClicked(menu, itemNumClicked, event);
+
+            if(hasClickedConfirmationItems(menu, itemNumClicked))
+                performConfirmationAction(menu, itemNumClicked, event);
         });
     }
 
+    private boolean hasClickedConfirmationItems(Menu menu, int itemNumClicked){
+        return menu.configuration().isConfirmation() && (menu.configuration().getConfirmationConfiguration().getCancel().getItemNum() == itemNumClicked ||
+                menu.configuration().getConfirmationConfiguration().getAccept().getItemNum() == itemNumClicked);
+    }
+
     private boolean hasClickedPaginationsItems(Menu menu, int itemNumClicked) {
-        return menu.configuration().isPaginated() && (menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNumClicked ||
-                menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNumClicked);
+        return menu.configuration().isPaginated() && (menu.configuration().getPaginationConfiguration().getBackward().getItemNum() == itemNumClicked ||
+                menu.configuration().getPaginationConfiguration().getForward().getItemNum() == itemNumClicked);
     }
 
     private void performPaginationControlledClicked(Menu menu, int itemNumClicked, InventoryClickEvent event) {
-        if(itemNumClicked == menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum())
+        if(itemNumClicked == menu.configuration().getPaginationConfiguration().getBackward().getItemNum())
             this.menuService.goBackward((Player) event.getWhoClicked(), menu);
         else
             this.menuService.goForward((Player) event.getWhoClicked(), menu);
+    }
+
+    private void performConfirmationAction(Menu menu, int itemNumClicked, InventoryClickEvent event) {
+        if(menu.configuration().getConfirmationConfiguration().isCloseOnAction())
+            this.menuService.close((Player) event.getWhoClicked());
     }
 }

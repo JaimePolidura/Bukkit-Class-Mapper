@@ -99,12 +99,12 @@ public class MenuBuilderService {
 
                 }else if(isGoBackward(menu, row, column)){
                     int itemNumOriginal = menu.items()[row][column];
-                    inventory.setItem(j, menu.configuration().getMenuPaginationConfiguration().getBackward().getItemStack());
+                    inventory.setItem(j, menu.configuration().getPaginationConfiguration().getBackward().getItemStack());
                     itemsNums[row][column] = itemNumOriginal;
 
                 }else if(isGoForward(menu, row, column)) {
                     int itemNumOriginal = menu.items()[row][column];
-                    inventory.setItem(j, menu.configuration().getMenuPaginationConfiguration().getForward().getItemStack());
+                    inventory.setItem(j, menu.configuration().getPaginationConfiguration().getForward().getItemStack());
                     itemsNums[row][column] = itemNumOriginal;
 
                 }else if(hasPassedBreakpoint || itemToAdd == null){
@@ -125,13 +125,13 @@ public class MenuBuilderService {
     private boolean isGoForward(Menu menu, int row, int column){
         int itemNum = menu.items()[row][column];
 
-        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getForward().getItemNum() == itemNum;
+        return menu.configuration().isPaginated() && menu.configuration().getPaginationConfiguration().getForward().getItemNum() == itemNum;
     }
 
     private boolean isGoBackward(Menu menu, int row, int column){
         int itemNum = menu.items()[row][column];
 
-        return menu.configuration().isPaginated() && menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum() == itemNum;
+        return menu.configuration().isPaginated() && menu.configuration().getPaginationConfiguration().getBackward().getItemNum() == itemNum;
     }
 
     private boolean isBreakpoint(Menu menu, int row, int column) {
