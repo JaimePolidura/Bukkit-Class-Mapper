@@ -3,17 +3,19 @@ package es.jaimetruman.menus.configuration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class MenuConfiguration {
     @Getter private final Map<Integer, List<ItemStack>> items;
-    @Getter private final Map<Integer, Consumer<InventoryClickEvent>> onClickEventListeners;
+    @Getter private final Map<Integer, BiConsumer<Player, InventoryClickEvent>> onClickEventListeners;
     @Getter private final Consumer<InventoryCloseEvent> onCloseEventListener;
     @Getter private final String title;
     @Getter private final boolean fixedItems;
@@ -30,7 +32,7 @@ public class MenuConfiguration {
 
     public static class MenuConfigurationBuilder{
         private Map<Integer, List<ItemStack>> items;
-        private Map<Integer, Consumer<InventoryClickEvent>> onClickEventListeners;
+        private Map<Integer, BiConsumer<Player, InventoryClickEvent>> onClickEventListeners;
         private Consumer<InventoryCloseEvent> onCloseEventListener;
         private PaginationConfiguration menuPaginationConfiguration;
         private String title;
@@ -73,7 +75,7 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder item(int itemNum, ItemStack item, Consumer<InventoryClickEvent> onClick){
+        public MenuConfigurationBuilder item(int itemNum, ItemStack item, BiConsumer<Player, InventoryClickEvent> onClick){
             this.items.put(itemNum, Collections.singletonList(item));
             this.onClickEventListeners.put(itemNum, onClick);
             return this;
@@ -92,13 +94,13 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder item(int itemNum, Material itemMaterial, Consumer<InventoryClickEvent> onClick){
+        public MenuConfigurationBuilder item(int itemNum, Material itemMaterial, BiConsumer<Player, InventoryClickEvent> onClick){
             this.items.put(itemNum, Collections.singletonList(new ItemStack(itemMaterial)));
             this.onClickEventListeners.put(itemNum, onClick);
             return this;
         }
 
-        public MenuConfigurationBuilder onClick(int itemNum, Consumer<InventoryClickEvent> listener){
+        public MenuConfigurationBuilder onClick(int itemNum, BiConsumer<Player, InventoryClickEvent> listener){
             this.onClickEventListeners.put(itemNum, listener);
             return this;
         }
@@ -108,7 +110,7 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder items(int itemNum, List<ItemStack> items, Consumer<InventoryClickEvent> onClick){
+        public MenuConfigurationBuilder items(int itemNum, List<ItemStack> items, BiConsumer<Player, InventoryClickEvent> onClick){
             this.items.put(itemNum, items);
             this.onClickEventListeners.put(itemNum, onClick);
             return this;
@@ -129,7 +131,7 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder breakpoint(int itemNum, Consumer<InventoryClickEvent> clickEvent){
+        public MenuConfigurationBuilder breakpoint(int itemNum, BiConsumer<Player, InventoryClickEvent> clickEvent){
             this.breakpointItemNum = itemNum;
             this.onClickEventListeners.put(itemNum, clickEvent);
             return this;
@@ -141,7 +143,7 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder breakpoint(int itemNum, Material material, Consumer<InventoryClickEvent> clickEvent){
+        public MenuConfigurationBuilder breakpoint(int itemNum, Material material, BiConsumer<Player, InventoryClickEvent> clickEvent){
             this.breakpointItemNum = itemNum;
             this.items.put(itemNum, Collections.singletonList(new ItemStack(material)));
             this.onClickEventListeners.put(itemNum, clickEvent);
@@ -154,7 +156,7 @@ public class MenuConfiguration {
             return this;
         }
 
-        public MenuConfigurationBuilder breakpoint(int itemNum, ItemStack item, Consumer<InventoryClickEvent> clickEvent){
+        public MenuConfigurationBuilder breakpoint(int itemNum, ItemStack item, BiConsumer<Player, InventoryClickEvent> clickEvent){
             this.breakpointItemNum = itemNum;
             this.items.put(itemNum, Collections.singletonList(item));
             this.onClickEventListeners.put(itemNum, clickEvent);

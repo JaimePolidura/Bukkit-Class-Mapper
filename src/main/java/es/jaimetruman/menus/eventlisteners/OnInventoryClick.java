@@ -1,18 +1,23 @@
 package es.jaimetruman.menus.eventlisteners;
 
+import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class OnInventoryClick implements Listener {
     private final OpenMenuRepository openMenuRepository;
+    private final MenuService menuService;
 
     public OnInventoryClick() {
-        this.openMenuRepository = InstanceProvider.OPEN_MENUS_REPOSITORY;
+        this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
+        this.menuService = ClassMapperInstanceProvider.MENU_SERVICE;
     }
 
     @EventHandler
@@ -31,11 +36,11 @@ public class OnInventoryClick implements Listener {
             if(menu.configuration().isFixedItems())
                 event.setCancelled(true);
 
-            Consumer<InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
+            BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
                     .get(menu.getItemsNums()[row][column]);
 
             if (eventConsumer != null)
-                eventConsumer.accept(event);
+                eventConsumer.accept((Player) event.getWhoClicked(), event);
 
             if (hasClickedPaginationsItems(menu, itemNumClicked))
                 performPaginationControlledClicked(menu, itemNumClicked, event);
@@ -49,20 +54,8 @@ public class OnInventoryClick implements Listener {
 
     private void performPaginationControlledClicked(Menu menu, int itemNumClicked, InventoryClickEvent event) {
         if(itemNumClicked == menu.configuration().getMenuPaginationConfiguration().getBackward().getItemNum())
-            this.goBackward(menu, event);
+            this.menuService.goBackward((Player) event.getWhoClicked(), menu);
         else
-            this.goForward(menu, event);
-
-        this.openMenuRepository.save(event.getWhoClicked().getName(), menu);
-    }
-
-    private void goForward(Menu menu, InventoryClickEvent event) {
-        Page page = menu.forward();
-        event.getWhoClicked().openInventory(page.getInventory());
-    }
-
-    private void goBackward(Menu menu, InventoryClickEvent event) {
-        Page page = menu.backward();
-        event.getWhoClicked().openInventory(page.getInventory());
+            this.menuService.goForward((Player) event.getWhoClicked(), menu);
     }
 }

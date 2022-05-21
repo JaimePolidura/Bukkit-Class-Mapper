@@ -1,6 +1,6 @@
 package es.jaimetruman.menus.eventlisteners;
 
-import es.jaimetruman.menus.InstanceProvider;
+import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.OpenMenuRepository;
 import org.bukkit.event.EventHandler;
@@ -13,7 +13,7 @@ public class OnInventoryClose implements Listener {
     private final OpenMenuRepository openMenuRepository;
 
     public OnInventoryClose() {
-        this.openMenuRepository = InstanceProvider.OPEN_MENUS_REPOSITORY;
+        this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
     }
 
     @EventHandler
