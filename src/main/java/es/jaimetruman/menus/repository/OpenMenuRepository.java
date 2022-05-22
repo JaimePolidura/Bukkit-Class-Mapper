@@ -1,4 +1,6 @@
-package es.jaimetruman.menus;
+package es.jaimetruman.menus.repository;
+
+import es.jaimetruman.menus.Menu;
 
 import java.util.Map;
 import java.util.Optional;

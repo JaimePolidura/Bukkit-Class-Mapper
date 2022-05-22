@@ -2,6 +2,7 @@ package es.jaimetruman.menus.eventlisteners;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.*;
+import es.jaimetruman.menus.repository.OpenMenuRepository;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

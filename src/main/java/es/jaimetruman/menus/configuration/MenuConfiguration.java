@@ -22,6 +22,7 @@ public class MenuConfiguration {
     @Getter private final int breakpointItemNum;
     @Getter private final PaginationConfiguration paginationConfiguration;
     @Getter private final ConfirmationConfiguration confirmationConfiguration;
+    @Getter private final boolean staticMenu;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
@@ -44,6 +45,7 @@ public class MenuConfiguration {
         private String title;
         private boolean fixedItems;
         private int breakpointItemNum;
+        private boolean staticMenu;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
@@ -53,7 +55,8 @@ public class MenuConfiguration {
 
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
-                    title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration);
+                    title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration,
+                    staticMenu);
         }
 
         public MenuConfigurationBuilder fixedItems(){
@@ -80,10 +83,14 @@ public class MenuConfiguration {
             return this;
         }
 
+        public MenuConfigurationBuilder staticMenu(){
+            this.staticMenu = true;
+            return this;
+        }
+
         public MenuConfigurationBuilder itemsMap(Map<Integer, ItemStack> items){
-            for (Map.Entry<Integer, ItemStack> itemsEntry : items.entrySet()){
+            for (Map.Entry<Integer, ItemStack> itemsEntry : items.entrySet())
                 this.items.put(itemsEntry.getKey(), Collections.singletonList(itemsEntry.getValue()));
-            }
 
             return this;
         }
