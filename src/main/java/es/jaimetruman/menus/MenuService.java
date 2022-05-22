@@ -29,6 +29,7 @@ public class MenuService {
         player.openInventory(menu.getInventory());
 
         this.openMenuRepository.save(player.getName(), menu);
+        if(menu.configuration().isStaticMenu()) this.staticMenuRepository.save(menu);
 
         callAfterShow(menu);
     }

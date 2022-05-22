@@ -34,8 +34,8 @@ public class MenuBuilderService {
             for (int j = 0; j < itemsToAdd.size(); j++) {
                 if(itemsToAdd.size() > 1 && j > 0) i++;
 
-                int row = SupportedInventoryType.getRowBySlotAndInventoryType(i, inventoryOfPageZero.getType());
-                int column = SupportedInventoryType.getColumnBySlotAndInventoryType(i, inventoryOfPageZero.getType());
+                int row = SupportedInventoryType.getRowBySlot(i, inventoryOfPageZero.getType());
+                int column = SupportedInventoryType.getColumnBySlot(i, inventoryOfPageZero.getType());
 
                 if(isBreakpoint(menu, row, column)){
                     inventoryOfPageZero.setItem(i, menu.configuration().getItems().get(breakpointItemNum) == null ?
@@ -86,8 +86,8 @@ public class MenuBuilderService {
 
             for (int j = 0; j < maxItemsPerPage; j++) {
                 ItemStack itemToAdd = j >= itemsToAdd.size() ? null : itemsToAdd.get(j);
-                int row = SupportedInventoryType.getRowBySlotAndInventoryType(j, inventoryType.getBukkitInventoryType());
-                int column = SupportedInventoryType.getColumnBySlotAndInventoryType(j, inventoryType.getBukkitInventoryType());
+                int row = SupportedInventoryType.getRowBySlot(j, inventoryType.getBukkitInventoryType());
+                int column = SupportedInventoryType.getColumnBySlot(j, inventoryType.getBukkitInventoryType());
 
                 if(this.isBreakpoint(menu, row, column)) {
                     inventory.addItem(menu.configuration().getItems().get(breakpointItemNum) == null ?

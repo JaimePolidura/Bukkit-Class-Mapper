@@ -22,7 +22,7 @@ public class OnInventoryClose implements Listener {
         this.openMenuRepository.findByPlayerName(event.getPlayer().getName()).ifPresent(menu -> {
             this.executeRegisteredMenuEventListener(event, menu);
 
-            this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName());
+            this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName(), menu.getClass());
 
             if(menu instanceof AfterClose) ((AfterClose) menu).afterClose();
         });

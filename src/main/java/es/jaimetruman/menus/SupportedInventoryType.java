@@ -9,7 +9,7 @@ public enum SupportedInventoryType {
     HOPPER(InventoryType.HOPPER, 1, 5),
     CHEST(InventoryType.CHEST, 3, 9),
     BIG_CHEST(InventoryType.CHEST, 6, 9);
-    
+
     @Getter private final InventoryType bukkitInventoryType;
     @Getter private final int rows;
     @Getter private final int columns;
@@ -32,15 +32,15 @@ public enum SupportedInventoryType {
                 .orElseThrow(() -> new NullPointerException("Inventory type not found"));
     }
 
-    public static int getRowBySlotAndInventoryType(int slot, InventoryType inventoryType){
+    public static int getRowBySlot(int slot, InventoryType inventoryType){
         int columns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
 
         return (slot) / columns;
     }
 
-    public static int getColumnBySlotAndInventoryType(int slot, InventoryType inventoryType){
+    public static int getColumnBySlot(int slot, InventoryType inventoryType){
         int cols = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
-        int actualRow = getRowBySlotAndInventoryType(slot, inventoryType);
+        int actualRow = getRowBySlot(slot, inventoryType);
 
         return (slot) - (cols * actualRow);
     }

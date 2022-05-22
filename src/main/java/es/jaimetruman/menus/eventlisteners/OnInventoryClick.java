@@ -24,10 +24,12 @@ public class OnInventoryClick implements Listener {
     public void on(InventoryClickEvent event){
         String playerName = event.getWhoClicked().getName();
 
+        if(event.getClickedInventory() == null) return;
+
         this.openMenuRepository.findByPlayerName(playerName).ifPresent(menu -> {
             InventoryType inventoryType = event.getClickedInventory().getType();
-            int row = SupportedInventoryType.getRowBySlotAndInventoryType(event.getSlot(), inventoryType);
-            int column = SupportedInventoryType.getColumnBySlotAndInventoryType(event.getSlot(), inventoryType);
+            int row = SupportedInventoryType.getRowBySlot(event.getSlot(), inventoryType);
+            int column = SupportedInventoryType.getColumnBySlot(event.getSlot(), inventoryType);
             int itemNumClicked = menu.items()[row][column];
 
             if(menu.configuration().isFixedItems())
