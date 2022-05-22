@@ -3,6 +3,7 @@ package es.jaimetruman.menus.eventlisteners;
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.OpenMenuRepository;
+import es.jaimetruman.menus.menustate.AfterClose;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -22,6 +23,8 @@ public class OnInventoryClose implements Listener {
             this.executeRegisteredMenuEventListener(event, menu);
 
             this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName());
+
+            if(menu instanceof AfterClose) ((AfterClose) menu).afterClose();
         });
     }
 

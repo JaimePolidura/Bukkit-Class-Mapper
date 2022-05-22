@@ -9,8 +9,8 @@ import java.util.List;
 
 public abstract class Menu {
     private int actualPage;
+    private List<Page> pages;
     @Getter private final int[][] itemsNums;
-    @Getter private List<Page> pages;
 
     public Menu() {
         this.itemsNums = this.items();
@@ -21,22 +21,22 @@ public abstract class Menu {
     public abstract int[][] items();
     public abstract MenuConfiguration configuration();
 
-    public void addAll(List<Page> pages){
+    public final void addAll(List<Page> pages){
         this.pages.addAll(pages);
     }
 
-    public Inventory getActualPageInventory(){
+    public final Inventory getActualPageInventory(){
         return this.pages.get(this.actualPage).getInventory();
     }
 
-    public Page forward(){
+    public final Page forward(){
         if(this.actualPage + 1 >= this.pages.size()) return this.pages.get(this.pages.size() - 1);
 
         this.actualPage++;
         return this.pages.get(this.actualPage);
     }
 
-    public Page backward(){
+    public final Page backward(){
         if(this.actualPage == 0) return this.pages.get(0);
 
         this.actualPage--;

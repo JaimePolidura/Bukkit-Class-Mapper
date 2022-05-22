@@ -3,6 +3,8 @@ package es.jaimetruman.menus;
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.menubuilder.MenuBuildResult;
 import es.jaimetruman.menus.menubuilder.MenuBuilderService;
+import es.jaimetruman.menus.menustate.AfterShow;
+import es.jaimetruman.menus.menustate.BeforeShow;
 import org.bukkit.entity.Player;
 
 public class MenuService {
@@ -15,12 +17,16 @@ public class MenuService {
     }
 
     public void open(Player player, Menu menu){
+        if(menu instanceof BeforeShow) ((BeforeShow) menu).beforeShow();
+
         MenuBuildResult menuBuildResult = this.inventoryBuilder.build(menu);
         menu.addAll(menuBuildResult.getPages());
 
         player.openInventory(menu.getActualPageInventory());
 
         this.openMenuRepository.save(player.getName(), menu);
+
+        if(menu instanceof AfterShow) ((AfterShow) menu).afterShow();
     }
 
     public void close(Player player){

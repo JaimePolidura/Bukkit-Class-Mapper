@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class OnInventoryClick implements Listener {
     private final OpenMenuRepository openMenuRepository;
@@ -22,9 +21,6 @@ public class OnInventoryClick implements Listener {
 
     @EventHandler
     public void on(InventoryClickEvent event){
-        if (event.getView() == null || event.getCurrentItem() == null ||
-                event.getClickedInventory().getType() == InventoryType.PLAYER) return;
-
         String playerName = event.getWhoClicked().getName();
 
         this.openMenuRepository.findByPlayerName(playerName).ifPresent(menu -> {
@@ -35,6 +31,9 @@ public class OnInventoryClick implements Listener {
 
             if(menu.configuration().isFixedItems())
                 event.setCancelled(true);
+
+            if (event.getView() == null || event.getCurrentItem() == null ||
+                    event.getClickedInventory().getType() == InventoryType.PLAYER) return;
 
             BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
                     .get(menu.getItemsNums()[row][column]);
