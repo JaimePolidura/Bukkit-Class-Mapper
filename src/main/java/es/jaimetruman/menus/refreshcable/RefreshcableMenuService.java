@@ -1,6 +1,7 @@
 package es.jaimetruman.menus.refreshcable;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
+import es.jaimetruman._shared.utils.CollectionUtils;
 import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.Page;
 import es.jaimetruman.menus.SupportedInventoryType;
@@ -12,11 +13,42 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public final class RefreshcableMenuService {
     private final OpenMenuRepository openMenuRepository;
 
     public RefreshcableMenuService() {
         this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
+    }
+
+    public synchronized void add(Menu originalMenu, ItemStack itemToAdd, int itemNum){
+        for (Menu menuOfOtherPlayer : this.openMenuRepository.findByMenuType(originalMenu.getClass())) {
+            if(menuOfOtherPlayer.getMenuId().equals(originalMenu.getMenuId()))continue;
+
+            Page lastPage = menuOfOtherPlayer.getPages().get(menuOfOtherPlayer.getPages().size() - 1);
+            Inventory inventoryOfLastPage = lastPage.getInventory();
+
+            List<Integer> itemNums = CollectionUtils.bidimensionalArrayToLinearArray(menuOfOtherPlayer.getItemsNums());
+
+            for(int i = 0; i < itemNums.size(); i++) {
+                ItemStack actualItemStack = inventoryOfLastPage.getItem(i);
+                int rowOfLastPage = SupportedInventoryType.getRowBySlot(i, menuOfOtherPlayer.getInventory().getType());
+                int columnOfLastPage = SupportedInventoryType.getColumnBySlot(i, menuOfOtherPlayer.getInventory().getType());
+                int actualNum = itemNums.get(i);
+
+                if (inventoryOfLastPage.getItem(i) == null || inventoryOfLastPage.getItem(i).getType() == Material.AIR) {
+                    lastPage.getItemsNums()[rowOfLastPage][columnOfLastPage] = itemNum;
+                    inventoryOfLastPage.setItem(i, itemToAdd);
+                    break;
+                }
+
+                if (menuOfOtherPlayer.configuration().getBreakpointItemNum() == actualNum) {
+                    //We dont create a new page
+                    return;
+                }
+            }
+        }
     }
 
     public synchronized void update(Menu originalMenu, int slotItemToEdit, ItemStack editedNewItem){

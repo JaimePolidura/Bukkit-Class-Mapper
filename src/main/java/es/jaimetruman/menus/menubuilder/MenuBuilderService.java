@@ -1,5 +1,6 @@
 package es.jaimetruman.menus.menubuilder;
 
+import es.jaimetruman._shared.utils.CollectionUtils;
 import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.Page;
 import es.jaimetruman.menus.SupportedInventoryType;
@@ -17,7 +18,7 @@ public class MenuBuilderService {
     public MenuBuildResult build(Menu menu){
         SupportedInventoryType supportedInventoryType = SupportedInventoryType.getByArray(menu.getItemsNums());
         Inventory inventoryOfPageZero = this.createBaseInventory(menu.configuration(), supportedInventoryType);
-        List<Integer> itemssList = bidimensionalArrayToLinearArray(menu.getItemsNums());
+        List<Integer> itemssList = CollectionUtils.bidimensionalArrayToLinearArray(menu.getItemsNums());
         List<ItemStack> itemsOverflow = new LinkedList<>();
         List<Page> pages = new ArrayList<>();
         int totalColumns = menu.getItemsNums()[0].length;
@@ -142,15 +143,5 @@ public class MenuBuilderService {
         return supportedInventoryType.getSize() % 9 == 0 ?
                 Bukkit.createInventory(null, supportedInventoryType.getSize(), configuration.getTitle()) :
                 Bukkit.createInventory(null, supportedInventoryType.getBukkitInventoryType(), configuration.getTitle());
-    }
-
-    private List<Integer> bidimensionalArrayToLinearArray(int[][] array){
-        List<Integer> toReturn = new ArrayList<>(array.length * array[0].length);
-
-        for (int i = 0; i < array.length; i++)
-            for (int j = 0; j < array[i].length; j++)
-                toReturn.add(array[i][j]);
-
-        return toReturn;
     }
 }
