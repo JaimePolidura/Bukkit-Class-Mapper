@@ -12,8 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-
 public final class RefreshcableMenuService {
     private final OpenMenuRepository openMenuRepository;
 
@@ -24,35 +22,43 @@ public final class RefreshcableMenuService {
     public synchronized void add(Class<? extends Menu> menuType, ItemStack item){
     }
 
-    public synchronized void delete(Menu menu, int slotItemToDelete){
-        int pageNumber = menu.getActualPageNumber();
+    public synchronized void delete(Menu originalMenu, int slotItemToDelete){
+        int pageNumber = originalMenu.getActualPageNumber();
 
-        for (Menu menuOfOtherPlayer : openMenuRepository.findByMenuType(menu.getClass())) {
-            int rowOfItemToDelete = SupportedInventoryType.getRowBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
-            int columOfItemToDelete = SupportedInventoryType.getColumnBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
-            Page pageOfToDelete = menuOfOtherPlayer.getPages().get(pageNumber);
-            Inventory inventoryOfPage = pageOfToDelete.getInventory();
-
-            if(!menu.getMenuId().equals(menuOfOtherPlayer.getMenuId())){
-                inventoryOfPage.clear(slotItemToDelete);
-            }
-
-
-            LastItemInMenuSearchResult lastItemSearchResult = findLastItemInMenu(menuOfOtherPlayer, slotItemToDelete);
-
-            if(lastItemSearchResult == null)  return;
-
-            Page lastPage = lastItemSearchResult.getLastPage();
-            Inventory inventoryLastPage = lastPage.getInventory();
-            int rowOfLastItem = SupportedInventoryType.getRowBySlot(lastItemSearchResult.getSlot(), menuOfOtherPlayer.getInventory().getType());
-            int columOfLastItem = SupportedInventoryType.getColumnBySlot(lastItemSearchResult.getSlot(), menuOfOtherPlayer.getInventory().getType());
-            int itemNumOfLastItem = lastItemSearchResult.getLastPage().getItemsNums()[rowOfLastItem][columOfLastItem];
-
-            inventoryOfPage.setItem(slotItemToDelete, lastItemSearchResult.getItemStack());
-            inventoryLastPage.clear(lastItemSearchResult.getSlot());
-            pageOfToDelete.getItemsNums()[rowOfItemToDelete][columOfItemToDelete] = itemNumOfLastItem;
-            lastPage.getItemsNums()[rowOfLastItem][columOfLastItem] = 0;
+        for (Menu menuOfOtherPlayer : openMenuRepository.findByMenuType(originalMenu.getClass())) {
+            deleteItem(originalMenu, slotItemToDelete, menuOfOtherPlayer);
+            moveLastItemToDeletedItemPosition(slotItemToDelete, pageNumber, menuOfOtherPlayer);
         }
+    }
+
+    private void moveLastItemToDeletedItemPosition(int slotItemToDelete, int pageNumber, Menu menuOfOtherPlayer) {
+        LastItemInMenuSearchResult lastItemSearchResult = findLastItemInMenu(menuOfOtherPlayer, slotItemToDelete);
+
+        if(lastItemSearchResult == null) return;
+
+        int rowOfLastItem = SupportedInventoryType.getRowBySlot(lastItemSearchResult.getSlot(), menuOfOtherPlayer.getInventory().getType());
+        int columOfLastItem = SupportedInventoryType.getColumnBySlot(lastItemSearchResult.getSlot(), menuOfOtherPlayer.getInventory().getType());
+        int rowOfItemToDelete = SupportedInventoryType.getRowBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
+        int columOfItemToDelete = SupportedInventoryType.getColumnBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
+
+        Page pageOfToDelete = menuOfOtherPlayer.getPages().get(pageNumber);
+        Page lastPage = lastItemSearchResult.getLastPage();
+        Inventory inventoryOfPageToDelete = pageOfToDelete.getInventory();
+        Inventory inventoryLastPage = lastPage.getInventory();
+        int itemNumOfLastItem = lastItemSearchResult.getLastPage().getItemsNums()[rowOfLastItem][columOfLastItem];
+
+        inventoryOfPageToDelete.setItem(slotItemToDelete, lastItemSearchResult.getItemStack());
+        inventoryLastPage.clear(lastItemSearchResult.getSlot());
+        pageOfToDelete.getItemsNums()[rowOfItemToDelete][columOfItemToDelete] = itemNumOfLastItem;
+        lastPage.getItemsNums()[rowOfLastItem][columOfLastItem] = 0;
+    }
+
+    private void deleteItem(Menu originalMenu, int slotItemToDelete, Menu menuOfOtherPlayer) {
+        Inventory inventoryToDeleteIntem = menuOfOtherPlayer.getPages().get(originalMenu.getActualPageNumber())
+                .getInventory();
+
+        if(!originalMenu.getMenuId().equals(menuOfOtherPlayer.getMenuId()))
+            inventoryToDeleteIntem.clear(slotItemToDelete);
     }
 
     private LastItemInMenuSearchResult findLastItemInMenu(Menu menu, int slotItemRemoved) {
