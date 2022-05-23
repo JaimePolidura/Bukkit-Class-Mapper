@@ -19,16 +19,36 @@ public final class RefreshcableMenuService {
         this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
     }
 
-    public synchronized void add(Class<? extends Menu> menuType, ItemStack item){
+    public synchronized void update(Menu originalMenu, int slotItemToEdit, ItemStack editedNewItem){
+        if(editedNewItem == null || editedNewItem.getAmount() <= 0){
+            this.delete(originalMenu, slotItemToEdit);
+            return;
+        }
+        int pageNumberOfItemToEdit = originalMenu.getActualPageNumber();
+
+        for (Menu menuOfOtherPlayer : this.openMenuRepository.findByMenuType(originalMenu.getClass())) {
+            Inventory inventoryOfItemToEdit = menuOfOtherPlayer.getPages().get(pageNumberOfItemToEdit)
+                    .getInventory();
+
+            inventoryOfItemToEdit.setItem(slotItemToEdit, editedNewItem);
+        }
     }
 
     public synchronized void delete(Menu originalMenu, int slotItemToDelete){
         int pageNumber = originalMenu.getActualPageNumber();
 
-        for (Menu menuOfOtherPlayer : openMenuRepository.findByMenuType(originalMenu.getClass())) {
+        openMenuRepository.findByMenuType(originalMenu.getClass()).forEach(menuOfOtherPlayer -> {
             deleteItem(originalMenu, slotItemToDelete, menuOfOtherPlayer);
             moveLastItemToDeletedItemPosition(slotItemToDelete, pageNumber, menuOfOtherPlayer);
-        }
+        });
+    }
+
+    private void deleteItem(Menu originalMenu, int slotItemToDelete, Menu menuOfOtherPlayer) {
+        Inventory inventoryToDeleteIntem = menuOfOtherPlayer.getPages().get(originalMenu.getActualPageNumber())
+                .getInventory();
+
+        if(!originalMenu.getMenuId().equals(menuOfOtherPlayer.getMenuId()))
+            inventoryToDeleteIntem.clear(slotItemToDelete);
     }
 
     private void moveLastItemToDeletedItemPosition(int slotItemToDelete, int pageNumber, Menu menuOfOtherPlayer) {
@@ -51,14 +71,6 @@ public final class RefreshcableMenuService {
         inventoryLastPage.clear(lastItemSearchResult.getSlot());
         pageOfToDelete.getItemsNums()[rowOfItemToDelete][columOfItemToDelete] = itemNumOfLastItem;
         lastPage.getItemsNums()[rowOfLastItem][columOfLastItem] = 0;
-    }
-
-    private void deleteItem(Menu originalMenu, int slotItemToDelete, Menu menuOfOtherPlayer) {
-        Inventory inventoryToDeleteIntem = menuOfOtherPlayer.getPages().get(originalMenu.getActualPageNumber())
-                .getInventory();
-
-        if(!originalMenu.getMenuId().equals(menuOfOtherPlayer.getMenuId()))
-            inventoryToDeleteIntem.clear(slotItemToDelete);
     }
 
     private LastItemInMenuSearchResult findLastItemInMenu(Menu menu, int slotItemRemoved) {
