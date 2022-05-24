@@ -39,7 +39,7 @@ public class OnInventoryClick implements Listener {
                     event.getClickedInventory().getType() == InventoryType.PLAYER) return;
 
             BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
-                    .get(menu.getItemsNums()[row][column]);
+                    .get(menu.getActualItemNums()[row][column]);
 
             if (eventConsumer != null)
                 eventConsumer.accept((Player) event.getWhoClicked(), event);

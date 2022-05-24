@@ -10,12 +10,12 @@ import java.util.UUID;
 
 public abstract class Menu {
     @Getter private final UUID menuId;
-    @Getter private final int[][] itemsNums;
+    @Getter private final int[][] baseItemNums;
     @Getter private int actualPageNumber;
     @Getter private List<Page> pages;
 
     public Menu() {
-        this.itemsNums = this.items();
+        this.baseItemNums = this.items();
         this.actualPageNumber = 0;
         this.pages = new ArrayList<>();
         this.menuId = UUID.randomUUID();
@@ -34,6 +34,10 @@ public abstract class Menu {
 
     public final Inventory getInventory(){
         return this.pages.get(this.actualPageNumber).getInventory();
+    }
+
+    public final int[][] getActualItemNums(){
+        return this.pages.get(this.actualPageNumber).getItemsNums();
     }
 
     public final Page forward(){

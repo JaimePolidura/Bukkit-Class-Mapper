@@ -80,6 +80,9 @@ public class MenuConfiguration {
             this.menuPaginationConfiguration = paginationConfiguration;
             this.items.put(paginationConfiguration.getBackward().getItemNum(), Collections.singletonList(paginationConfiguration.getBackward().getItemStack()));
             this.items.put(paginationConfiguration.getForward().getItemNum(), Collections.singletonList(paginationConfiguration.getForward().getItemStack()));
+            if(this.breakpointItemNum == -1)
+                this.breakpointItemNum = paginationConfiguration.getBackward().getItemNum();
+
             return this;
         }
 

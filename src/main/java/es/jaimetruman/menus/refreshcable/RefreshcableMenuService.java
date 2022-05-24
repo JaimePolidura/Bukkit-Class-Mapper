@@ -29,7 +29,7 @@ public final class RefreshcableMenuService {
             Page lastPage = menuOfOtherPlayer.getPages().get(menuOfOtherPlayer.getPages().size() - 1);
             Inventory inventoryOfLastPage = lastPage.getInventory();
 
-            List<Integer> itemNums = CollectionUtils.bidimensionalArrayToLinearArray(menuOfOtherPlayer.getItemsNums());
+            List<Integer> itemNums = CollectionUtils.bidimensionalArrayToLinearArray(menuOfOtherPlayer.getActualItemNums());
 
             for(int i = 0; i < itemNums.size(); i++) {
                 ItemStack actualItemStack = inventoryOfLastPage.getItem(i);
