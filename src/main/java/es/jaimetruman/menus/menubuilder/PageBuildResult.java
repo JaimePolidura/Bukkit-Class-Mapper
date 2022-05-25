@@ -1,4 +1,4 @@
-package es.jaimetruman.menus.menubuilder.lkajs;
+package es.jaimetruman.menus.menubuilder;
 
 import es.jaimetruman.menus.Page;
 import lombok.AllArgsConstructor;

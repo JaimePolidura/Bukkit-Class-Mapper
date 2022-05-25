@@ -2,14 +2,12 @@ package es.jaimetruman.menus;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.menubuilder.MenuBuilderService;
-import es.jaimetruman.menus.menubuilder.lkajs.NewMenuBuilderService;
 import es.jaimetruman.menus.menustate.AfterShow;
 import es.jaimetruman.menus.menustate.BeforeShow;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
 import es.jaimetruman.menus.repository.StaticMenuRepository;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class MenuService {
@@ -43,7 +41,7 @@ public class MenuService {
     }
 
     private List<Page> buildMenuPages(Menu menu) {
-        NewMenuBuilderService newMenuBuilderService = new NewMenuBuilderService();
+        MenuBuilderService newMenuBuilderService = new MenuBuilderService();
 
         return newMenuBuilderService.createPages(menu.configuration(), menu.getBaseItemNums());
     }

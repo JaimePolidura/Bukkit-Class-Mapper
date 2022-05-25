@@ -1,7 +1,8 @@
-package es.jaimetruman.menus.refreshcable;
+package es.jaimetruman.menus.messaging;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman._shared.utils.CollectionUtils;
+import es.jaimetruman.commands.exceptions.InvalidUsage;
 import es.jaimetruman.menus.Menu;
 import es.jaimetruman.menus.Page;
 import es.jaimetruman.menus.SupportedInventoryType;
@@ -14,12 +15,35 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public final class RefreshcableMenuService {
+public final class MessagingMenuService {
     private final OpenMenuRepository openMenuRepository;
 
-    public RefreshcableMenuService() {
+    public MessagingMenuService() {
         this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
+    }
+
+    public synchronized <T> void broadCastMessage(Menu originalMenu, T message){
+        this.openMenuRepository.findByMenuType(originalMenu.getClass()).stream()
+                .filter(menu -> !menu.getMenuId().equals(originalMenu.getMenuId()))
+                .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
+    }
+
+    public synchronized <T> void broadCastMessage(Class<? extends Menu> menuTypeTarget, T message){
+        this.openMenuRepository.findByMenuType(menuTypeTarget)
+                .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
+    }
+
+    private <T> void sendMessageToMenu(T message, Menu menuOfPlayer) {
+        if(!menuOfPlayer.configuration().hasMessagingConfiguration())
+            throw new InvalidUsage("No messaging configuration added for menus");
+
+        Consumer<T> onMessageListener = (Consumer<T>) menuOfPlayer.configuration().getMessageListener(message.getClass());
+        if(onMessageListener == null)
+            throw new InvalidUsage("No message listener added for menu");
+
+        onMessageListener.accept(message);
     }
 
     public synchronized void add(Menu originalMenu, ItemStack itemToAdd, int itemNum){

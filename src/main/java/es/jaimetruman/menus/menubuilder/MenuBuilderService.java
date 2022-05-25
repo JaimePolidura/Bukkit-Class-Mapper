@@ -1,4 +1,4 @@
-package es.jaimetruman.menus.menubuilder.lkajs;
+package es.jaimetruman.menus.menubuilder;
 
 import es.jaimetruman._shared.utils.CollectionUtils;
 import es.jaimetruman.menus.Page;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public final class NewMenuBuilderService {
+public final class MenuBuilderService {
     public List<Page> createPages(MenuConfiguration configuration, int[][] itemNumsArray){
         List<Page> pages = new LinkedList<>();
 

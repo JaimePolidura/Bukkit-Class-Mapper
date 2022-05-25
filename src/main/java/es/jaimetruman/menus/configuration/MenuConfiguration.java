@@ -23,9 +23,18 @@ public class MenuConfiguration {
     @Getter private final PaginationConfiguration paginationConfiguration;
     @Getter private final ConfirmationConfiguration confirmationConfiguration;
     @Getter private final boolean staticMenu;
+    @Getter private final MessagingConfiguration messagingConfiguration;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
+    }
+
+    public <T> Consumer<T> getMessageListener(Class<T> messageType){
+        return (Consumer<T>) this.messagingConfiguration.getOnMessageEventListeners().get(messageType);
+    }
+
+    public boolean hasMessagingConfiguration(){
+        return this.messagingConfiguration != null;
     }
 
     public boolean isPaginated(){
@@ -46,6 +55,7 @@ public class MenuConfiguration {
         private boolean fixedItems;
         private int breakpointItemNum;
         private boolean staticMenu;
+        private MessagingConfiguration messagingConfiguration;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
@@ -56,11 +66,16 @@ public class MenuConfiguration {
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
                     title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration,
-                    staticMenu);
+                    staticMenu, this.messagingConfiguration);
         }
 
         public MenuConfigurationBuilder fixedItems(){
             this.fixedItems = true;
+            return this;
+        }
+
+        public MenuConfigurationBuilder messaging(MessagingConfiguration messagingConfiguration){
+            this.messagingConfiguration = messagingConfiguration;
             return this;
         }
 
