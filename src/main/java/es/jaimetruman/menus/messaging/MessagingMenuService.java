@@ -29,7 +29,7 @@ public final class MessagingMenuService {
                 .filter(menu -> !menu.getMenuId().equals(originalMenu.getMenuId()))
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
     }
-
+    
     public synchronized <T> void broadCastMessage(Class<? extends Menu> menuTypeTarget, T message){
         this.openMenuRepository.findByMenuType(menuTypeTarget)
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
