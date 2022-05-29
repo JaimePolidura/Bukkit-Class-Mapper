@@ -77,6 +77,9 @@ public class MenuConfiguration {
 
         public MenuConfigurationBuilder numberSelector(NumberSelectorMenuConfiguration configuration){
             this.numberSelectorMenuConfiguration = configuration;
+            for(Map.Entry<Integer, NumberSelectorControllItem> entry: configuration.getItems().entrySet())
+                this.items.put(entry.getKey(), Collections.singletonList(entry.getValue().getItemStack()));
+
             return this;
         }
 

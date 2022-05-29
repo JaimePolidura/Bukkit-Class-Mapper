@@ -30,6 +30,14 @@ public final class NumberSelectorMenuConfiguration {
         private Map<Integer, NumberSelectorControllItem> items;
         private Consumer<Double> onValueChanged;
 
+        public NumberSelectorMenuConfigurationBuilder(){
+            this.items = new HashMap<>();
+            this.initialValue = 0;
+            this.minValue = Double.MIN_VALUE;
+            this.maxValue = Double.MAX_VALUE;
+            this.valuePropertyName = "numberselector.value";
+        }
+
         public NumberSelectorMenuConfigurationBuilder onValueChanged(Consumer<Double> onValueChanged){
             this.onValueChanged = onValueChanged;
             return this;
@@ -69,31 +77,9 @@ public final class NumberSelectorMenuConfiguration {
             return this;
         }
 
-        public NumberSelectorMenuConfigurationBuilder(){
-            this.items = new HashMap<>();
-            this.initialValue = 0;
-            this.minValue = Double.MIN_VALUE;
-            this.maxValue = Double.MAX_VALUE;
-            this.valuePropertyName = "numberselector.value";
-        }
-
         public NumberSelectorMenuConfiguration build(){
             return new NumberSelectorMenuConfiguration(valuePropertyName, initialValue, minValue, maxValue,
                     items, onValueChanged);
         }
     }
-
-    @AllArgsConstructor
-    public static class NumberSelectorControllItem{
-        @Getter private final int itemNum;
-        @Getter private ItemStack itemStack;
-        @Getter private NumberSelectActionType actionType;
-        @Getter private double valueToChange;
-    }
-
-    public enum NumberSelectActionType{
-        INCREASE, DECREASE;
-    }
-
-
 }

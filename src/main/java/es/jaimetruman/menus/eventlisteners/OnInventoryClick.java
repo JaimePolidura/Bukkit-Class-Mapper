@@ -2,6 +2,8 @@ package es.jaimetruman.menus.eventlisteners;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.*;
+import es.jaimetruman.menus.configuration.NumberSelectActionType;
+import es.jaimetruman.menus.configuration.NumberSelectorControllItem;
 import es.jaimetruman.menus.configuration.NumberSelectorMenuConfiguration;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
 import lombok.var;
@@ -87,10 +89,10 @@ public class OnInventoryClick implements Listener {
 
     private void performNumberSelectorClicked(Menu menu, int itemNum){
         NumberSelectorMenuConfiguration configuration = menu.configuration().getNumberSelectorMenuConfiguration();
-        NumberSelectorMenuConfiguration.NumberSelectorControllItem controllItem = configuration.getItems().get(itemNum);
+        NumberSelectorControllItem controllItem = configuration.getItems().get(itemNum);
         String valuePropertyName = configuration.getValuePropertyName();
         double actualValue = menu.getPropertyDouble(valuePropertyName);
-        boolean isIncrease = controllItem.getActionType() == NumberSelectorMenuConfiguration.NumberSelectActionType.INCREASE;
+        boolean isIncrease = controllItem.getActionType() == NumberSelectActionType.INCREASE;
 
         double newValue = isIncrease ? actualValue + controllItem.getValueToChange() : actualValue - controllItem.getValueToChange();
         boolean newValueInsideBounds = newValue >= configuration.getMinValue() && newValue <= configuration.getMaxValue();
