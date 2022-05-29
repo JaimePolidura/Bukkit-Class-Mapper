@@ -2,7 +2,9 @@ package es.jaimetruman.menus.eventlisteners;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman.menus.*;
+import es.jaimetruman.menus.configuration.NumberSelectorMenuConfiguration;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
+import lombok.var;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class OnInventoryClick implements Listener {
     private final OpenMenuRepository openMenuRepository;
@@ -49,7 +52,15 @@ public class OnInventoryClick implements Listener {
 
             if(hasClickedConfirmationItems(menu, itemNumClicked))
                 performConfirmationAction(menu, itemNumClicked, event);
+
+            if(hasClickedNumberSelectorItem(menu, itemNumClicked))
+                performNumberSelectorClicked(menu, itemNumClicked);
         });
+    }
+
+    private boolean hasClickedNumberSelectorItem(Menu menu, int itemNumClicekd){
+        return menu.configuration().isNumberSelector() && menu.configuration().getNumberSelectorMenuConfiguration()
+                .getItems().get(itemNumClicekd) != null;
     }
 
     private boolean hasClickedConfirmationItems(Menu menu, int itemNumClicked){
@@ -72,5 +83,32 @@ public class OnInventoryClick implements Listener {
     private void performConfirmationAction(Menu menu, int itemNumClicked, InventoryClickEvent event) {
         if(menu.configuration().getConfirmationConfiguration().isCloseOnAction())
             this.menuService.close((Player) event.getWhoClicked());
+    }
+
+    private void performNumberSelectorClicked(Menu menu, int itemNum){
+        NumberSelectorMenuConfiguration configuration = menu.configuration().getNumberSelectorMenuConfiguration();
+        NumberSelectorMenuConfiguration.NumberSelectorControllItem controllItem = configuration.getItems().get(itemNum);
+        String valuePropertyName = configuration.getValuePropertyName();
+        double actualValue = menu.getPropertyDouble(valuePropertyName);
+        boolean isIncrease = controllItem.getActionType() == NumberSelectorMenuConfiguration.NumberSelectActionType.INCREASE;
+
+        double newValue = isIncrease ? actualValue + controllItem.getValueToChange() : actualValue - controllItem.getValueToChange();
+        boolean newValueInsideBounds = newValue >= configuration.getMinValue() && newValue <= configuration.getMaxValue();
+
+        if(newValueInsideBounds){
+            applyNewValueProperty(menu, valuePropertyName, newValue);
+            callOnValueChanged(configuration, newValue);
+        }
+    }
+
+    private void applyNewValueProperty(Menu menu, String valuePropertyName, double newValue) {
+        menu.setProperty(valuePropertyName, newValue);
+    }
+
+    private void callOnValueChanged(NumberSelectorMenuConfiguration configuration, double newValue) {
+        Consumer<Double> onValueChangedConsumer = configuration.getOnValueChanged();
+
+        if(onValueChangedConsumer != null)
+            onValueChangedConsumer.accept(newValue);
     }
 }

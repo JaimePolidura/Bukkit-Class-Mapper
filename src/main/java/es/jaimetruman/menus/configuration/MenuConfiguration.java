@@ -24,6 +24,7 @@ public class MenuConfiguration {
     @Getter private final ConfirmationConfiguration confirmationConfiguration;
     @Getter private final boolean staticMenu;
     @Getter private final MessagingConfiguration messagingConfiguration;
+    @Getter private final NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
@@ -45,6 +46,10 @@ public class MenuConfiguration {
         return this.confirmationConfiguration != null;
     }
 
+    public boolean isNumberSelector(){
+        return this.numberSelectorMenuConfiguration != null;
+    }
+
     public static class MenuConfigurationBuilder{
         private Map<Integer, List<ItemStack>> items;
         private Map<Integer, BiConsumer<Player, InventoryClickEvent>> onClickEventListeners;
@@ -56,6 +61,7 @@ public class MenuConfiguration {
         private int breakpointItemNum;
         private boolean staticMenu;
         private MessagingConfiguration messagingConfiguration;
+        private NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
@@ -66,7 +72,12 @@ public class MenuConfiguration {
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
                     title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration,
-                    staticMenu, this.messagingConfiguration);
+                    staticMenu, this.messagingConfiguration, this.numberSelectorMenuConfiguration);
+        }
+
+        public MenuConfigurationBuilder numberSelector(NumberSelectorMenuConfiguration configuration){
+            this.numberSelectorMenuConfiguration = configuration;
+            return this;
         }
 
         public MenuConfigurationBuilder fixedItems(){
