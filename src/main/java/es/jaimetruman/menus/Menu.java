@@ -1,8 +1,11 @@
 package es.jaimetruman.menus;
 
+import es.jaimetruman.ItemUtils;
 import es.jaimetruman.menus.configuration.MenuConfiguration;
 import lombok.Getter;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -19,6 +22,7 @@ public abstract class Menu {
         this.pages = new ArrayList<>();
         this.menuId = UUID.randomUUID();
         this.properties = new HashMap<>();
+        this.properties.putAll(this.configuration().getProperties());
     }
 
     public abstract int[][] items();
@@ -38,6 +42,24 @@ public abstract class Menu {
 
     public final int[][] getActualItemNums(){
         return this.pages.get(this.actualPageNumber).getItemsNums();
+    }
+
+    public final void setItem(int slot, ItemStack newItemStack){
+        this.getActualPage().getInventory().setItem(slot, newItemStack);
+    }
+
+    public final void setItemLore(int slot, List<String> newLore){
+        ItemStack itemToEdit = this.getActualPage().getInventory().getItem(slot);
+        ItemMeta itemToEditMeta = itemToEdit.getItemMeta();
+        itemToEditMeta.setLore(newLore);
+        itemToEdit.setItemMeta(itemToEditMeta);
+        this.getActualPage().getInventory().setItem(slot, itemToEdit);
+    }
+
+    public final void setItemLore(int slot, int index, String newLore){
+        ItemStack itemToEdit = this.getActualPage().getInventory().getItem(slot);
+        ItemStack itemEdited = ItemUtils.setLore(itemToEdit, index, newLore);
+        this.getActualPage().getInventory().setItem(slot, itemEdited);
     }
 
     public final Page forward(){

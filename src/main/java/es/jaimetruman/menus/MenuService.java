@@ -29,13 +29,8 @@ public class MenuService {
         player.openInventory(menu.getInventory());
 
         this.openMenuRepository.save(player.getName(), menu);
-        if(menu.configuration().isStaticMenu()) this.staticMenuRepository.save(menu);
-        if(menu.configuration().isNumberSelector()){
-            double initialValue = menu.configuration().getNumberSelectorMenuConfiguration().getInitialValue();
-            String newPropertyName = menu.configuration().getNumberSelectorMenuConfiguration().getValuePropertyName();
 
-            menu.setProperty(newPropertyName, initialValue);
-        }
+        if(menu.configuration().isStaticMenu()) this.staticMenuRepository.save(menu);
 
         callAfterShow(menu);
     }

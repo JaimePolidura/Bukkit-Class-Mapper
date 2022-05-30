@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public final class NumberSelectorMenuConfiguration {
+    public static final String DEFAULT_NUMBER_SELECTOR_PROPERTY_NAME = "numberselector.value";
+
     @Getter private final String valuePropertyName;
     @Getter private final double initialValue;
     @Getter private final double minValue;

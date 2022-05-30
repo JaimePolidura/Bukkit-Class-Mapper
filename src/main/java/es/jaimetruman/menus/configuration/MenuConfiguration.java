@@ -30,6 +30,7 @@ public class MenuConfiguration {
     @Getter private final boolean staticMenu;
     @Getter private final MessagingConfiguration messagingConfiguration;
     @Getter private final NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
+    @Getter private final Map<String, Object> properties;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
@@ -67,23 +68,38 @@ public class MenuConfiguration {
         private boolean staticMenu;
         private MessagingConfiguration messagingConfiguration;
         private NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
+        private final Map<String, Object> properties;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
             this.onClickEventListeners = new HashMap<>();
             this.breakpointItemNum = -1;
+            this.properties = new HashMap<>();
         }
 
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
                     title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration,
-                    staticMenu, this.messagingConfiguration, this.numberSelectorMenuConfiguration);
+                    staticMenu, messagingConfiguration, numberSelectorMenuConfiguration, properties);
+        }
+
+        public MenuConfigurationBuilder property(String key, Object value){
+            this.properties.put(key, value);
+            return this;
+        }
+
+        public MenuConfigurationBuilder properties(Map<String, Object> properties){
+            this.properties.putAll(properties);
+            return this;
         }
 
         public MenuConfigurationBuilder numberSelector(NumberSelectorMenuConfiguration configuration){
             this.numberSelectorMenuConfiguration = configuration;
-            for(Map.Entry<Integer, NumberSelectorControllItem> entry: configuration.getItems().entrySet())
+            this.properties.put(configuration.getValuePropertyName(), configuration.getInitialValue());
+
+            for(Map.Entry<Integer, NumberSelectorControllItem> entry: configuration.getItems().entrySet()){
                 this.items.put(entry.getKey(), Collections.singletonList(entry.getValue().getItemStack()));
+            }
 
             return this;
         }

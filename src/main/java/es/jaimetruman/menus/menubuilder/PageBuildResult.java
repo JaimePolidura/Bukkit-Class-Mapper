@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.Queue;
 
 @AllArgsConstructor
