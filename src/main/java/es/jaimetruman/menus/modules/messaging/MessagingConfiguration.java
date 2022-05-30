@@ -1,4 +1,4 @@
-package es.jaimetruman.menus.configuration;
+package es.jaimetruman.menus.modules.messaging;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

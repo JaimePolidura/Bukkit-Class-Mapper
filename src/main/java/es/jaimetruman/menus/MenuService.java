@@ -65,16 +65,4 @@ public class MenuService {
             player.closeInventory();
         });
     }
-
-    public void goBackward(Player player, Menu menu){
-        Page page = menu.backward();
-        player.openInventory(page.getInventory());
-        this.openMenuRepository.save(player.getName(), menu);
-    }
-
-    public void goForward(Player player, Menu menu){
-        Page page = menu.forward();
-        player.openInventory(page.getInventory());
-        this.openMenuRepository.save(player.getName(), menu);
-    }
 }

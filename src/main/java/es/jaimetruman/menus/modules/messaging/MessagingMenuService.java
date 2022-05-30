@@ -1,4 +1,4 @@
-package es.jaimetruman.menus.messaging;
+package es.jaimetruman.menus.modules.messaging;
 
 import es.jaimetruman._shared.utils.ClassMapperInstanceProvider;
 import es.jaimetruman._shared.utils.CollectionUtils;

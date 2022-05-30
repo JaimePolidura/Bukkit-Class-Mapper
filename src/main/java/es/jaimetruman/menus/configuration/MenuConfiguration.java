@@ -1,5 +1,10 @@
 package es.jaimetruman.menus.configuration;
 
+import es.jaimetruman.menus.modules.confirmation.ConfirmationConfiguration;
+import es.jaimetruman.menus.modules.messaging.MessagingConfiguration;
+import es.jaimetruman.menus.modules.numberselector.NumberSelectorControllItem;
+import es.jaimetruman.menus.modules.numberselector.NumberSelectorMenuConfiguration;
+import es.jaimetruman.menus.modules.pagination.PaginationConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;

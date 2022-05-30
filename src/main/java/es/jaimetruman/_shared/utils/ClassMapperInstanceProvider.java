@@ -1,7 +1,7 @@
 package es.jaimetruman._shared.utils;
 
 import es.jaimetruman.menus.MenuService;
-import es.jaimetruman.menus.messaging.MessagingMenuService;
+import es.jaimetruman.menus.modules.messaging.MessagingMenuService;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
 import es.jaimetruman.menus.repository.StaticMenuRepository;
 
