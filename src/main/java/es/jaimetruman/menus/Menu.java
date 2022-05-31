@@ -3,6 +3,8 @@ package es.jaimetruman.menus;
 import es.jaimetruman.ItemUtils;
 import es.jaimetruman.menus.configuration.MenuConfiguration;
 import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -60,6 +62,12 @@ public abstract class Menu {
         ItemStack itemToEdit = this.getActualPage().getInventory().getItem(slot);
         ItemStack itemEdited = ItemUtils.setLore(itemToEdit, index, newLore);
         this.getActualPage().getInventory().setItem(slot, itemEdited);
+    }
+
+    public final void deleteItem(int slot){
+        this.getActualPage().getInventory().setItem(slot, null);
+        InventoryType inventoryType = SupportedInventoryType.getByArray(this.baseItemNums).getBukkitInventoryType();
+        this.items()[SupportedInventoryType.getRowBySlot(slot, inventoryType)][SupportedInventoryType.getColumnBySlot(slot, inventoryType)] = 0;
     }
 
     public final Page forward(){
