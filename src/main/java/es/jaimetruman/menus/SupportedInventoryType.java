@@ -33,15 +33,15 @@ public enum SupportedInventoryType {
     }
 
     public static int getRowBySlot(int slot, InventoryType inventoryType){
-        int columns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
+        int maxColumns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
 
-        return (slot) / columns;
+        return slot / maxColumns;
     }
 
     public static int getColumnBySlot(int slot, InventoryType inventoryType){
-        int cols = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
+        int maxColumns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
         int actualRow = getRowBySlot(slot, inventoryType);
 
-        return (slot) - (cols * actualRow);
+        return (slot) - (maxColumns * actualRow);
     }
 }

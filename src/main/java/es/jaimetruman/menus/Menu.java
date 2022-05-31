@@ -58,6 +58,25 @@ public abstract class Menu {
         this.getActualPage().getInventory().setItem(slot, itemToEdit);
     }
 
+    public final List<ItemStack> getItemsByItemNum(int itemNum){
+        Page actualPage = this.getActualPage();
+        int[][] itemNums = actualPage.getItemsNums();
+        List<ItemStack> toReturn = new ArrayList<>();
+        int maxRows = itemNums.length;
+        int maxCols = itemNums[0].length;
+
+        for (int i = 0; i < itemNums.length; i++) {
+            for (int j = 0; j < itemNums[i].length; j++) {
+                if(itemNums[i][j] == itemNum)
+                    toReturn.add(actualPage.getInventory().getItem(
+                            i * maxRows + j
+                    ));
+            }
+        }
+
+        return toReturn;
+    }
+
     public final void setItemLore(int slot, int index, String newLore){
         ItemStack itemToEdit = this.getActualPage().getInventory().getItem(slot);
         ItemStack itemEdited = ItemUtils.setLore(itemToEdit, index, newLore);
