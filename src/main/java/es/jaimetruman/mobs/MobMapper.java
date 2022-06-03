@@ -1,7 +1,8 @@
 package es.jaimetruman.mobs;
 
 import es.jaimetruman.ClassScanner;
-import javafx.util.Pair;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -14,7 +15,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public final class MobMapper extends ClassScanner {
-    private final Map<Location, Pair<OnPlayerInteractMob, Mob>> mappedMobs;
+    private final Map<Location, MobInfo> mappedMobs;
     private final Plugin mainPluginClass;
     private final DefaultEntrypointPlayerInteractEntity defaultListener;
 
@@ -77,10 +78,10 @@ public final class MobMapper extends ClassScanner {
 
         Location mobLocation = new Location(null, x, y, z);
 
-        this.mappedMobs.put(mobLocation, new Pair<>(mobClassInstance, mobMeta));
+        this.mappedMobs.put(mobLocation, new MobInfo(mobClassInstance, mobMeta));
     }
 
-    private Optional<Pair<OnPlayerInteractMob, Mob>> findByCords(Location location) {
+    private Optional<MobInfo> findByCords(Location location) {
         return Optional.ofNullable(this.mappedMobs.get(location));
     }
 
@@ -96,14 +97,20 @@ public final class MobMapper extends ClassScanner {
 
         private void searchAndExecuteMob (PlayerInteractEntityEvent event) {
             Location location = transformLocationToWorldNull(event.getRightClicked().getLocation());
-            Optional<Pair<OnPlayerInteractMob, Mob>> mobOptional = findByCords(location);
+            Optional<MobInfo> mobOptional = findByCords(location);
 
-            mobOptional.ifPresent(onPlayerInteractMobMobPair -> onPlayerInteractMobMobPair.getKey().execute(event));
+            mobOptional.ifPresent(mobInfo -> mobInfo.getListener().execute(event));
         }
 
         // Needed to perform a search in the hashmap because we dont sabe world objects
         private Location transformLocationToWorldNull (Location location) {
             return new Location(null, (int) location.getX(), (int) location.getY(), (int) location.getZ());
         }
+    }
+
+    @AllArgsConstructor
+    private static final class MobInfo{
+        @Getter private final OnPlayerInteractMob listener;
+        @Getter private final Mob mobData;
     }
 }

@@ -24,8 +24,6 @@ public final class CommandMapper extends ClassScanner {
 
     @Override
     public void scan () {
-        System.out.println("hola");
-
         Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
@@ -79,6 +77,9 @@ public final class CommandMapper extends ClassScanner {
     }
 
     private void registerCommandBukkit (String commandName) {
+        System.out.println(commandName);
+        System.out.println("HOla que tal?");
+
         //Just in case we are passing a subcommand
         Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(this.commandExecutorEntrypoint);
     }
