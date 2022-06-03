@@ -77,10 +77,11 @@ public final class CommandMapper extends ClassScanner {
     }
 
     private void registerCommandBukkit (String commandName) {
-        System.out.println(commandName);
-        System.out.println("HOla que tal?");
-
-        //Just in case we are passing a subcommand
-        Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(this.commandExecutorEntrypoint);
+        try{
+            //Just in case we are passing a subcommand
+            Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(this.commandExecutorEntrypoint);
+        }catch (Exception e) {
+            throw new NullPointerException(String.format("Command: %s not found", commandName.split(" ")[0]));
+        }
     }
 }
