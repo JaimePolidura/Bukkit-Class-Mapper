@@ -6,6 +6,7 @@ import es.jaimetruman.menus.modules.numberselector.NumberSelectActionType;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorControllItem;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorMenuConfiguration;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,16 +39,32 @@ public class OnInventoryClick implements Listener {
             if(menu.configuration().isFixedItems())
                 event.setCancelled(true);
 
-            if (event.getView() == null || event.getCurrentItem() == null ||
-                    event.getClickedInventory().getType() == InventoryType.PLAYER) return;
+            boolean inventorTypePlayer = event.getView() == null || event.getCurrentItem() == null ||
+                    event.getClickedInventory().getType() == InventoryType.PLAYER;
 
-            BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
-                    .get(menu.getActualItemNums()[row][column]);
-
-            if (eventConsumer != null)
-                eventConsumer.accept((Player) event.getWhoClicked(), event);
-
-            OnMenuClickedListeners.notify((Player) event.getWhoClicked(), menu, itemNumClicked);
+            if (!inventorTypePlayer){
+                performOnClickInMenu(event, menu, row, column, itemNumClicked);
+            }
         });
+    }
+
+    private void performOnClickInMenu(InventoryClickEvent event, Menu menu, int row, int column, int itemNumClicked) {
+        BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
+                .get(menu.getActualItemNums()[row][column]);
+
+        if (eventConsumer != null){
+            tryToExcuteOnClick(event, eventConsumer);
+        }
+
+        OnMenuClickedListeners.notify((Player) event.getWhoClicked(), menu, itemNumClicked);
+    }
+
+    private void tryToExcuteOnClick(InventoryClickEvent event, BiConsumer<Player, InventoryClickEvent> eventConsumer) {
+        try{
+            eventConsumer.accept((Player) event.getWhoClicked(), event);
+        }catch (Exception e) {
+            event.getWhoClicked().sendMessage(ChatColor.DARK_RED + e.getMessage());
+            this.menuService.close((Player) event.getWhoClicked());
+        }
     }
 }
