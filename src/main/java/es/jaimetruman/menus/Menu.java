@@ -24,7 +24,6 @@ public abstract class Menu {
         this.pages = new ArrayList<>();
         this.menuId = UUID.randomUUID();
         this.properties = new HashMap<>();
-        this.properties.putAll(this.configuration().getProperties());
     }
 
     public abstract int[][] items();
@@ -109,6 +108,8 @@ public abstract class Menu {
     }
 
     public final Object getProperty(String key){
+        this.properties.putAll(this.configuration().getProperties());
+
         return this.properties.get(key);
     }
 
