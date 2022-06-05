@@ -64,16 +64,20 @@ public abstract class Menu {
         this.getPage(pageNumber).setItem(slotItem, newItem);
     }
 
+    public void setItemActualPage(int slotItem, ItemStack newItem){
+        this.getPage(actualPageNumber).setItem(slotItem, newItem);
+    }
+
     public final void addItem(int slot, ItemStack newItemStack, int itemNum, int pageNumber){
         this.getPage(pageNumber).addItem(newItemStack, itemNum, slot);
     }
 
-    public final void setItemActualPage(int slot, ItemStack newItemStack, int itemNum){
-        this.getActualPage().addItem(newItemStack, itemNum, slot);
-    }
-
     public final void setItemLore(int pageNumber, int itemSlot, List<String> newLore){
         this.getPage(pageNumber).setItemLore(itemSlot, newLore);
+    }
+
+    public final void setItemLoreActualpage(int itemSlot, List<String> newLore){
+        this.getPage(actualPageNumber).setItemLore(itemSlot, newLore);
     }
 
     public final List<ItemStack> getItemsByItemNum(int itemNum, int pageNumber){
@@ -82,6 +86,10 @@ public abstract class Menu {
 
     public final void setItemLore(int pagenNumer, int itemSlot, int indexItemLore, String newLore){
         this.pages.get(pagenNumer).setItemLore(itemSlot, indexItemLore, newLore);
+    }
+
+    public final void setItemLoreActualPage(int itemSlot, int indexItemLore, String newLore){
+        this.pages.get(actualPageNumber).setItemLore(itemSlot, indexItemLore, newLore);
     }
 
     public final void deleteItem(int slot){
