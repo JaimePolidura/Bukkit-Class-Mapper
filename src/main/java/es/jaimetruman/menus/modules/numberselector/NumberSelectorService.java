@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public final class NumberSelectorService {
     public void performNumberSelectorClicked(Menu menu, int itemNum){
-        NumberSelectorMenuConfiguration configuration = menu.configuration().getNumberSelectorMenuConfiguration();
+        NumberSelectorMenuConfiguration configuration = menu.getConfiguration().getNumberSelectorMenuConfiguration();
         NumberSelectorControllItem controllItem = configuration.getItems().get(itemNum);
         String valuePropertyName = configuration.getValuePropertyName();
         double actualValue = menu.getPropertyDouble(valuePropertyName);

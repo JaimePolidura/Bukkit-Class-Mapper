@@ -16,13 +16,13 @@ public final class OnConfirmationMenuClicked implements OnMenuClicked {
     @Override
     public void on(Player player, Menu menu, int itemNumClicked) {
         if(hasClickedConfirmationItems(menu, itemNumClicked)){
-            if(menu.configuration().getConfirmationConfiguration().isCloseOnAction())
+            if(menu.getConfiguration().getConfirmationConfiguration().isCloseOnAction())
                 this.menuService.close(player);
         }
     }
 
     private boolean hasClickedConfirmationItems(Menu menu, int itemNumClicked){
-        return menu.configuration().isConfirmation() && (menu.configuration().getConfirmationConfiguration().getCancel().getItemNum() == itemNumClicked ||
-                menu.configuration().getConfirmationConfiguration().getAccept().getItemNum() == itemNumClicked);
+        return menu.getConfiguration().isConfirmation() && (menu.getConfiguration().getConfirmationConfiguration().getCancel().getItemNum() == itemNumClicked ||
+                menu.getConfiguration().getConfirmationConfiguration().getAccept().getItemNum() == itemNumClicked);
     }
 }

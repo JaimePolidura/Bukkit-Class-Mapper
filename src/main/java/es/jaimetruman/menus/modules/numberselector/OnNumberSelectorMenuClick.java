@@ -20,7 +20,7 @@ public final class OnNumberSelectorMenuClick implements OnMenuClicked {
     }
 
     private boolean hasClickedNumberSelectorItem(Menu menu, int itemNumClicekd){
-        return menu.configuration().isNumberSelector() && menu.configuration().getNumberSelectorMenuConfiguration()
+        return menu.getConfiguration().isNumberSelector() && menu.getConfiguration().getNumberSelectorMenuConfiguration()
                 .getItems().get(itemNumClicekd) != null;
     }
 }

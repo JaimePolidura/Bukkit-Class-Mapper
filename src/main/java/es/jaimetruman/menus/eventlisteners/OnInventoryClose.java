@@ -29,7 +29,7 @@ public class OnInventoryClose implements Listener {
     }
 
     private void executeRegisteredMenuEventListener(InventoryCloseEvent event, Menu menu){
-        Consumer<InventoryCloseEvent> onCloseEventListener = menu.configuration().getOnCloseEventListener();
+        Consumer<InventoryCloseEvent> onCloseEventListener = menu.getConfiguration().getOnCloseEventListener();
 
         if(onCloseEventListener != null)
             onCloseEventListener.accept(event);

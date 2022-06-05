@@ -1,6 +1,7 @@
 package es.jaimetruman._shared.utils;
 
 import es.jaimetruman.menus.MenuService;
+import es.jaimetruman.menus.menubuilder.MenuBuilderService;
 import es.jaimetruman.menus.modules.messaging.MessagingMenuService;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorService;
 import es.jaimetruman.menus.modules.pagination.PaginationService;
@@ -14,4 +15,5 @@ public class ClassMapperInstanceProvider {
     public static final MessagingMenuService REFRESHCABLE_MENU_SERVICE = new MessagingMenuService();
     public static final NumberSelectorService NUMBER_SELECTOR_SERVICE = new NumberSelectorService();
     public static final PaginationService PAGINATION_SERVICE = new PaginationService();
+    public static final MenuBuilderService MENU_BUILDER_SERVICE = new MenuBuilderService();
 }

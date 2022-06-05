@@ -30,13 +30,13 @@ public class MenuService {
 
         this.openMenuRepository.save(player.getName(), menu);
 
-        if(menu.configuration().isStaticMenu()) this.staticMenuRepository.save(menu);
+        if(menu.getConfiguration().isStaticMenu()) this.staticMenuRepository.save(menu);
 
         callAfterShow(menu);
     }
 
     private List<Page> getPagesForMenu(Menu menu) {
-        return menu.configuration().isStaticMenu() ?
+        return menu.getConfiguration().isStaticMenu() ?
                 this.staticMenuRepository.findByMenuClass(menu.getClass()).orElse(buildMenuPages(menu)) :
                 buildMenuPages(menu);
     }
@@ -44,7 +44,7 @@ public class MenuService {
     private List<Page> buildMenuPages(Menu menu) {
         MenuBuilderService newMenuBuilderService = new MenuBuilderService();
 
-        return newMenuBuilderService.createPages(menu.configuration(), menu.getBaseItemNums());
+        return newMenuBuilderService.createPages(menu.getConfiguration(), menu.getBaseItemNums());
     }
 
     private void callAfterShow(Menu menu) {

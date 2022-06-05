@@ -36,10 +36,10 @@ public final class MessagingMenuService {
     }
 
     private <T> void sendMessageToMenu(T message, Menu menuOfPlayer) {
-        if(!menuOfPlayer.configuration().hasMessagingConfiguration())
+        if(!menuOfPlayer.getConfiguration().hasMessagingConfiguration())
             throw new InvalidUsage("No messaging configuration added for menus");
 
-        Consumer<T> onMessageListener = (Consumer<T>) menuOfPlayer.configuration().getMessageListener(message.getClass());
+        Consumer<T> onMessageListener = (Consumer<T>) menuOfPlayer.getConfiguration().getMessageListener(message.getClass());
         if(onMessageListener == null)
             throw new InvalidUsage("No message listener added for menu");
 
@@ -50,7 +50,7 @@ public final class MessagingMenuService {
         for (Menu menuOfOtherPlayer : this.openMenuRepository.findByMenuType(originalMenu.getClass())) {
             if(menuOfOtherPlayer.getMenuId().equals(originalMenu.getMenuId()))continue;
 
-            Page lastPage = menuOfOtherPlayer.getPages().get(menuOfOtherPlayer.getPages().size() - 1);
+            Page lastPage = menuOfOtherPlayer.getLastPage();
             Inventory inventoryOfLastPage = lastPage.getInventory();
 
             List<Integer> itemNums = CollectionUtils.bidimensionalArrayToLinearArray(menuOfOtherPlayer.getActualItemNums());
@@ -67,7 +67,7 @@ public final class MessagingMenuService {
                     break;
                 }
 
-                if (menuOfOtherPlayer.configuration().getBreakpointItemNum() == actualNum) {
+                if (menuOfOtherPlayer.getConfiguration().getBreakpointItemNum() == actualNum) {
                     //We dont create a new page
                     return;
                 }
@@ -83,7 +83,7 @@ public final class MessagingMenuService {
         int pageNumberOfItemToEdit = originalMenu.getActualPageNumber();
 
         for (Menu menuOfOtherPlayer : this.openMenuRepository.findByMenuType(originalMenu.getClass())) {
-            Inventory inventoryOfItemToEdit = menuOfOtherPlayer.getPages().get(pageNumberOfItemToEdit)
+            Inventory inventoryOfItemToEdit = menuOfOtherPlayer.getPage(pageNumberOfItemToEdit)
                     .getInventory();
 
             inventoryOfItemToEdit.setItem(slotItemToEdit, editedNewItem);
@@ -100,7 +100,7 @@ public final class MessagingMenuService {
     }
 
     private void deleteItem(Menu originalMenu, int slotItemToDelete, Menu menuOfOtherPlayer) {
-        Inventory inventoryToDeleteIntem = menuOfOtherPlayer.getPages().get(originalMenu.getActualPageNumber())
+        Inventory inventoryToDeleteIntem = menuOfOtherPlayer.getPage(originalMenu.getActualPageNumber())
                 .getInventory();
 
         if(!originalMenu.getMenuId().equals(menuOfOtherPlayer.getMenuId()))
@@ -117,7 +117,7 @@ public final class MessagingMenuService {
         int rowOfItemToDelete = SupportedInventoryType.getRowBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
         int columOfItemToDelete = SupportedInventoryType.getColumnBySlot(slotItemToDelete, menuOfOtherPlayer.getInventory().getType());
 
-        Page pageOfToDelete = menuOfOtherPlayer.getPages().get(pageNumber);
+        Page pageOfToDelete = menuOfOtherPlayer.getPage(pageNumber);
         Page lastPage = lastItemSearchResult.getLastPage();
         Inventory inventoryOfPageToDelete = pageOfToDelete.getInventory();
         Inventory inventoryLastPage = lastPage.getInventory();
@@ -130,7 +130,7 @@ public final class MessagingMenuService {
     }
 
     private LastItemInMenuSearchResult findLastItemInMenu(Menu menu, int slotItemRemoved) {
-        Page lastPage = menu.getPages().get(menu.getPages().size() - 1);
+        Page lastPage = menu.getLastPage();
         Inventory lastPageInventory = lastPage.getInventory();
         int[][] lastPageItemNums = lastPage.getItemsNums();
         ItemStack[] itemsInLastPage = lastPage.getInventory().getContents();

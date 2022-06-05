@@ -20,15 +20,15 @@ public final class OnPaginationMenuClicked implements OnMenuClicked {
     }
 
     private void performPaginationAction(Player player, Menu menu, int itemNumClicked) {
-        if(itemNumClicked == menu.configuration().getPaginationConfiguration().getBackward().getItemNum())
+        if(itemNumClicked == menu.getConfiguration().getPaginationConfiguration().getBackward().getItemNum())
             paginationService.goBackward(player, menu);
         else
             paginationService.goForward(player, menu);
     }
 
     private boolean hasClickedPaginationsItems(Menu menu, int itemNumClicked) {
-        return menu.configuration().isPaginated() && (menu.configuration().getPaginationConfiguration().getBackward().getItemNum() == itemNumClicked ||
-                menu.configuration().getPaginationConfiguration().getForward().getItemNum() == itemNumClicked);
+        return menu.getConfiguration().isPaginated() && (menu.getConfiguration().getPaginationConfiguration().getBackward().getItemNum() == itemNumClicked ||
+                menu.getConfiguration().getPaginationConfiguration().getForward().getItemNum() == itemNumClicked);
     }
 
 }

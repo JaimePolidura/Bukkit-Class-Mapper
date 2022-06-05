@@ -20,11 +20,11 @@ public final class MenuBuilderService {
         Queue<ItemStack> variousItemsItemStack = this.findVariousItems(configuration);
         int variousItemStack = this.findVariousItemsItemNum(configuration);
         BuildItemNumsReult buildItemNumsResult = createItemNumsArrayForPage(configuration, itemNumsArray, variousItemsItemStack, variousItemStack);
-        pages.add(new Page(buildItemNumsResult.inventory, buildItemNumsResult.itemNums));
+        pages.add(new Page(buildItemNumsResult.inventory, buildItemNumsResult.itemNums, buildItemNumsResult.lastItemsAddedSlots));
 
         while (!variousItemsItemStack.isEmpty()){
             BuildItemNumsReult result = createItemNumsArrayForPage(configuration, itemNumsArray, variousItemsItemStack, variousItemStack);
-            pages.add(new Page(result.inventory, result.itemNums));
+            pages.add(new Page(result.inventory, result.itemNums, buildItemNumsResult.lastItemsAddedSlots));
         }
 
         return pages;
@@ -47,13 +47,22 @@ public final class MenuBuilderService {
         return -1;
     }
 
-    private BuildItemNumsReult createItemNumsArrayForPage(MenuConfiguration configuration, int[][] baseItemNumsArray,
+    public Page createPage(MenuConfiguration configuration, int[][] baseItemNumsArray, Queue<ItemStack> variousItemsPendingToAdd,
+                           int variousImtesNum){
+
+        BuildItemNumsReult result = this.createItemNumsArrayForPage(configuration, baseItemNumsArray, variousItemsPendingToAdd, variousImtesNum);
+
+        return new Page(result.inventory, result.itemNums, result.lastItemsAddedSlots);
+    }
+
+    public BuildItemNumsReult createItemNumsArrayForPage(MenuConfiguration configuration, int[][] baseItemNumsArray,
                                                           Queue<ItemStack> variousItemsPendingToAdd, int variousImtesNum){
         List<Integer> itemNums = CollectionUtils.bidimensionalArrayToLinearArray(baseItemNumsArray);
         Inventory inventoryOfPage = this.createBaseInventory(configuration, SupportedInventoryType.getByArray(baseItemNumsArray));
         int[][] newItemNums = new int[baseItemNumsArray.length][baseItemNumsArray[0].length];
         SupportedInventoryType supportedInventoryType = SupportedInventoryType.getByArray(baseItemNumsArray);
         Map<Integer, List<ItemStack>> itemMap = configuration.getItems();
+        Map<Integer, Integer> lastItemsAddedSlots = new HashMap<>();
 
         for(int i = 0; i < itemNums.size(); i++){
             int actualItemNum = itemNums.get(i);
@@ -68,6 +77,7 @@ public final class MenuBuilderService {
             if(itemsToAdd.size() == 1){
                 newItemNums[row][column] = actualItemNum;
                 inventoryOfPage.setItem(i, configuration.getItems().get(actualItemNum).get(0));
+                lastItemsAddedSlots.put(actualItemNum, i);
 
                 continue;
             }
@@ -88,15 +98,17 @@ public final class MenuBuilderService {
                     newItemNums[row][column] = actualItemNum;
                     int itemNumBreakpoint = itemNums.get(i);
                     inventoryOfPage.setItem(i, itemMap.get(itemNumBreakpoint) == null ? new ItemStack(Material.AIR) : itemMap.get(itemNumBreakpoint).get(0));
+                    lastItemsAddedSlots.put(actualItemNum, i);
                     break;
                 }
                 //No breakpoint
                 newItemNums[row][column] = actualItemNum;
                 inventoryOfPage.setItem(i, variousItemsPendingToAdd.poll());
+                lastItemsAddedSlots.put(actualItemNum, i);
             }
         }
 
-        return new BuildItemNumsReult(inventoryOfPage, newItemNums, variousItemsPendingToAdd, variousImtesNum);
+        return new BuildItemNumsReult(inventoryOfPage, newItemNums, variousItemsPendingToAdd, variousImtesNum, lastItemsAddedSlots);
     }
 
     @AllArgsConstructor
@@ -105,6 +117,7 @@ public final class MenuBuilderService {
         @Getter private final int[][] itemNums;
         @Getter private final Queue<ItemStack> itemsOverflow;
         @Getter private final int itemsNumOverflow;
+        @Getter private final Map<Integer, Integer> lastItemsAddedSlots;
     }
 
     private boolean isBreakpoint(MenuConfiguration configuration, int[][] originalItemNums, int row, int column) {

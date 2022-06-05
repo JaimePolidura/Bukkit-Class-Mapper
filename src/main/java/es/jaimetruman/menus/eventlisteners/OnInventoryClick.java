@@ -36,7 +36,7 @@ public class OnInventoryClick implements Listener {
             int column = SupportedInventoryType.getColumnBySlot(event.getSlot(), inventoryType);
             int itemNumClicked = menu.items()[row][column];
 
-            if(menu.configuration().isFixedItems())
+            if(menu.getConfiguration().isFixedItems())
                 event.setCancelled(true);
 
             boolean inventorTypePlayer = event.getView() == null || event.getCurrentItem() == null ||
@@ -49,7 +49,7 @@ public class OnInventoryClick implements Listener {
     }
 
     private void performOnClickInMenu(InventoryClickEvent event, Menu menu, int row, int column, int itemNumClicked) {
-        BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.configuration().getOnClickEventListeners()
+        BiConsumer<Player, InventoryClickEvent> eventConsumer = menu.getConfiguration().getOnClickEventListeners()
                 .get(menu.getActualItemNums()[row][column]);
 
         if (eventConsumer != null){
