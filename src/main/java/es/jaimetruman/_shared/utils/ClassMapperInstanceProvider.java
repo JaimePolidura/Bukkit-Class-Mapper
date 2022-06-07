@@ -5,6 +5,7 @@ import es.jaimetruman.menus.menubuilder.MenuBuilderService;
 import es.jaimetruman.menus.modules.messaging.MessagingMenuService;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorService;
 import es.jaimetruman.menus.modules.pagination.PaginationService;
+import es.jaimetruman.menus.modules.sync.SyncMenuService;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
 import es.jaimetruman.menus.repository.StaticMenuRepository;
 
@@ -16,4 +17,5 @@ public class ClassMapperInstanceProvider {
     public static final NumberSelectorService NUMBER_SELECTOR_SERVICE = new NumberSelectorService();
     public static final PaginationService PAGINATION_SERVICE = new PaginationService();
     public static final MenuBuilderService MENU_BUILDER_SERVICE = new MenuBuilderService();
+    public static final SyncMenuService SYNC_MENU_SERVICE = new SyncMenuService();
 }

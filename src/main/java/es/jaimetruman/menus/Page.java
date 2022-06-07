@@ -4,35 +4,26 @@ import es.jaimetruman.ItemUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @ToString
 public final class Page {
     @Getter private final Inventory inventory;
     @Getter private final int[][] itemsNums;
-    @Getter private final Map<Integer, Integer> lastItemsAddedSlots;
+    private final int[][] baseItemNums;
 
-    public void addItem(ItemStack item, int itemNum, int slot){
-        InventoryType inventoryType = SupportedInventoryType.getByArray(this.getItemsNums())
-                .getBukkitInventoryType();
-        int row = SupportedInventoryType.getRowBySlot(slot, inventoryType);
-        int column = SupportedInventoryType.getColumnBySlot(slot, inventoryType);
-
-        this.inventory.setItem(slot, item);
-        this.itemsNums[row][column] = itemNum;
-        this.lastItemsAddedSlots.put(itemNum, slot);
-    }
-
-    public void setItem(int slot, ItemStack newItem){
+    public void setItem(int slot, ItemStack newItem, int itemNum){
         this.inventory.setItem(slot, newItem);
+        int row = SupportedInventoryType.getRowBySlot(slot, itemsNums);
+        int column = SupportedInventoryType.getColumnBySlot(slot, itemsNums);
+
+        itemsNums[row][column] = itemNum;
     }
 
     public void setItemLore(int slot, List<String> newLore){

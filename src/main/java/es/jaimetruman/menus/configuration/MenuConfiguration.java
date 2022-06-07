@@ -5,6 +5,7 @@ import es.jaimetruman.menus.modules.messaging.MessagingConfiguration;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorControllItem;
 import es.jaimetruman.menus.modules.numberselector.NumberSelectorMenuConfiguration;
 import es.jaimetruman.menus.modules.pagination.PaginationConfiguration;
+import es.jaimetruman.menus.modules.sync.SyncMenuConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -31,6 +32,7 @@ public class MenuConfiguration {
     @Getter private final MessagingConfiguration messagingConfiguration;
     @Getter private final NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
     @Getter private final Map<String, Object> properties;
+    @Getter private final SyncMenuConfiguration syncMenuConfiguration;
 
     public static MenuConfigurationBuilder builder(){
         return new MenuConfigurationBuilder();
@@ -38,6 +40,10 @@ public class MenuConfiguration {
 
     public <T> Consumer<T> getMessageListener(Class<T> messageType){
         return (Consumer<T>) this.messagingConfiguration.getOnMessageEventListeners().get(messageType);
+    }
+
+    public boolean isSync(){
+        return this.syncMenuConfiguration != null;
     }
 
     public boolean hasMessagingConfiguration(){
@@ -69,6 +75,7 @@ public class MenuConfiguration {
         private MessagingConfiguration messagingConfiguration;
         private NumberSelectorMenuConfiguration numberSelectorMenuConfiguration;
         private final Map<String, Object> properties;
+        private SyncMenuConfiguration syncMenuConfiguration;
 
         public MenuConfigurationBuilder(){
             this.items = new HashMap<>();
@@ -80,7 +87,13 @@ public class MenuConfiguration {
         public MenuConfiguration build(){
             return new MenuConfiguration(items, onClickEventListeners, onCloseEventListener,
                     title, fixedItems, breakpointItemNum, menuPaginationConfiguration, confirmationConfiguration,
-                    staticMenu, messagingConfiguration, numberSelectorMenuConfiguration, properties);
+                    staticMenu, messagingConfiguration, numberSelectorMenuConfiguration, properties,
+                    syncMenuConfiguration);
+        }
+
+        public MenuConfigurationBuilder sync(SyncMenuConfiguration configuration){
+            this.syncMenuConfiguration = configuration;
+            return this;
         }
 
         public MenuConfigurationBuilder property(String key, Object value){

@@ -24,7 +24,7 @@ public class MenuService {
     public void open(Player player, Menu menu){
         callBeforeShow(menu);
 
-        menu.addPages(getPagesForMenu(menu));
+        menu.addPages(buildPages(menu));
 
         player.openInventory(menu.getInventory());
 
@@ -35,7 +35,7 @@ public class MenuService {
         callAfterShow(menu);
     }
 
-    private List<Page> getPagesForMenu(Menu menu) {
+    public List<Page> buildPages(Menu menu){
         return menu.getConfiguration().isStaticMenu() ?
                 this.staticMenuRepository.findByMenuClass(menu.getClass()).orElse(buildMenuPages(menu)) :
                 buildMenuPages(menu);

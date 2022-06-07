@@ -32,6 +32,24 @@ public enum SupportedInventoryType {
                 .orElseThrow(() -> new NullPointerException("Inventory type not found"));
     }
 
+    public static int getRowBySlot(int slot, int[][] array){
+        InventoryType inventoryType = SupportedInventoryType.getByArray(array).getBukkitInventoryType();
+
+        int maxColumns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
+
+        return slot / maxColumns;
+    }
+
+    public static int getColumnBySlot(int slot, int[][] array){
+        InventoryType inventoryType = SupportedInventoryType.getByArray(array).getBukkitInventoryType();
+
+        int maxColumns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
+        int actualRow = getRowBySlot(slot, inventoryType);
+
+        return (slot) - (maxColumns * actualRow);
+    }
+
+
     public static int getRowBySlot(int slot, InventoryType inventoryType){
         int maxColumns = SupportedInventoryType.valueOf(inventoryType.toString()).getColumns();
 

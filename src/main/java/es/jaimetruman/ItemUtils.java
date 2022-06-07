@@ -13,6 +13,14 @@ public final class ItemUtils {
                 .replaceAll("§l", "");
     }
 
+    public static ItemStack setDisplayname(ItemStack item, String newDisplayName){
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.setDisplayName(newDisplayName);
+        item.setItemMeta(itemMeta);
+
+        return item;
+    }
+
     public static ItemStack setLore(ItemStack item, int index, String newLoreLine){
         ItemMeta itemMeta = item.getItemMeta();
         List<String> lore = itemMeta.getLore();
