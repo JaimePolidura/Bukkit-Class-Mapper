@@ -38,7 +38,7 @@ public final class PaginationConfiguration {
         }
 
         public PaginationConfigurationBuilder backward(int itemNum, ItemStack itemStack){
-            this.forward = new PaginationControllItem(itemNum, itemStack, PaginationControlAction.BACKWARD);
+            this.backward = new PaginationControllItem(itemNum, itemStack, PaginationControlAction.BACKWARD);
             return this;
         }
     }

@@ -15,6 +15,8 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.function.BiConsumer;
 
+import static org.bukkit.ChatColor.*;
+
 public class OnInventoryClick implements Listener {
     private final OpenMenuRepository openMenuRepository;
     private final MenuService menuService;
@@ -31,21 +33,30 @@ public class OnInventoryClick implements Listener {
         if(event.getClickedInventory() == null) return;
 
         this.openMenuRepository.findByPlayerName(playerName).ifPresent(menu -> {
-            InventoryType inventoryType = event.getClickedInventory().getType();
-            int row = SupportedInventoryType.getRowBySlot(event.getSlot(), inventoryType);
-            int column = SupportedInventoryType.getColumnBySlot(event.getSlot(), inventoryType);
-            int itemNumClicked = menu.items()[row][column];
-
-            if(menu.getConfiguration().isFixedItems())
-                event.setCancelled(true);
-
-            boolean inventorTypePlayer = event.getView() == null || event.getCurrentItem() == null ||
-                    event.getClickedInventory().getType() == InventoryType.PLAYER;
-
-            if (!inventorTypePlayer){
-                performOnClickInMenu(event, menu, row, column, itemNumClicked);
+            try{
+                tryPerformClickOnMenu(event, menu);
+            }catch (Exception e) {
+                event.getWhoClicked().sendMessage(DARK_RED + "Some error happened " + e.getMessage());
+                e.printStackTrace();
             }
         });
+    }
+
+    private void tryPerformClickOnMenu(InventoryClickEvent event, Menu menu) {
+        InventoryType inventoryType = event.getClickedInventory().getType();
+        int row = SupportedInventoryType.getRowBySlot(event.getSlot(), inventoryType);
+        int column = SupportedInventoryType.getColumnBySlot(event.getSlot(), inventoryType);
+        int itemNumClicked = menu.items()[row][column];
+
+        if(menu.getConfiguration().isFixedItems())
+            event.setCancelled(true);
+
+        boolean inventorTypePlayer = event.getView() == null || event.getCurrentItem() == null ||
+                event.getClickedInventory().getType() == InventoryType.PLAYER;
+
+        if (!inventorTypePlayer){
+            performOnClickInMenu(event, menu, row, column, itemNumClicked);
+        }
     }
 
     private void performOnClickInMenu(InventoryClickEvent event, Menu menu, int row, int column, int itemNumClicked) {
@@ -63,7 +74,7 @@ public class OnInventoryClick implements Listener {
         try{
             eventConsumer.accept((Player) event.getWhoClicked(), event);
         }catch (Exception e) {
-            event.getWhoClicked().sendMessage(ChatColor.DARK_RED + e.getMessage());
+            event.getWhoClicked().sendMessage(DARK_RED + e.getMessage());
             this.menuService.close((Player) event.getWhoClicked());
         }
     }

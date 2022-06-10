@@ -6,9 +6,12 @@ import es.jaimetruman.menus.menustate.AfterShow;
 import es.jaimetruman.menus.menustate.BeforeShow;
 import es.jaimetruman.menus.repository.OpenMenuRepository;
 import es.jaimetruman.menus.repository.StaticMenuRepository;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static org.bukkit.ChatColor.*;
 
 public class MenuService {
     private final MenuBuilderService menuBuilder;
@@ -22,6 +25,15 @@ public class MenuService {
     }
 
     public void open(Player player, Menu menu){
+        try {
+            tryToOpenMenu(player, menu);
+        }catch (Exception e) {
+            player.sendMessage(DARK_RED + "Some error happened " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void tryToOpenMenu(Player player, Menu menu) {
         callBeforeShow(menu);
 
         menu.addPages(buildPages(menu));

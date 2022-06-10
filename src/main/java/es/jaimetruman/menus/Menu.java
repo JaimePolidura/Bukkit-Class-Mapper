@@ -37,6 +37,10 @@ public abstract class Menu {
         return this.configuration == null ? this.configuration = configuration() : this.configuration;
     }
 
+    public final void deleteItem(int slot, int pageNumber){
+        this.getPage(pageNumber).getInventory().clear(slot);
+    }
+
     public final List<Page> allPages() {
         return new ArrayList<>(this.pages);
     }
@@ -111,21 +115,23 @@ public abstract class Menu {
     }
 
     public final Menu setProperty(String key, Object value) {
-        if (this.properties == null) this.properties.putAll(this.getConfiguration().getProperties());
+        if (this.properties.isEmpty()) this.properties.putAll(this.getConfiguration().getProperties());
 
         this.properties.put(key, value);
         return this;
     }
 
     public final Object getProperty(String key) {
-        if (this.properties == null) this.properties.putAll(this.getConfiguration().getProperties());
+        if (this.properties.isEmpty()) this.properties.putAll(this.getConfiguration().getProperties());
 
         return this.properties.get(key);
     }
 
     public final double getPropertyDouble(String key) {
-        if (this.properties == null) this.properties.putAll(this.getConfiguration().getProperties());
+        if (this.properties.isEmpty()) this.properties.putAll(getConfiguration().getProperties());
 
-        return Double.parseDouble(String.valueOf(this.properties.get(key)));
+        Object propertyObject = this.properties.get(key);
+
+        return propertyObject == null ? 0 : Double.parseDouble(String.valueOf(propertyObject));
     }
 }

@@ -8,9 +8,24 @@ import java.util.List;
 public final class ItemUtils {
     public static String getLore(ItemStack item, int index){
         String rawString = item.getItemMeta().getLore().get(index);
-
+        
         return rawString.replaceAll("§c", "")
-                .replaceAll("§l", "");
+                .replaceAll("§a", "")
+                .replaceAll("§b", "")
+                .replaceAll("§c", "")
+                .replaceAll("§d", "")
+                .replaceAll("§e", "")
+                .replaceAll("§f", "")
+                .replaceAll("§0", "")
+                .replaceAll("§0'", "")
+                .replaceAll("§1", "")
+                .replaceAll("§2", "")
+                .replaceAll("§3", "")
+                .replaceAll("§4", "")
+                .replaceAll("§5", "")
+                .replaceAll("§6", "")
+                .replaceAll("§7", "")
+                .replaceAll("§9", "");
     }
 
     public static ItemStack setDisplayname(ItemStack item, String newDisplayName){

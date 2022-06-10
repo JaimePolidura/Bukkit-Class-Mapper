@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public final class MenuBuilderService {
+
     public List<Page> createPages(MenuConfiguration configuration, int[][] baseItemNums){
         List<Page> pages = new LinkedList<>();
 
@@ -29,7 +30,6 @@ public final class MenuBuilderService {
 
         return pages;
     }
-
 
     private Queue<ItemStack> findVariousItems(MenuConfiguration configuration) {
         for(Map.Entry<Integer, List<ItemStack>> entry : configuration.getItems().entrySet())
