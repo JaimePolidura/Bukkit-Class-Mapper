@@ -45,11 +45,11 @@ public final class Page {
         int maxRows = this.itemsNums.length;
         int maxCols = this.itemsNums[0].length;
 
-        for (int i = 0; i < this.itemsNums.length; i++) {
-            for (int j = 0; j < this.itemsNums[i].length; j++) {
-                if(itemsNums[i][j] == itemNum)
+        for (int rows = 0; rows < this.itemsNums.length; rows++) {
+            for (int columns = 0; columns < this.itemsNums[rows].length; columns++) {
+                if(itemsNums[rows][columns] == itemNum)
                     toReturn.add(inventory.getItem(
-                            i * maxRows + j
+                            rows * maxCols + columns
                     ));
             }
         }

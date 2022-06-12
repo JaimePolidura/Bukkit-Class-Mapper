@@ -1,9 +1,13 @@
 package es.jaimetruman.menus.modules.pagination;
 
+import es.jaimetruman.ItemBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import static org.bukkit.ChatColor.*;
 
 @AllArgsConstructor
 public final class PaginationConfiguration {
@@ -23,7 +27,8 @@ public final class PaginationConfiguration {
         }
 
         public PaginationConfigurationBuilder forward(int itemNum, Material material){
-            this.forward = new PaginationControllItem(itemNum, new ItemStack(material), PaginationControlAction.FORWARD);
+            this.forward = new PaginationControllItem(itemNum, ItemBuilder.of(material).title(GREEN + "->").build(),
+                    PaginationControlAction.FORWARD);
             return this;
         }
 
@@ -33,7 +38,8 @@ public final class PaginationConfiguration {
         }
 
         public PaginationConfigurationBuilder backward(int itemNum, Material material){
-            this.backward = new PaginationControllItem(itemNum, new ItemStack(material), PaginationControlAction.BACKWARD);
+            this.backward = new PaginationControllItem(itemNum, ItemBuilder.of(material).title(RED + "<-").build(),
+                    PaginationControlAction.BACKWARD);
             return this;
         }
 
