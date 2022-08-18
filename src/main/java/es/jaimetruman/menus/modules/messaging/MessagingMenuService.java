@@ -16,11 +16,13 @@ public final class MessagingMenuService {
     public synchronized <T> void broadCastMessage(Menu originalMenu, T message){
         this.openMenuRepository.findByMenuType(originalMenu.getClass()).stream()
                 .filter(menu -> !menu.getMenuId().equals(originalMenu.getMenuId()))
+                .parallel()
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
     }
-    
+
     public synchronized <T> void broadCastMessage(Class<? extends Menu> menuTypeTarget, T message){
-        this.openMenuRepository.findByMenuType(menuTypeTarget)
+        this.openMenuRepository.findByMenuType(menuTypeTarget).stream()
+                .parallel()
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
     }
 
