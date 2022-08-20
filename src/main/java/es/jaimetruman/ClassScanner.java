@@ -1,5 +1,6 @@
 package es.jaimetruman;
 
+import es.jaimetruman._shared.utils.InstanceProvider;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -16,5 +17,5 @@ public abstract class ClassScanner {
                              new SubTypesScanner()));
     }
 
-    public abstract void scan ();
+    public abstract void scan (InstanceProvider instanceProvider);
 }

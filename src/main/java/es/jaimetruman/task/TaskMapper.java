@@ -1,6 +1,8 @@
 package es.jaimetruman.task;
 
 import es.jaimetruman.ClassScanner;
+import es.jaimetruman._shared.utils.InstanceCreator;
+import es.jaimetruman._shared.utils.InstanceProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -17,11 +19,11 @@ public final class TaskMapper extends ClassScanner {
     }
 
     @Override
-    public void scan() {
+    public void scan(InstanceProvider instanceProvider) {
         Set<Class<? extends TaskRunner>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Task.class));
 
-        this.createInstancesAndAdd(checkedClasses);
+        this.createInstancesAndAdd(checkedClasses, instanceProvider);
     }
 
     private Set<Class<? extends TaskRunner>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
@@ -38,16 +40,12 @@ public final class TaskMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd (Set<Class<? extends TaskRunner>> classes) {
+    private void createInstancesAndAdd(Set<Class<? extends TaskRunner>> classes, InstanceProvider instanceProvider) {
         for(Class<? extends TaskRunner> classToAdd : classes){
-            try {
-                Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
-                TaskRunner taskRunner = classToAdd.newInstance();
+            Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
+            TaskRunner taskRunner = InstanceCreator.create(classToAdd, instanceProvider);
 
-                Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.value());
-            } catch (InstantiationException | IllegalAccessException e) {
-                //TODO
-            }
+            Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.value());
         }
 
         System.out.println("Mapped all task classes");

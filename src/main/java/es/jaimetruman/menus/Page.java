@@ -1,6 +1,6 @@
 package es.jaimetruman.menus;
 
-import es.jaimetruman.ItemUtils;
+import es.jaimetruman._shared.utils.ItemUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;

@@ -1,6 +1,8 @@
 package es.jaimetruman.mobs;
 
 import es.jaimetruman.ClassScanner;
+import es.jaimetruman._shared.utils.InstanceCreator;
+import es.jaimetruman._shared.utils.InstanceProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -30,11 +32,11 @@ public final class MobMapper extends ClassScanner {
     }
 
     @Override
-    public void scan() {
+    public void scan(InstanceProvider instanceProvider) {
         Set<Class<? extends OnPlayerInteractMob>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Mob.class));
 
-        this.createInstancesAndAdd(checkedClasses);
+        this.createInstancesAndAdd(checkedClasses, instanceProvider);
     }
 
     private Set<Class<? extends OnPlayerInteractMob>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
@@ -51,11 +53,12 @@ public final class MobMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd (Set<Class<? extends OnPlayerInteractMob>> classes) {
+    private void createInstancesAndAdd(Set<Class<? extends OnPlayerInteractMob>> classes,
+                                       InstanceProvider instanceProvider) {
         for(Class<? extends OnPlayerInteractMob> classToAdd : classes){
             Mob annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
 
-            saveMobClassInstance(classToAdd, annotation);
+            saveMobClassInstance(classToAdd, annotation, instanceProvider);
         }
 
         System.out.println("Mapped all mob classes");
@@ -69,8 +72,9 @@ public final class MobMapper extends ClassScanner {
     }
 
     @SneakyThrows
-    private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta) {
-        OnPlayerInteractMob mobClassInstance = mobClass.newInstance();
+    private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta,
+                                      InstanceProvider instanceProvider) {
+        OnPlayerInteractMob mobClassInstance = InstanceCreator.create(mobClass, instanceProvider);
 
         int x = mobMeta.x();
         int y = mobMeta.y();

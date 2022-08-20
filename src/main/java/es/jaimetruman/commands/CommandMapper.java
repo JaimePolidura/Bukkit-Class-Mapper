@@ -1,6 +1,8 @@
 package es.jaimetruman.commands;
 
 import es.jaimetruman.ClassScanner;
+import es.jaimetruman._shared.utils.InstanceProvider;
+import es.jaimetruman._shared.utils.InstanceCreator;
 import es.jaimetruman.commands.commandrunners.CommandRunner;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
@@ -23,32 +25,31 @@ public final class CommandMapper extends ClassScanner {
     }
 
     @Override
-    public void scan () {
+    public void scan (InstanceProvider instanceProvider) {
         Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
-        this.createInstancesAndSave(commandRunnerClasses);
+        this.createInstancesAndSave(commandRunnerClasses, instanceProvider);
     }
 
     private Set<Class<? extends CommandRunner>> getCommandRunnerClasses(Set<Class<?>> classes) {
         Set<Class<? extends CommandRunner>> checkedClasses = new HashSet<>();
 
         for(Class<?> notCheckedClass : classes){
-            if(CommandRunner.class.isAssignableFrom(notCheckedClass)){
+            if(CommandRunner.class.isAssignableFrom(notCheckedClass))
                 checkedClasses.add((Class<? extends CommandRunner>) notCheckedClass);
-            }else{
+            else
                 System.out.println("Couldn't initialize command in class " + notCheckedClass + ". This class should implement command interface");
-            }
         }
 
         return checkedClasses;
     }
 
-    private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses) {
+    private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses, InstanceProvider instanceProvider) {
         for(Class<? extends CommandRunner> classToSave : commandRunnersClasses){
             Command annotation = this.getCommandAnnotationFromClass(classToSave);
 
-            saveCommand(classToSave, annotation);
+            saveCommand(classToSave, annotation, instanceProvider);
         }
     }
 
@@ -60,8 +61,8 @@ public final class CommandMapper extends ClassScanner {
     }
 
     @SneakyThrows
-    private void saveCommand (Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation) {
-        CommandRunner commandRunnerInstance = commandClass.newInstance();
+    private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation, InstanceProvider instanceProvider) {
+        CommandRunner commandRunnerInstance = InstanceCreator.create(commandClass, instanceProvider);
         String commandName = commandInfoAnnotation.value();
 
         this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);

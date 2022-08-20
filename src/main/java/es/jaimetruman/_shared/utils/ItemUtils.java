@@ -1,4 +1,4 @@
-package es.jaimetruman;
+package es.jaimetruman._shared.utils;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

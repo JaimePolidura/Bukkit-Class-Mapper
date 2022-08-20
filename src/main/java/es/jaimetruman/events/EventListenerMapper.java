@@ -1,6 +1,8 @@
 package es.jaimetruman.events;
 
 import es.jaimetruman.ClassScanner;
+import es.jaimetruman._shared.utils.InstanceProvider;
+import es.jaimetruman._shared.utils.InstanceCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -20,17 +22,13 @@ public final class EventListenerMapper extends ClassScanner {
     }
 
     @Override
-    public void scan () {
+    public void scan (InstanceProvider instanceProvider) {
         Set<Class<? extends Listener>> classImplemensListener = this.reflections.getSubTypesOf(Listener.class);
 
         for(Class<? extends Listener> classListener : classImplemensListener){
-            try {
-                Listener newInstance = classListener.newInstance();
+            Listener newInstance = InstanceCreator.create(classListener, instanceProvider);
 
-                Bukkit.getPluginManager().registerEvents(newInstance, this.plugin);
-            } catch (InstantiationException | IllegalAccessException e) {
-                //Ignored
-            }
+            Bukkit.getPluginManager().registerEvents(newInstance, this.plugin);
         }
 
         System.out.println("Mapped all event listener classes");

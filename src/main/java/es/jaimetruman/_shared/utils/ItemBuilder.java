@@ -1,4 +1,4 @@
-package es.jaimetruman;
+package es.jaimetruman._shared.utils;
 
 import lombok.NonNull;
 import org.bukkit.Material;

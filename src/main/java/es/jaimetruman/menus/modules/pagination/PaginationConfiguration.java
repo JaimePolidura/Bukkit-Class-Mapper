@@ -1,9 +1,8 @@
 package es.jaimetruman.menus.modules.pagination;
 
-import es.jaimetruman.ItemBuilder;
+import es.jaimetruman._shared.utils.ItemBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
