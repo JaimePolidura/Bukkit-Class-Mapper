@@ -11,11 +11,11 @@ public abstract class ClassMapper {
     protected final ClassMapperConfiguration configuration;
 
     public ClassMapper(ClassMapperConfiguration configuration) {
+        this.configuration = configuration;
         this.reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(configuration.getCommonPackage()))
                 .setScanners(new TypeAnnotationsScanner(),
                              new SubTypesScanner()));
-        this.configuration = configuration;
     }
 
     public abstract void scan ();

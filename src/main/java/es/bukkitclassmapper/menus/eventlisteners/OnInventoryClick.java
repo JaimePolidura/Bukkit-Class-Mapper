@@ -1,5 +1,6 @@
 package es.bukkitclassmapper.menus.eventlisteners;
 
+import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.*;
 import es.bukkitclassmapper.menus.repository.OpenMenuRepository;
@@ -23,14 +24,17 @@ public class OnInventoryClick implements Listener {
     }
 
     @EventHandler
-    public void on(InventoryClickEvent event){
+    public void on(InventoryClickEvent event) {
         String playerName = event.getWhoClicked().getName();
 
         if(event.getClickedInventory() == null) return;
 
         this.openMenuRepository.findByPlayerName(playerName).ifPresent(menu -> {
             try{
-                tryPerformClickOnMenu(event, menu);
+                ClassMapperConfiguration.INSTANCE.getCommonThreadPool().execute(() -> {
+                    tryPerformClickOnMenu(event, menu);
+                });
+
             }catch (Exception e) {
                 event.getWhoClicked().sendMessage(DARK_RED + "Some error happened " + e.getMessage());
                 e.printStackTrace();

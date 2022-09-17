@@ -20,6 +20,8 @@ import static es.bukkitclassmapper._shared.utils.ExceptionUtils.*;
 
 @AllArgsConstructor
 public final class ClassMapperConfiguration {
+    public static ClassMapperConfiguration INSTANCE = null; //TODO Improve
+
     @Getter private final Plugin plugin;
     @Getter private final String commonPackage;
     @Getter private final InstanceProvider instanceProvider;
@@ -32,6 +34,8 @@ public final class ClassMapperConfiguration {
 
     @SneakyThrows
     public void startScanning() {
+        INSTANCE = this;
+
         CountDownLatch mappersCompleted = new CountDownLatch(this.mappers.size());
 
         this.mappers.stream()
@@ -63,6 +67,11 @@ public final class ClassMapperConfiguration {
             this.plugin = plugin;
             this.commonThreadPool = Executors.newSingleThreadExecutor();
             this.IOThreadPool = Executors.newSingleThreadExecutor();
+        }
+
+        public ClassMapperConfiguration build() {
+            return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, commonThreadPool,
+                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound);
         }
 
         public ClassMapperConfigurationBuilder commonThreadPool(Executor executor) {

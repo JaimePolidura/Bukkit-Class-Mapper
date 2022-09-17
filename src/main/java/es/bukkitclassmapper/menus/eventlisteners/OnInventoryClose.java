@@ -1,5 +1,6 @@
 package es.bukkitclassmapper.menus.eventlisteners;
 
+import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.repository.OpenMenuRepository;
@@ -20,11 +21,13 @@ public class OnInventoryClose implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event){
         this.openMenuRepository.findByPlayerName(event.getPlayer().getName()).ifPresent(menu -> {
-            this.executeRegisteredMenuEventListener(event, menu);
+            ClassMapperConfiguration.INSTANCE.getCommonThreadPool().execute(() -> {
+                this.executeRegisteredMenuEventListener(event, menu);
 
-            this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName(), menu.getClass());
+                this.openMenuRepository.deleteByPlayerName(event.getPlayer().getName(), menu.getClass());
 
-            if(menu instanceof AfterClose) ((AfterClose) menu).afterClose();
+                if(menu instanceof AfterClose) ((AfterClose) menu).afterClose();
+            });
         });
     }
 
