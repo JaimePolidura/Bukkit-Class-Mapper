@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus.modules.messaging;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.commands.exceptions.InvalidUsage;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.repository.OpenMenuRepository;
@@ -13,14 +13,14 @@ public final class MessagingMenuService {
         this.openMenuRepository = ClassMapperInstanceProvider.OPEN_MENUS_REPOSITORY;
     }
 
-    public synchronized <T> void broadCastMessage(Menu originalMenu, T message){
+    public <T> void broadCastMessage(Menu originalMenu, T message){
         this.openMenuRepository.findByMenuType(originalMenu.getClass()).stream()
                 .filter(menu -> !menu.getMenuId().equals(originalMenu.getMenuId()))
                 .parallel()
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));
     }
 
-    public synchronized <T> void broadCastMessage(Class<? extends Menu> menuTypeTarget, T message){
+    public <T> void broadCastMessage(Class<? extends Menu> menuTypeTarget, T message){
         this.openMenuRepository.findByMenuType(menuTypeTarget).stream()
                 .parallel()
                 .forEach(menuOfPlayer -> sendMessageToMenu(message, menuOfPlayer));

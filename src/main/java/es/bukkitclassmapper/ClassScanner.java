@@ -1,6 +1,6 @@
 package es.bukkitclassmapper;
 
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;

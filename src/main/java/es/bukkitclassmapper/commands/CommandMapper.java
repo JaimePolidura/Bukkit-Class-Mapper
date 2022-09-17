@@ -1,8 +1,7 @@
 package es.bukkitclassmapper.commands;
 
 import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
-import es.bukkitclassmapper._shared.utils.InstanceCreator;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunner;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
@@ -62,7 +61,7 @@ public final class CommandMapper extends ClassScanner {
 
     @SneakyThrows
     private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation, InstanceProvider instanceProvider) {
-        CommandRunner commandRunnerInstance = InstanceCreator.create(commandClass, instanceProvider);
+        CommandRunner commandRunnerInstance = instanceProvider.get(commandClass);
         String commandName = commandInfoAnnotation.value();
 
         this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);

@@ -1,4 +1,4 @@
-package es.bukkitclassmapper._shared.utils;
+package es.bukkitclassmapper._shared.utils.reflections;
 
 import es.bukkitclassmapper.menus.MenuService;
 import es.bukkitclassmapper.menus.menubuilder.MenuBuilderService;

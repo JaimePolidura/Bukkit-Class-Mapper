@@ -1,8 +1,7 @@
 package es.bukkitclassmapper.mobs;
 
 import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.InstanceCreator;
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -74,7 +73,7 @@ public final class MobMapper extends ClassScanner {
     @SneakyThrows
     private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta,
                                       InstanceProvider instanceProvider) {
-        OnPlayerInteractMob mobClassInstance = InstanceCreator.create(mobClass, instanceProvider);
+        OnPlayerInteractMob mobClassInstance = instanceProvider.get(mobClass);
 
         int x = mobMeta.x();
         int y = mobMeta.y();

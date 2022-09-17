@@ -1,7 +1,7 @@
 package es.bukkitclassmapper;
 
 
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import es.bukkitclassmapper.commands.CommandMapper;
 import es.bukkitclassmapper.commands.CommandRegistry;
 import es.bukkitclassmapper.commands.DefaultCommandExecutorEntrypoint;
@@ -42,7 +42,7 @@ public class Mapper  {
         this.taskMapper();
         this.eventListenerMapper();
         this.mobMapper();
-        this.instanceProvider = InstanceProvider.defaultEmpty();
+        this.instanceProvider = InstanceProvider.defaultProvider();
 
         return this;
     }
@@ -85,7 +85,7 @@ public class Mapper  {
     }
 
     public static Mapper build (String commonPackage, Plugin plugin) {
-        return new Mapper(commonPackage, plugin, InstanceProvider.defaultEmpty());
+        return new Mapper(commonPackage, plugin, InstanceProvider.defaultProvider());
     }
 
     public static Mapper build (String commonPackage, Plugin plugin, InstanceProvider instanceProvider) {
@@ -93,7 +93,7 @@ public class Mapper  {
     }
 
     public static Mapper build (Plugin plugin) {
-        return new Mapper(plugin.getClass().getPackage().getName(), plugin, InstanceProvider.defaultEmpty());
+        return new Mapper(plugin.getClass().getPackage().getName(), plugin, InstanceProvider.defaultProvider());
     }
 
     public static Mapper build (Plugin plugin, InstanceProvider instanceProvider) {

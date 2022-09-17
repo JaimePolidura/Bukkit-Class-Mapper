@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus.modules.confirmation;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.MenuService;
 import es.bukkitclassmapper.menus.OnMenuClicked;

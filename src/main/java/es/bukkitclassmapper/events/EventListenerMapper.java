@@ -1,8 +1,7 @@
 package es.bukkitclassmapper.events;
 
 import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
-import es.bukkitclassmapper._shared.utils.InstanceCreator;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -16,7 +15,6 @@ public final class EventListenerMapper extends ClassScanner {
 
     public EventListenerMapper(String packageToScan, Plugin plugin) {
         super(packageToScan);
-
         this.packageToScan = packageToScan;
         this.plugin = plugin;
     }
@@ -26,7 +24,7 @@ public final class EventListenerMapper extends ClassScanner {
         Set<Class<? extends Listener>> classImplemensListener = this.reflections.getSubTypesOf(Listener.class);
 
         for(Class<? extends Listener> classListener : classImplemensListener){
-            Listener newInstance = InstanceCreator.create(classListener, instanceProvider);
+            Listener newInstance = instanceProvider.get(classListener);
 
             Bukkit.getPluginManager().registerEvents(newInstance, this.plugin);
         }

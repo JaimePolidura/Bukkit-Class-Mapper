@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus.modules.sync;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.Page;
 import es.bukkitclassmapper.menus.SupportedInventoryType;

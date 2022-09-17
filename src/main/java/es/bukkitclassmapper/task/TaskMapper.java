@@ -1,8 +1,7 @@
 package es.bukkitclassmapper.task;
 
 import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.InstanceCreator;
-import es.bukkitclassmapper._shared.utils.InstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -43,7 +42,7 @@ public final class TaskMapper extends ClassScanner {
     private void createInstancesAndAdd(Set<Class<? extends TaskRunner>> classes, InstanceProvider instanceProvider) {
         for(Class<? extends TaskRunner> classToAdd : classes){
             Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
-            TaskRunner taskRunner = InstanceCreator.create(classToAdd, instanceProvider);
+            TaskRunner taskRunner = instanceProvider.get(classToAdd);
 
             Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.value());
         }

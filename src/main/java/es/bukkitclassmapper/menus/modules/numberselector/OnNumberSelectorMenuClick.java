@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus.modules.numberselector;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.OnMenuClicked;
 import org.bukkit.entity.Player;

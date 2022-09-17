@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus.eventlisteners;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.Menu;
 import es.bukkitclassmapper.menus.repository.OpenMenuRepository;
 import es.bukkitclassmapper.menus.menustate.AfterClose;

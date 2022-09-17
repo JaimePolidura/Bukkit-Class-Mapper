@@ -1,6 +1,6 @@
 package es.bukkitclassmapper.menus;
 
-import es.bukkitclassmapper._shared.utils.ClassMapperInstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.ClassMapperInstanceProvider;
 import es.bukkitclassmapper.menus.menubuilder.MenuBuilderService;
 import es.bukkitclassmapper.menus.menustate.AfterShow;
 import es.bukkitclassmapper.menus.menustate.BeforeShow;
