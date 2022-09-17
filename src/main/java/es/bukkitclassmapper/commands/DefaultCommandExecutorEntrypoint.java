@@ -1,5 +1,6 @@
 package es.bukkitclassmapper.commands;
 
+import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunnerArgs;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunnerNonArgs;
 import es.bukkitclassmapper.commands.exceptions.CommandNotFound;
@@ -20,21 +21,16 @@ import java.util.stream.Collectors;
 import static org.bukkit.Bukkit.*;
 
 public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
-    private final CommandRegistry commandRegistry;
     private final CommandArgsObjectBuilder commandArgsObjectBuilder;
+    private final ClassMapperConfiguration configuration;
+    private final CommandRegistry commandRegistry;
     private final String messageOnWrongSender;
-    private final String messageOnCommandNotFound;
-    private final String messageOnNotHavePermissions;
-    private final Plugin plugin;
 
-    public DefaultCommandExecutorEntrypoint(CommandRegistry commandRegistry, String messageOnCommandNotFound,
-                                            Plugin plugin, String messageOnNotHavingPermissinos) {
-        this.commandRegistry = commandRegistry;
+    public DefaultCommandExecutorEntrypoint(ClassMapperConfiguration configuration) {
+        this.commandRegistry = new CommandRegistry();
         this.messageOnWrongSender = "You need to be a player to execute this command";
-        this.messageOnNotHavePermissions = messageOnNotHavingPermissinos;
-        this.messageOnCommandNotFound = messageOnCommandNotFound;
-        this.plugin = plugin;
         this.commandArgsObjectBuilder = new CommandArgsObjectBuilder();
+        this.configuration = configuration;
     }
 
     @Override
@@ -79,19 +75,19 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private void ensureCorrectPermissions(CommandSender sender, CommandData commandData) {
         if(!commandData.getPermissions().equals("") && !sender.hasPermission(commandData.getPermissions()))
-            throw new InvalidPermissions(messageOnNotHavePermissions);
+            throw new InvalidPermissions(this.configuration.getOnWrongPermissions());
     }
 
     private CommandData findCommand(String commandName, String[] args){
         return commandRegistry.findByName(commandName, args)
-                .orElseThrow(() -> new CommandNotFound(messageOnCommandNotFound));
+                .orElseThrow(() -> new CommandNotFound(this.configuration.getOnCommandNotFound()));
     }
 
     private void executeNonArgsCommnad(CommandData commandData, CommandSender sender) throws Exception{
         CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandData.getRunner();
 
         if(commandData.isAsync())
-            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerNonArgs.execute(sender), 0L);
+            getScheduler().scheduleAsyncDelayedTask(this.configuration.getPlugin(), () -> commandRunnerNonArgs.execute(sender), 0L);
         else
             commandRunnerNonArgs.execute(sender);
     }
@@ -101,7 +97,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
         if(commandData.isAsync())
-            getScheduler().scheduleAsyncDelayedTask(plugin, () -> commandRunnerArgs.execute(argsCommand, sender), 0L);
+            getScheduler().scheduleAsyncDelayedTask(this.configuration.getPlugin(), () -> commandRunnerArgs.execute(argsCommand, sender), 0L);
         else
             commandRunnerArgs.execute(argsCommand, sender);
     }

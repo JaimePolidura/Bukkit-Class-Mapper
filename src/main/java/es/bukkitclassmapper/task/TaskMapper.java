@@ -1,28 +1,24 @@
 package es.bukkitclassmapper.task;
 
-import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
+import es.bukkitclassmapper.ClassMapperConfiguration;
+import es.bukkitclassmapper.ClassMapper;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public final class TaskMapper extends ClassScanner {
-    private final Plugin plugin;
-
-    public TaskMapper(String packageToStartScanning, Plugin plugin) {
-        super(packageToStartScanning);
-        this.plugin = plugin;
+public final class TaskMapper extends ClassMapper {
+    public TaskMapper(ClassMapperConfiguration configuration) {
+        super(configuration);
     }
 
     @Override
-    public void scan(InstanceProvider instanceProvider) {
+    public void scan() {
         Set<Class<? extends TaskRunner>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Task.class));
 
-        this.createInstancesAndAdd(checkedClasses, instanceProvider);
+        this.createInstancesAndAdd(checkedClasses);
     }
 
     private Set<Class<? extends TaskRunner>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
@@ -39,12 +35,13 @@ public final class TaskMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd(Set<Class<? extends TaskRunner>> classes, InstanceProvider instanceProvider) {
+    private void createInstancesAndAdd(Set<Class<? extends TaskRunner>> classes) {
         for(Class<? extends TaskRunner> classToAdd : classes){
             Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
-            TaskRunner taskRunner = instanceProvider.get(classToAdd);
+            TaskRunner taskRunner = this.configuration.getInstanceProvider().get(classToAdd);
 
-            Bukkit.getScheduler().runTaskTimer(plugin, taskRunner, annotation.delay(), annotation.value());
+            Bukkit.getScheduler().runTaskTimer(this.configuration.getPlugin(), taskRunner,
+                    annotation.delay(), annotation.value());
         }
 
         System.out.println("Mapped all task classes");

@@ -1,6 +1,7 @@
 package es.bukkitclassmapper.mobs;
 
-import es.bukkitclassmapper.ClassScanner;
+import es.bukkitclassmapper.ClassMapperConfiguration;
+import es.bukkitclassmapper.ClassMapper;
 import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,32 +11,34 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.stream.Stream;
 
-public final class MobMapper extends ClassScanner {
-    private final Map<Location, MobInfo> mappedMobs;
-    private final Plugin mainPluginClass;
+public final class MobMapper extends ClassMapper {
+    private final ClassMapperConfiguration configuartion;
     private final DefaultEntrypointPlayerInteractEntity defaultListener;
+    private final Map<Location, MobInfo> mappedMobs;
 
-    public MobMapper(String packageToStartScanning, Plugin plugin) {
-        super(packageToStartScanning);
+    public MobMapper(ClassMapperConfiguration configuration) {
+        super(configuration);
 
+        this.configuartion = configuration;
         this.mappedMobs = new HashMap<>();
         this.defaultListener = new DefaultEntrypointPlayerInteractEntity();
-        this.mainPluginClass = plugin;
 
-        plugin.getServer().getPluginManager().registerEvents(defaultListener, plugin);
+        this.configuartion.getPlugin()
+                .getServer()
+                .getPluginManager()
+                .registerEvents(defaultListener, this.configuartion.getPlugin());
     }
 
     @Override
-    public void scan(InstanceProvider instanceProvider) {
+    public void scan() {
         Set<Class<? extends OnPlayerInteractMob>> checkedClasses = this.checkIfClassesImplementsMobInterface(
                 reflections.getTypesAnnotatedWith(Mob.class));
 
-        this.createInstancesAndAdd(checkedClasses, instanceProvider);
+        this.createInstancesAndAdd(checkedClasses);
     }
 
     private Set<Class<? extends OnPlayerInteractMob>> checkIfClassesImplementsMobInterface(Set<Class<?>> classes) {
@@ -52,12 +55,11 @@ public final class MobMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndAdd(Set<Class<? extends OnPlayerInteractMob>> classes,
-                                       InstanceProvider instanceProvider) {
+    private void createInstancesAndAdd(Set<Class<? extends OnPlayerInteractMob>> classes) {
         for(Class<? extends OnPlayerInteractMob> classToAdd : classes){
             Mob annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
 
-            saveMobClassInstance(classToAdd, annotation, instanceProvider);
+            saveMobClassInstance(classToAdd, annotation, this.configuartion.getInstanceProvider());
         }
 
         System.out.println("Mapped all mob classes");

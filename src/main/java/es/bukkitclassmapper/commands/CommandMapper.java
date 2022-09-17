@@ -1,7 +1,7 @@
 package es.bukkitclassmapper.commands;
 
-import es.bukkitclassmapper.ClassScanner;
-import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
+import es.bukkitclassmapper.ClassMapperConfiguration;
+import es.bukkitclassmapper.ClassMapper;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunner;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
@@ -9,26 +9,24 @@ import org.bukkit.Bukkit;
 import java.util.*;
 import java.util.stream.Stream;
 
-public final class CommandMapper extends ClassScanner {
+public final class CommandMapper extends ClassMapper {
     private final DefaultCommandExecutorEntrypoint commandExecutorEntrypoint;
-    private final CommandRegistry commandRegistry;
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
+    private final CommandRegistry commandRegistry;
 
-    public CommandMapper(String packageToStartScanning, DefaultCommandExecutorEntrypoint defaultCommandExecutorEntrypoint,
-                         CommandRegistry commandRegistry) {
-        super(packageToStartScanning);
-
+    public CommandMapper(ClassMapperConfiguration configuration) {
+        super(configuration);
+        this.commandRegistry = new CommandRegistry();
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
-        this.commandRegistry = commandRegistry;
-        this.commandExecutorEntrypoint = defaultCommandExecutorEntrypoint;
+        this.commandExecutorEntrypoint = new DefaultCommandExecutorEntrypoint(configuration);
     }
 
     @Override
-    public void scan (InstanceProvider instanceProvider) {
+    public void scan () {
         Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
-        this.createInstancesAndSave(commandRunnerClasses, instanceProvider);
+        this.createInstancesAndSave(commandRunnerClasses);
     }
 
     private Set<Class<? extends CommandRunner>> getCommandRunnerClasses(Set<Class<?>> classes) {
@@ -44,11 +42,11 @@ public final class CommandMapper extends ClassScanner {
         return checkedClasses;
     }
 
-    private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses, InstanceProvider instanceProvider) {
+    private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses) {
         for(Class<? extends CommandRunner> classToSave : commandRunnersClasses){
             Command annotation = this.getCommandAnnotationFromClass(classToSave);
 
-            saveCommand(classToSave, annotation, instanceProvider);
+            saveCommand(classToSave, annotation);
         }
     }
 
@@ -60,8 +58,8 @@ public final class CommandMapper extends ClassScanner {
     }
 
     @SneakyThrows
-    private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation, InstanceProvider instanceProvider) {
-        CommandRunner commandRunnerInstance = instanceProvider.get(commandClass);
+    private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation) {
+        CommandRunner commandRunnerInstance = this.configuration.getInstanceProvider().get(commandClass);
         String commandName = commandInfoAnnotation.value();
 
         this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
