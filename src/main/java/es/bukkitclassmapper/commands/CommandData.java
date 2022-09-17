@@ -9,7 +9,6 @@ public final class CommandData {
     @Getter private final String command;
     @Getter private final boolean canBeTypedInConsole;
     @Getter private final String permissions;
-    @Getter private final boolean isAsync;
     @Getter private final boolean isSubcommand;
     @Getter private final String[] args;
     @Getter private final CommandRunner runner;
@@ -17,14 +16,13 @@ public final class CommandData {
     @Getter private final String helperCommand;
     @Getter private final String explanation;
     @Getter private final boolean isHelper;
+    @Getter private final boolean isIO;
 
-    public CommandData(String command, boolean canBeTypedInConsole, String permissions, boolean isAsync,
-                       String[] args, CommandRunner runner, String usage, String helperCommand, String explanation,
-                       boolean isHelper) {
+    public CommandData(String command, boolean canBeTypedInConsole, String permissions, String[] args, CommandRunner runner,
+                       String usage, String helperCommand, String explanation, boolean isHelper, boolean isIO) {
         this.command = command;
         this.canBeTypedInConsole = canBeTypedInConsole;
         this.permissions = permissions;
-        this.isAsync = isAsync;
         this.runner = runner;
         this.usage = usage;
         this.helperCommand = helperCommand;
@@ -32,15 +30,14 @@ public final class CommandData {
         this.isHelper = isHelper;
         this.isSubcommand = this.command.split(" ").length > 1;
         this.args = args;
+        this.isIO = isIO;
     }
 
-    public CommandData(String command, boolean canBeTypedInConsole, String permissions, boolean isAsync,
-                       String[] args, CommandRunner runner, String usage, String helperCommand, String explanation,
-                       boolean isHelper, boolean isSubcommand) {
+    public CommandData(String command, boolean canBeTypedInConsole, String permissions, String[] args, CommandRunner runner,
+                       String usage, String helperCommand, String explanation, boolean isHelper, boolean isSubcommand, boolean isIO) {
         this.command = command;
         this.canBeTypedInConsole = canBeTypedInConsole;
         this.permissions = permissions;
-        this.isAsync = isAsync;
         this.runner = runner;
         this.usage = usage;
         this.helperCommand = helperCommand;
@@ -48,6 +45,7 @@ public final class CommandData {
         this.isHelper = isHelper;
         this.isSubcommand = isSubcommand;
         this.args = args;
+        this.isIO = isIO;
     }
 
     public boolean isWithoutArgs(){

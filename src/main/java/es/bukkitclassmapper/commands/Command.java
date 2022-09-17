@@ -31,9 +31,9 @@ public @interface Command {
     String permissions() default "";
 
     /**
-     * If you want your command to be executed in other thread, set this to true
+     * If the command use io type operations it will execute in IO special thread pool
      */
-    boolean isAsync() default false;
+    boolean isIO() default false;
 
     /**
      * All args names that will be mapped to the classname with the same. Example

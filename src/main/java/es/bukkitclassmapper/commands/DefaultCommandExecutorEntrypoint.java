@@ -7,6 +7,7 @@ import es.bukkitclassmapper.commands.exceptions.CommandNotFound;
 import es.bukkitclassmapper.commands.exceptions.InvalidUsage;
 import es.bukkitclassmapper.commands.exceptions.InvalidPermissions;
 import es.bukkitclassmapper.commands.exceptions.InvalidSenderType;
+import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,7 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static org.bukkit.Bukkit.*;
@@ -56,12 +58,23 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         this.ensureCorrectSenderType(sender, commandData);
         this.ensureCorrectPermissions(sender, commandData);
 
+        this.getCorrespondentThreadPool(commandData).execute(() -> {
+            this.executeCommand(commandData, sender, args);
+        });
+    }
+
+    @SneakyThrows
+    private void executeCommand(CommandData commandData, CommandSender sender, String[] args) {
         if(commandData.isHelper())
             executeHelperCommand(sender);
         else if(commandData.isWithoutArgs())
             executeNonArgsCommnad(commandData, sender);
         else
             executeArgsCommand(commandData, sender, args);
+    }
+
+    private Executor getCorrespondentThreadPool(CommandData commandData) {
+        return commandData.isIO() ? this.configuration.getIOThreadPool() : this.configuration.getCommonThreadPool();
     }
 
     private boolean isCommandTypeSubcommandHelp(String command, String[] args){
@@ -83,23 +96,17 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
                 .orElseThrow(() -> new CommandNotFound(this.configuration.getOnCommandNotFound()));
     }
 
-    private void executeNonArgsCommnad(CommandData commandData, CommandSender sender) throws Exception{
+    private void executeNonArgsCommnad(CommandData commandData, CommandSender sender) {
         CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandData.getRunner();
 
-        if(commandData.isAsync())
-            getScheduler().scheduleAsyncDelayedTask(this.configuration.getPlugin(), () -> commandRunnerNonArgs.execute(sender), 0L);
-        else
-            commandRunnerNonArgs.execute(sender);
+        commandRunnerNonArgs.execute(sender);
     }
     
     private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception{
         Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
-        if(commandData.isAsync())
-            getScheduler().scheduleAsyncDelayedTask(this.configuration.getPlugin(), () -> commandRunnerArgs.execute(argsCommand, sender), 0L);
-        else
-            commandRunnerArgs.execute(argsCommand, sender);
+        commandRunnerArgs.execute(argsCommand, sender);
     }
 
     private Object tryToBuildArgObject(CommandData commandData, String[] args) throws Exception{
