@@ -49,6 +49,10 @@ public final class ClassMapperConfiguration {
         if(this.waitUntilCompletion) mappersCompleted.await();
     }
 
+    public ClassMapperConfigurationBuilder builder(Plugin plugin, String commonPackage) {
+        return new ClassMapperConfigurationBuilder(plugin, commonPackage);
+    }
+
     private static class ClassMapperConfigurationBuilder {
         @Getter private final Plugin plugin;
         @Getter private final String commonPackage;
