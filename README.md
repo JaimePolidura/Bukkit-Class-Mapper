@@ -9,7 +9,6 @@
 <dependency>
 	<groupId>com.github.JaimeTruman</groupId>
 	<artifactId>Bukkit-Class-Mapper</artifactId>
-	<version>2.4.1</version>
 </dependency>
 ```
 
