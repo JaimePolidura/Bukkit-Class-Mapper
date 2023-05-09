@@ -53,7 +53,7 @@ public final class ClassMapperConfiguration {
         return new ClassMapperConfigurationBuilder(plugin, commonPackage);
     }
 
-    private static class ClassMapperConfigurationBuilder {
+    public static class ClassMapperConfigurationBuilder {
         @Getter private final Plugin plugin;
         @Getter private final String commonPackage;
         @Getter private InstanceProvider instanceProvider;
