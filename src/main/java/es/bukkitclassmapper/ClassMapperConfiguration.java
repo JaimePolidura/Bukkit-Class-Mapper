@@ -1,6 +1,6 @@
 package es.bukkitclassmapper;
 
-import es.bukkitclassmapper._shared.utils.reflections.InstanceProvider;
+import es.bukkitclassmapper._shared.utils.reflections.BukkitClassMapperInstanceProvider;
 import es.bukkitclassmapper.commands.CommandMapper;
 import es.bukkitclassmapper.events.EventListenerMapper;
 import es.bukkitclassmapper.mobs.MobMapper;
@@ -24,7 +24,7 @@ public final class ClassMapperConfiguration {
 
     @Getter private final Plugin plugin;
     @Getter private final String commonPackage;
-    @Getter private final InstanceProvider instanceProvider;
+    @Getter private final BukkitClassMapperInstanceProvider instanceProvider;
     @Getter private final Set<Class<? extends ClassMapper>> mappers;
     @Getter private final Executor commonThreadPool;
     @Getter private final Executor IOThreadPool;
@@ -56,7 +56,7 @@ public final class ClassMapperConfiguration {
     public static class ClassMapperConfigurationBuilder {
         @Getter private final Plugin plugin;
         @Getter private final String commonPackage;
-        @Getter private InstanceProvider instanceProvider;
+        @Getter private BukkitClassMapperInstanceProvider instanceProvider;
         @Getter private Set<Class<? extends ClassMapper>> mappers;
         @Getter private boolean waitUntilCompletion;
         @Getter private Executor commonThreadPool;
@@ -65,7 +65,7 @@ public final class ClassMapperConfiguration {
         @Getter private String onCommandNotFound;
 
         public ClassMapperConfigurationBuilder(Plugin plugin, String commonPackage) {
-            this.instanceProvider = InstanceProvider.defaultProvider();
+            this.instanceProvider = BukkitClassMapperInstanceProvider.defaultProvider();
             this.commonPackage = commonPackage;
             this.mappers = new HashSet<>();
             this.plugin = plugin;
@@ -117,7 +117,7 @@ public final class ClassMapperConfiguration {
             return this;
         }
 
-        public ClassMapperConfigurationBuilder instanceProvider(InstanceProvider instanceProvider) {
+        public ClassMapperConfigurationBuilder instanceProvider(BukkitClassMapperInstanceProvider instanceProvider) {
             this.instanceProvider = instanceProvider;
             return this;
         }

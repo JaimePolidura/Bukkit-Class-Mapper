@@ -1,10 +1,10 @@
 package es.bukkitclassmapper._shared.utils.reflections;
 
 @FunctionalInterface
-public interface InstanceProvider {
+public interface BukkitClassMapperInstanceProvider {
     <I, O extends I> O get(Class<I> baseClass);
 
-    static InstanceProvider defaultProvider() {
+    static BukkitClassMapperInstanceProvider defaultProvider() {
         return DefaultInstanceProvider.INSTANCE;
     }
 }

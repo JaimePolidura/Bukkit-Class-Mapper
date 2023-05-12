@@ -2,7 +2,7 @@ package es.bukkitclassmapper._shared.utils.reflections;
 
 import lombok.SneakyThrows;
 
-public final class DefaultInstanceProvider implements InstanceProvider{
+public final class DefaultInstanceProvider implements BukkitClassMapperInstanceProvider {
     public static final DefaultInstanceProvider INSTANCE = new DefaultInstanceProvider();
 
     @Override
