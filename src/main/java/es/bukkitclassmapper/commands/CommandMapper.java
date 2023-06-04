@@ -69,9 +69,9 @@ public final class CommandMapper extends ClassMapper {
     private void addCommandToRegistry(CommandRunner commandRunnerInstance, Command commandInfo){
         String usageMessage = this.bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args());
 
-        this.commandRegistry.put(new CommandData(commandInfo.value(), commandInfo.canBeTypedInConsole(),
-                commandInfo.permissions(), commandInfo.args(), commandRunnerInstance, usageMessage,
-                commandInfo.helperCommand(), commandInfo.explanation(), commandInfo.isHelper(), commandInfo.isIO()));
+        this.commandRegistry.put(new CommandData(commandInfo.value(), commandInfo.permissions(), commandInfo.args(),
+                commandRunnerInstance, usageMessage, commandInfo.helperCommand(), commandInfo.explanation(),
+                commandInfo.isHelper(), commandInfo.isIO()));
     }
 
     private void registerCommandBukkit (String commandName) {

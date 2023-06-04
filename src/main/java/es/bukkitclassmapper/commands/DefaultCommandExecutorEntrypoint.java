@@ -12,15 +12,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
-
-import static org.bukkit.Bukkit.*;
 
 public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private final CommandArgsObjectBuilder commandArgsObjectBuilder;
@@ -55,7 +52,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         }
 
         CommandData commandData = this.findCommand(commandName, args);
-        this.ensureCorrectSenderType(sender, commandData);
+        this.ensureCorrectSenderType(sender);
         this.ensureCorrectPermissions(sender, commandData);
 
         this.getCorrespondentThreadPool(commandData).execute(() -> {
@@ -81,8 +78,8 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         return this.commandRegistry.findSubcommandsByCommandName(command) != null && (args.length == 0 || args[0].equals("help"));
     }
 
-    private void ensureCorrectSenderType(CommandSender sender, CommandData commandData){
-        if(!(sender instanceof Player) && !commandData.canBeTypedInConsole())
+    private void ensureCorrectSenderType(CommandSender sender){
+        if(!(sender instanceof Player))
             throw new InvalidSenderType(messageOnWrongSender);
     }
 
@@ -99,17 +96,17 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private void executeNonArgsCommnad(CommandData commandData, CommandSender sender) {
         CommandRunnerNonArgs commandRunnerNonArgs = (CommandRunnerNonArgs) commandData.getRunner();
 
-        commandRunnerNonArgs.execute(sender);
+        commandRunnerNonArgs.execute((Player) sender);
     }
     
     private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception{
         Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
-        commandRunnerArgs.execute(argsCommand, sender);
+        commandRunnerArgs.execute(argsCommand, (Player) sender);
     }
 
-    private Object tryToBuildArgObject(CommandData commandData, String[] args) throws Exception{
+    private Object tryToBuildArgObject(CommandData commandData, String[] args) {
         try{
             CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
             ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];

@@ -1,7 +1,7 @@
 package es.bukkitclassmapper.commands.commandrunners;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public interface CommandRunnerNonArgs extends CommandRunner {
-    void execute(CommandSender sender);
+    void execute(Player player);
 }

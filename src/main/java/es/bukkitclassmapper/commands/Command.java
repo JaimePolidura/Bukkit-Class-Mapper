@@ -20,12 +20,6 @@ public @interface Command {
     String value();
 
     /**
-     * If you want your command to be able to run in the console you would
-     * set this to true
-     */
-    boolean canBeTypedInConsole() default false;
-
-    /**
      * Permissions that the player needs to have to perform the command
      */
     String permissions() default "";

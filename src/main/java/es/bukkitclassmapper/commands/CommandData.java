@@ -7,7 +7,6 @@ import lombok.Getter;
 
 public final class CommandData {
     @Getter private final String command;
-    @Getter private final boolean canBeTypedInConsole;
     @Getter private final String permissions;
     @Getter private final boolean isSubcommand;
     @Getter private final String[] args;
@@ -18,10 +17,9 @@ public final class CommandData {
     @Getter private final boolean isHelper;
     @Getter private final boolean isIO;
 
-    public CommandData(String command, boolean canBeTypedInConsole, String permissions, String[] args, CommandRunner runner,
+    public CommandData(String command, String permissions, String[] args, CommandRunner runner,
                        String usage, String helperCommand, String explanation, boolean isHelper, boolean isIO) {
         this.command = command;
-        this.canBeTypedInConsole = canBeTypedInConsole;
         this.permissions = permissions;
         this.runner = runner;
         this.usage = usage;
@@ -33,10 +31,9 @@ public final class CommandData {
         this.isIO = isIO;
     }
 
-    public CommandData(String command, boolean canBeTypedInConsole, String permissions, String[] args, CommandRunner runner,
+    public CommandData(String command, String permissions, String[] args, CommandRunner runner,
                        String usage, String helperCommand, String explanation, boolean isHelper, boolean isSubcommand, boolean isIO) {
         this.command = command;
-        this.canBeTypedInConsole = canBeTypedInConsole;
         this.permissions = permissions;
         this.runner = runner;
         this.usage = usage;
@@ -54,9 +51,5 @@ public final class CommandData {
 
     public boolean isWithArgs(){
         return runner instanceof CommandRunnerArgs;
-    }
-
-    public boolean canBeTypedInConsole(){
-        return this.canBeTypedInConsole;
     }
 }

@@ -34,7 +34,7 @@ public final class CommandRegistry {
         String[] args = commandData.getArgs();
 
         this.mainCommands.putIfAbsent(mainCommandName, new CommandData(
-                mainCommandName, commandData.canBeTypedInConsole(),
+                mainCommandName,
                 commandData.getPermissions(), args, commandData.getRunner(), commandData.getHelperCommand(),
                 this.bukkitUsageMessageBuilder.build(mainCommandName, args),
                 commandData.getExplanation(), commandData.isHelper(), commandData.isIO())
