@@ -2,6 +2,7 @@ package es.bukkitclassmapper.task;
 
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
+import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import org.bukkit.Bukkit;
 
 import java.util.HashSet;
@@ -39,6 +40,9 @@ public final class TaskMapper extends ClassMapper {
         for(Class<? extends TaskRunner> classToAdd : classes){
             Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
             TaskRunner taskRunner = this.configuration.getInstanceProvider().get(classToAdd);
+            if(taskRunner == null){
+                throw new ResourceNotFound(String.format("Bukkit task runnner %s provided by dependency provider is null", classToAdd));
+            }
 
             Bukkit.getScheduler().runTaskTimer(this.configuration.getPlugin(), taskRunner,
                     annotation.delay(), annotation.value());

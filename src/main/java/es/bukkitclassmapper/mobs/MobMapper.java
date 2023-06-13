@@ -3,6 +3,7 @@ package es.bukkitclassmapper.mobs;
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
 import es.bukkitclassmapper._shared.utils.reflections.BukkitClassMapperInstanceProvider;
+import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -76,6 +77,9 @@ public final class MobMapper extends ClassMapper {
     private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta,
                                       BukkitClassMapperInstanceProvider instanceProvider) {
         OnPlayerInteractMob mobClassInstance = instanceProvider.get(mobClass);
+        if(mobClassInstance == null){
+            throw new ResourceNotFound(String.format("Bukkit OnPlayerInteractMob %s provided by dependency provider is null", mobClass));
+        }
 
         int x = mobMeta.x();
         int y = mobMeta.y();

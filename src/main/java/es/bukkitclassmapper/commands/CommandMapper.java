@@ -3,6 +3,7 @@ package es.bukkitclassmapper.commands;
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunner;
+import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 
@@ -60,6 +61,10 @@ public final class CommandMapper extends ClassMapper {
     @SneakyThrows
     private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation) {
         CommandRunner commandRunnerInstance = this.configuration.getInstanceProvider().get(commandClass);
+        if(commandRunnerInstance == null){
+            throw new RuntimeException(String.format("Bukkit command runner %s provided by dependency provider is null", commandClass));
+        }
+
         String commandName = commandInfoAnnotation.value();
 
         this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
