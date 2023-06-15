@@ -9,7 +9,7 @@ import org.reflections.util.ConfigurationBuilder;
 public abstract class ClassMapper {
     protected final Reflections reflections;
     protected final ClassMapperConfiguration configuration;
-
+    
     public ClassMapper(ClassMapperConfiguration configuration) {
         this.configuration = configuration;
         this.reflections = new Reflections(new ConfigurationBuilder()
