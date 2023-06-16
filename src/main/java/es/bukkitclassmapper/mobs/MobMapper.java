@@ -2,6 +2,7 @@ package es.bukkitclassmapper.mobs;
 
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
+import es.bukkitclassmapper._shared.utils.ClassMapperLogger;
 import es.bukkitclassmapper._shared.utils.reflections.BukkitClassMapperInstanceProvider;
 import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import lombok.AllArgsConstructor;
@@ -18,15 +19,14 @@ import java.util.stream.Stream;
 
 public final class MobMapper extends ClassMapper {
     private final ClassMapperConfiguration configuartion;
-    private final DefaultEntrypointPlayerInteractEntity defaultListener;
     private final Map<Location, MobInfo> mappedMobs;
 
-    public MobMapper(ClassMapperConfiguration configuration) {
-        super(configuration);
+    public MobMapper(ClassMapperConfiguration configuration, ClassMapperLogger logger) {
+        super(configuration, logger);
 
         this.configuartion = configuration;
         this.mappedMobs = new HashMap<>();
-        this.defaultListener = new DefaultEntrypointPlayerInteractEntity();
+        DefaultEntrypointPlayerInteractEntity defaultListener = new DefaultEntrypointPlayerInteractEntity();
 
         this.configuartion.getPlugin()
                 .getServer()
@@ -49,7 +49,7 @@ public final class MobMapper extends ClassMapper {
             if(OnPlayerInteractMob.class.isAssignableFrom(notCheckedClass)){
                 checkedClasses.add((Class<? extends OnPlayerInteractMob>) notCheckedClass);
             }else{
-                System.out.println("Couldn't initialize mob in class " + notCheckedClass + ". This class should implement MobOnInteract interface");
+                logger.error("Couldn't initialize mob in class %s. This class should implement MobOnInteract interface", notCheckedClass.getName());
             }
         }
 
@@ -63,7 +63,7 @@ public final class MobMapper extends ClassMapper {
             saveMobClassInstance(classToAdd, annotation, this.configuartion.getInstanceProvider());
         }
 
-        System.out.println("Mapped all mob classes");
+        logger.info("Mapped all mob classes. Total: %s", classes.size());
     }
 
     private Mob getMobExecutorAnnotationFromClass(Class<? extends OnPlayerInteractMob> classToFind) {
@@ -88,13 +88,15 @@ public final class MobMapper extends ClassMapper {
         Location mobLocation = new Location(null, x, y, z);
 
         this.mappedMobs.put(mobLocation, new MobInfo(mobClassInstance, mobMeta));
+
+        logger.debug("Registered mob class %s", mobClass.getName());
     }
 
     private Optional<MobInfo> findByCords(Location location) {
         return Optional.ofNullable(this.mappedMobs.get(location));
     }
 
-    private final class DefaultEntrypointPlayerInteractEntity implements Listener {
+    public final class DefaultEntrypointPlayerInteractEntity implements Listener {
         @EventHandler
         public void on (PlayerInteractEntityEvent event) {
             EquipmentSlot tipoClick = event.getHand();
@@ -120,7 +122,7 @@ public final class MobMapper extends ClassMapper {
     }
 
     @AllArgsConstructor
-    private static final class MobInfo{
+    private static final class MobInfo {
         @Getter private final OnPlayerInteractMob listener;
         @Getter private final Mob mobData;
     }

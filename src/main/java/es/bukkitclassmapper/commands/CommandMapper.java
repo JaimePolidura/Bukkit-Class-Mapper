@@ -2,8 +2,8 @@ package es.bukkitclassmapper.commands;
 
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
+import es.bukkitclassmapper._shared.utils.ClassMapperLogger;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunner;
-import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 
@@ -15,8 +15,8 @@ public final class CommandMapper extends ClassMapper {
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
     private final CommandRegistry commandRegistry;
 
-    public CommandMapper(ClassMapperConfiguration configuration) {
-        super(configuration);
+    public CommandMapper(ClassMapperConfiguration configuration, ClassMapperLogger logger) {
+        super(configuration, logger);
         this.commandRegistry = new CommandRegistry();
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
         this.commandExecutorEntrypoint = new DefaultCommandExecutorEntrypoint(configuration);
@@ -37,7 +37,7 @@ public final class CommandMapper extends ClassMapper {
             if(CommandRunner.class.isAssignableFrom(notCheckedClass))
                 checkedClasses.add((Class<? extends CommandRunner>) notCheckedClass);
             else
-                System.out.println("Couldn't initialize command in class " + notCheckedClass + ". This class should implement command interface");
+                logger.error("Couldn't initialize command in class %s. This class should implement command interface", notCheckedClass);
         }
 
         return checkedClasses;
@@ -49,6 +49,8 @@ public final class CommandMapper extends ClassMapper {
 
             saveCommand(classToSave, annotation);
         }
+
+        logger.info("Mapped all command classes. Total %s", commandRunnersClasses.size());
     }
 
     private Command getCommandAnnotationFromClass(Class<? extends CommandRunner> classToFind) {
@@ -69,6 +71,8 @@ public final class CommandMapper extends ClassMapper {
 
         this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
         this.registerCommandBukkit(commandName);
+
+        logger.debug("Registered command /%s on class %s", commandName, commandClass.getName());
     }
 
     private void addCommandToRegistry(CommandRunner commandRunnerInstance, Command commandInfo){

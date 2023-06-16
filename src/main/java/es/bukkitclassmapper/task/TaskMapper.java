@@ -2,6 +2,7 @@ package es.bukkitclassmapper.task;
 
 import es.bukkitclassmapper.ClassMapperConfiguration;
 import es.bukkitclassmapper.ClassMapper;
+import es.bukkitclassmapper._shared.utils.ClassMapperLogger;
 import es.jaime.javaddd.domain.exceptions.ResourceNotFound;
 import org.bukkit.Bukkit;
 
@@ -10,8 +11,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public final class TaskMapper extends ClassMapper {
-    public TaskMapper(ClassMapperConfiguration configuration) {
-        super(configuration);
+    public TaskMapper(ClassMapperConfiguration configuration, ClassMapperLogger logger) {
+        super(configuration, logger);
     }
 
     @Override
@@ -29,7 +30,7 @@ public final class TaskMapper extends ClassMapper {
             if(TaskRunner.class.isAssignableFrom(notCheckedClass)){
                 checkedClasses.add((Class<? extends TaskRunner>) notCheckedClass);
             }else{
-                System.out.println("Couldn't initialize task in class " + notCheckedClass + ". This class should implement TaskRunner interface");
+                logger.error("Couldn't initialize task in class %s. This class should implement TaskRunner interface", notCheckedClass);
             }
         }
 
@@ -46,9 +47,11 @@ public final class TaskMapper extends ClassMapper {
 
             Bukkit.getScheduler().runTaskTimer(this.configuration.getPlugin(), taskRunner,
                     annotation.delay(), annotation.value());
+
+            logger.debug("Registered task class %s", classToAdd.getName());
         }
 
-        System.out.println("Mapped all task classes");
+        logger.info("Mapped all task classes. Total %s", classes.size());
     }
 
     private Task getMobExecutorAnnotationFromClass(Class<? extends TaskRunner> classToFind) {

@@ -1,11 +1,11 @@
 package es.bukkitclassmapper;
 
+import es.bukkitclassmapper._shared.utils.ClassMapperLogger;
 import es.bukkitclassmapper._shared.utils.reflections.BukkitClassMapperInstanceProvider;
 import es.bukkitclassmapper.commands.CommandMapper;
 import es.bukkitclassmapper.events.EventListenerMapper;
 import es.bukkitclassmapper.mobs.MobMapper;
 import es.bukkitclassmapper.task.TaskMapper;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
@@ -15,10 +15,10 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import static es.bukkitclassmapper._shared.utils.ExceptionUtils.*;
 
-@AllArgsConstructor
 public final class ClassMapperConfiguration {
     public static ClassMapperConfiguration INSTANCE = null; //TODO Improve
 
@@ -31,15 +31,35 @@ public final class ClassMapperConfiguration {
     @Getter private final boolean waitUntilCompletion;
     @Getter private final String onWrongPermissions;
     @Getter private final String onCommandNotFound;
+    @Getter private final boolean useDebugLogging;
+    @Getter private final Logger nativeLogger;
+
+    public ClassMapperConfiguration(Plugin plugin, String commonPackage, BukkitClassMapperInstanceProvider instanceProvider,
+                                    Set<Class<? extends ClassMapper>> mappers, Executor commonThreadPool, Executor IOThreadPool,
+                                    boolean waitUntilCompletion, String onWrongPermissions, String onCommandNotFound,
+                                    boolean logging, Logger nativeLogger) {
+        this.plugin = plugin;
+        this.commonPackage = commonPackage;
+        this.instanceProvider = instanceProvider;
+        this.mappers = mappers;
+        this.commonThreadPool = commonThreadPool;
+        this.IOThreadPool = IOThreadPool;
+        this.waitUntilCompletion = waitUntilCompletion;
+        this.onWrongPermissions = onWrongPermissions;
+        this.onCommandNotFound = onCommandNotFound;
+        this.nativeLogger = nativeLogger;
+        this.useDebugLogging = logging;
+    }
 
     @SneakyThrows
     public void startScanning() {
         INSTANCE = this;
 
         CountDownLatch mappersCompleted = new CountDownLatch(this.mappers.size());
+        ClassMapperLogger classMapperLogger = new ClassMapperLogger(this);
 
         this.mappers.stream()
-                .map(mapperClass -> runAndGetOrTerminate(() -> mapperClass.getConstructors()[0].newInstance(this)))
+                .map(mapperClass -> runAndGetOrTerminate(() -> mapperClass.getConstructors()[0].newInstance(this, classMapperLogger)))
                 .map(mapperInstance -> (ClassMapper) mapperInstance)
                 .forEach(mapperInstance -> {
                     commonThreadPool.execute(mapperInstance::scan);
@@ -54,15 +74,17 @@ public final class ClassMapperConfiguration {
     }
 
     public static class ClassMapperConfigurationBuilder {
-        @Getter private final Plugin plugin;
-        @Getter private final String commonPackage;
-        @Getter private BukkitClassMapperInstanceProvider instanceProvider;
-        @Getter private Set<Class<? extends ClassMapper>> mappers;
-        @Getter private boolean waitUntilCompletion;
-        @Getter private Executor commonThreadPool;
-        @Getter private Executor IOThreadPool;
-        @Getter private String onWrongPermissions;
-        @Getter private String onCommandNotFound;
+        private final Plugin plugin;
+        private final String commonPackage;
+        private BukkitClassMapperInstanceProvider instanceProvider;
+        private Set<Class<? extends ClassMapper>> mappers;
+        private boolean waitUntilCompletion;
+        private Executor commonThreadPool;
+        private Executor IOThreadPool;
+        private String onWrongPermissions;
+        private String onCommandNotFound;
+        private boolean useDebugLogging;
+        private Logger logger;
 
         public ClassMapperConfigurationBuilder(Plugin plugin, String commonPackage) {
             this.instanceProvider = BukkitClassMapperInstanceProvider.defaultProvider();
@@ -75,7 +97,17 @@ public final class ClassMapperConfiguration {
 
         public ClassMapperConfiguration build() {
             return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, commonThreadPool,
-                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound);
+                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound, useDebugLogging, logger);
+        }
+
+        public ClassMapperConfigurationBuilder logger(Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
+        public ClassMapperConfigurationBuilder useDebugLogging() {
+            this.useDebugLogging = true;
+            return this;
         }
 
         public ClassMapperConfigurationBuilder commonThreadPool(Executor executor) {
