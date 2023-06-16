@@ -69,8 +69,8 @@ public final class CommandMapper extends ClassMapper {
 
         String commandName = commandInfoAnnotation.value();
 
-        this.addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
-        this.registerCommandBukkit(commandName);
+        addCommandToRegistry(commandRunnerInstance, commandInfoAnnotation);
+        registerCommandBukkit(commandName);
 
         logger.debug("Registered command /%s on class %s", commandName, commandClass.getName());
     }

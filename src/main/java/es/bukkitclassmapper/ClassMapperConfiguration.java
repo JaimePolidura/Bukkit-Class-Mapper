@@ -17,8 +17,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-
 import static es.bukkitclassmapper._shared.utils.ExceptionUtils.*;
 
 @AllArgsConstructor
@@ -35,7 +33,6 @@ public final class ClassMapperConfiguration {
     @Getter private final String onWrongPermissions;
     @Getter private final String onCommandNotFound;
     @Getter private final boolean useDebugLogging;
-    @Getter private final Logger nativeLogger;
     @Getter private final Reflections reflections;
 
     @SneakyThrows
@@ -72,7 +69,6 @@ public final class ClassMapperConfiguration {
         private Reflections reflections;
         private Executor IOThreadPool;
         private final Plugin plugin;
-        private Logger logger;
 
         public ClassMapperConfigurationBuilder(Plugin plugin, String commonPackage) {
             this.instanceProvider = BukkitClassMapperInstanceProvider.defaultProvider();
@@ -85,17 +81,11 @@ public final class ClassMapperConfiguration {
 
         public ClassMapperConfiguration build() {
             return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, commonThreadPool,
-                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound, useDebugLogging, logger,
-                    reflections);
+                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound, useDebugLogging, reflections);
         }
 
         public ClassMapperConfigurationBuilder reflections(Reflections reflections) {
             this.reflections = reflections;
-            return this;
-        }
-
-        public ClassMapperConfigurationBuilder logger(Logger logger) {
-            this.logger = logger;
             return this;
         }
 

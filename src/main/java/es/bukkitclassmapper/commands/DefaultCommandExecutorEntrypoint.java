@@ -47,7 +47,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private void execute(CommandSender sender, String commandName, String[] args) throws Exception{
         if(isCommandTypeSubcommandHelp(commandName, args)){
-            this.sendSubCommandHelpMessage(sender, commandName);
+            sendSubCommandHelpMessage(sender, commandName);
             return;
         }
 

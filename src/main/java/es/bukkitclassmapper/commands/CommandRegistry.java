@@ -23,9 +23,9 @@ public final class CommandRegistry {
 
         if(commandData.isSubcommand()){
             addToSubCommandList(commandData);
-            this.addSubcommandMainCommandToMainCommandList(commandData);
+            addSubcommandMainCommandToMainCommandList(commandData);
         }else{
-            this.mainCommands.put(commandName, commandData);
+            mainCommands.put(commandName, commandData);
         }
     }
 
