@@ -14,10 +14,10 @@ public abstract class ClassMapper {
 
     public ClassMapper(ClassMapperConfiguration configuration, ClassMapperLogger logger) {
         this.configuration = configuration;
-        this.reflections = new Reflections(new ConfigurationBuilder()
+        this.reflections = configuration.getReflections() == null ? new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(configuration.getCommonPackage()))
                 .setScanners(new TypeAnnotationsScanner(),
-                             new SubTypesScanner()));
+                             new SubTypesScanner())) : configuration.getReflections();
         this.logger = logger;
     }
 
