@@ -9,15 +9,15 @@ public final class ClassMapperLogger {
 
     public void debug(String message, Object... args) {
         if(configuration.isUseDebugLogging()){
-            System.out.printf(message, args);
+            System.out.println(String.format(message, args));
         }
     }
 
     public void info(String message, Object... args) {
-        System.out.printf(message, args);
+        System.out.println(String.format(message, args));
     }
 
     public void error(String message, Object... args) {
-        System.err.printf(message, args);
+        System.out.println(String.format(message, args));
     }
 }
