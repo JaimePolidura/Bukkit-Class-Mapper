@@ -22,12 +22,10 @@ public final class EventListenerMapper extends ClassMapper {
 
         for(Class<? extends Listener> classListener : classImplemensListener){
             Listener newInstance = this.configuration.getInstanceProvider().get(classListener);
-            if(newInstance instanceof MobMapper.DefaultEntrypointPlayerInteractEntity){
+            if(classListener.equals(MobMapper.DefaultEntrypointPlayerInteractEntity.class))
                 continue;
-            }
-            if(newInstance == null){
+            if(newInstance == null)
                 throw new ResourceNotFound(String.format("Bukkit event listener %s provided by dependency provider is null", classListener));
-            }
 
             Bukkit.getPluginManager().registerEvents(newInstance, this.configuration.getPlugin());
 

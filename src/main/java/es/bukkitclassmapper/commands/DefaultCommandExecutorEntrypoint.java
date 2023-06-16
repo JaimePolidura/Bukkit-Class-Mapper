@@ -25,10 +25,10 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private final CommandRegistry commandRegistry;
     private final String messageOnWrongSender;
 
-    public DefaultCommandExecutorEntrypoint(ClassMapperConfiguration configuration) {
-        this.commandRegistry = new CommandRegistry();
-        this.messageOnWrongSender = "You need to be a player to execute this command";
+    public DefaultCommandExecutorEntrypoint(ClassMapperConfiguration configuration, CommandRegistry commandRegistry) {
         this.commandArgsObjectBuilder = new CommandArgsObjectBuilder();
+        this.messageOnWrongSender = "You need to be a player to execute this command";
+        this.commandRegistry = commandRegistry;
         this.configuration = configuration;
     }
 
@@ -45,18 +45,18 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         return true;
     }
 
-    private void execute(CommandSender sender, String commandName, String[] args) throws Exception{
+    private void execute(CommandSender sender, String commandName, String[] args) {
         if(isCommandTypeSubcommandHelp(commandName, args)){
             sendSubCommandHelpMessage(sender, commandName);
             return;
         }
 
-        CommandData commandData = this.findCommand(commandName, args);
-        this.ensureCorrectSenderType(sender);
-        this.ensureCorrectPermissions(sender, commandData);
+        CommandData commandData = findCommand(commandName, args);
+        ensureCorrectSenderType(sender);
+        ensureCorrectPermissions(sender, commandData);
 
-        this.getCorrespondentThreadPool(commandData).execute(() -> {
-            this.executeCommand(commandData, sender, args);
+        getCorrespondentThreadPool(commandData).execute(() -> {
+            executeCommand(commandData, sender, args);
         });
     }
 

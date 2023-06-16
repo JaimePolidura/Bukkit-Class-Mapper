@@ -1,6 +1,7 @@
 package es.bukkitclassmapper.commands;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class CommandRegistry {
     private final Map<String, CommandData> allCommands;
@@ -10,10 +11,10 @@ public final class CommandRegistry {
     private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
 
     public CommandRegistry(){
-        this.allCommands = new HashMap<>();
-        this.subcommands = new HashMap<>();
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
-        this.mainCommands = new HashMap<>();
+        this.allCommands = new ConcurrentHashMap<>();
+        this.subcommands = new ConcurrentHashMap<>();
+        this.mainCommands = new ConcurrentHashMap<>();
     }
 
     public void put(CommandData commandData){
