@@ -112,9 +112,13 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private boolean isHelper(String commandName, String[] args) {
+        System.out.println(commandName);
+
         Optional<CommandData> mainCommand = commandRegistry.findMainCommandByName(commandName);
-        Optional<CommandData> subCommand = commandRegistry.findSubcommandByMainCommandName(commandName, args);
+        System.out.println(mainCommand.isPresent());
         
+        Optional<CommandData> subCommand = commandRegistry.findSubcommandByMainCommandName(commandName, args);
+
         return (mainCommand.isPresent() && mainCommand.get().isHelper()) ||
                 (subCommand.isPresent() && subCommand.get().isHelper());
     }

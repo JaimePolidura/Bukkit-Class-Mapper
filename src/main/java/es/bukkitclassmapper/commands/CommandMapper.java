@@ -37,7 +37,7 @@ public final class CommandMapper extends ClassMapper {
             if(CommandRunner.class.isAssignableFrom(notCheckedClass))
                 checkedClasses.add((Class<? extends CommandRunner>) notCheckedClass);
             else
-                logger.error("Couldn't initialize command in class %s. This class should implement command interface", notCheckedClass);
+                throw new RuntimeException(String.format("Couldn't initialize command in class %s. This class should implement command interface", notCheckedClass));
         }
 
         return checkedClasses;

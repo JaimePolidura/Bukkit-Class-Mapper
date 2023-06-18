@@ -42,12 +42,12 @@ public final class CommandRegistry {
     private void addToSubCommandList(CommandData commandData) {
         String mainCommand = commandData.getMainCommand();
 
-        this.subcommands.putIfAbsent(mainCommand, new HashSet<>());
-        this.subcommands.get(mainCommand).add(commandData);
+        subcommands.putIfAbsent(mainCommand, new HashSet<>());
+        subcommands.get(mainCommand).add(commandData);
     }
 
     public Optional<CommandData> findMainCommandByName(String commandName) {
-        return Optional.ofNullable(this.mainCommands.get(commandName));
+        return Optional.ofNullable(mainCommands.get(commandName));
     }
 
     public Optional<CommandData> findByName(String commandName, String[] args){
