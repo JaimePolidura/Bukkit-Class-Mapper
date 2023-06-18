@@ -160,8 +160,14 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private void sendMainCommandsHelpMessage(CommandSender sender) {
+        System.out.println("HOla");
+
         Set<CommandData> allMainCommands = this.commandRegistry.getMainCommands().stream()
-                .filter(command -> !command.isMainCommandHelper())
+                .filter(command -> {
+                    System.out.println(command.getCommand() + " " + command.isMainCommandHelper());
+
+                    return !command.isMainCommandHelper();
+                })
                 .collect(Collectors.toSet());
 
         for (CommandData mainCommand : allMainCommands) {
