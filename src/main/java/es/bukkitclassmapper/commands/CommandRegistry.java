@@ -4,14 +4,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CommandRegistry {
-    private final Map<String, CommandData> allCommands;
     private final Map<String, Set<CommandData>> subcommands;
     private final Map<String, CommandData> mainCommands;
-
-    private final BukkitUsageMessageBuilder bukkitUsageMessageBuilder;
+    private final Map<String, CommandData> allCommands;
 
     public CommandRegistry(){
-        this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
         this.allCommands = new ConcurrentHashMap<>();
         this.subcommands = new ConcurrentHashMap<>();
         this.mainCommands = new ConcurrentHashMap<>();
@@ -20,26 +17,22 @@ public final class CommandRegistry {
     public void put(CommandData commandData){
         String commandName = commandData.getCommand();
 
-        this.allCommands.put(commandName, commandData);
+        allCommands.put(commandName, commandData);
 
-        if(commandData.isSubcommand()){
+        if(commandData.isSubcommand()) {
             addToSubCommandList(commandData);
-            addSubcommandMainCommandToMainCommandList(commandData);
-        }else{
-            mainCommands.put(commandName, commandData);
+        }
+        if(commandData.isMainCommand() || commandData.isSubCommandHelper()){
+            mainCommands.put(commandData.getCommand(), commandData);
         }
     }
 
-    private void addSubcommandMainCommandToMainCommandList(CommandData commandData){
-        String mainCommandName = commandData.getCommand().split(" ")[0];
-        String[] args = commandData.getArgs();
-
-        this.mainCommands.putIfAbsent(mainCommandName, new CommandData(
-                mainCommandName,
-                commandData.getPermissions(), args, commandData.getRunner(), commandData.getHelperCommand(),
-                this.bukkitUsageMessageBuilder.build(mainCommandName, args),
-                commandData.getExplanation(), commandData.isHelper(), commandData.isIO())
-        );
+    public Optional<CommandData> findSubcommandByMainCommandName(String commandName, String[] args) {
+        return args.length > 0 ? subcommands.get(commandName).stream()
+                .filter(subcommand -> args[0].equalsIgnoreCase("help") ||
+                                      subcommand.getSubCommand().equalsIgnoreCase(args[0]))
+                .findFirst() :
+                Optional.empty();
     }
 
     public Set<CommandData> findSubcommandsByCommandName(String mainCommand){
@@ -47,10 +40,14 @@ public final class CommandRegistry {
     }
 
     private void addToSubCommandList(CommandData commandData) {
-        String mainCommand = commandData.getCommand().split(" ")[0];
+        String mainCommand = commandData.getMainCommand();
 
         this.subcommands.putIfAbsent(mainCommand, new HashSet<>());
         this.subcommands.get(mainCommand).add(commandData);
+    }
+
+    public Optional<CommandData> findMainCommandByName(String commandName) {
+        return Optional.ofNullable(this.mainCommands.get(commandName));
     }
 
     public Optional<CommandData> findByName(String commandName, String[] args){

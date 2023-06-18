@@ -27,8 +27,7 @@ public final class ClassMapperConfiguration {
     @Getter private final String commonPackage;
     @Getter private final BukkitClassMapperInstanceProvider instanceProvider;
     @Getter private final Set<Class<? extends ClassMapper>> mappers;
-    @Getter private final Executor commonThreadPool;
-    @Getter private final Executor IOThreadPool;
+    @Getter private final Executor threadPool;
     @Getter private final boolean waitUntilCompletion;
     @Getter private final String onWrongPermissions;
     @Getter private final String onCommandNotFound;
@@ -46,7 +45,7 @@ public final class ClassMapperConfiguration {
                 .map(mapperClass -> runAndGetOrTerminate(() -> mapperClass.getConstructors()[0].newInstance(this, classMapperLogger)))
                 .map(mapperInstance -> (ClassMapper) mapperInstance)
                 .forEach(mapperInstance -> {
-                    commonThreadPool.execute(mapperInstance::scan);
+                    threadPool.execute(mapperInstance::scan);
                     mappersCompleted.countDown();
                 });
 
@@ -62,12 +61,11 @@ public final class ClassMapperConfiguration {
         private Set<Class<? extends ClassMapper>> mappers;
         private boolean waitUntilCompletion;
         private final String commonPackage;
-        private Executor commonThreadPool;
         private String onWrongPermissions;
         private String onCommandNotFound;
         private boolean useDebugLogging;
         private Reflections reflections;
-        private Executor IOThreadPool;
+        private Executor threadPool;
         private final Plugin plugin;
 
         public ClassMapperConfigurationBuilder(Plugin plugin, String commonPackage) {
@@ -75,13 +73,12 @@ public final class ClassMapperConfiguration {
             this.commonPackage = commonPackage;
             this.mappers = new HashSet<>();
             this.plugin = plugin;
-            this.commonThreadPool = Executors.newSingleThreadExecutor();
-            this.IOThreadPool = Executors.newSingleThreadExecutor();
+            this.threadPool = Executors.newSingleThreadExecutor();
         }
 
         public ClassMapperConfiguration build() {
-            return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, commonThreadPool,
-                    IOThreadPool, waitUntilCompletion, onWrongPermissions, onCommandNotFound, useDebugLogging, reflections);
+            return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, threadPool, waitUntilCompletion,
+                    onWrongPermissions, onCommandNotFound, useDebugLogging, reflections);
         }
 
         public ClassMapperConfigurationBuilder reflections(Reflections reflections) {
@@ -94,13 +91,8 @@ public final class ClassMapperConfiguration {
             return this;
         }
 
-        public ClassMapperConfigurationBuilder commonThreadPool(Executor executor) {
-            this.commonThreadPool = executor;
-            return this;
-        }
-
-        public ClassMapperConfigurationBuilder IOThreadPool(Executor executor) {
-            this.IOThreadPool = executor;
+        public ClassMapperConfigurationBuilder threadPool(Executor executor) {
+            this.threadPool = executor;
             return this;
         }
 

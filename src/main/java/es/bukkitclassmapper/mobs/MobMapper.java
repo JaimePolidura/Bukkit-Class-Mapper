@@ -110,7 +110,7 @@ public final class MobMapper extends ClassMapper {
             Location location = transformLocationToWorldNull(event.getRightClicked().getLocation());
             Optional<MobInfo> mobOptional = findByCords(location);
 
-            mobOptional.ifPresent(mobInfo -> configuartion.getCommonThreadPool().execute(() -> {
+            mobOptional.ifPresent(mobInfo -> configuartion.getThreadPool().execute(() -> {
                 mobInfo.getListener().execute(event);
             }));
         }

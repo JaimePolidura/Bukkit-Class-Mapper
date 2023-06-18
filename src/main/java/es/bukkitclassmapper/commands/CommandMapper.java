@@ -27,7 +27,7 @@ public final class CommandMapper extends ClassMapper {
         Set<Class<? extends CommandRunner>> commandRunnerClasses = this.getCommandRunnerClasses(
                 reflections.getTypesAnnotatedWith(Command.class));
 
-        this.createInstancesAndSave(commandRunnerClasses);
+        createInstancesAndSave(commandRunnerClasses);
     }
 
     private Set<Class<? extends CommandRunner>> getCommandRunnerClasses(Set<Class<?>> classes) {
@@ -45,7 +45,7 @@ public final class CommandMapper extends ClassMapper {
 
     private void createInstancesAndSave(Set<Class<? extends CommandRunner>> commandRunnersClasses) {
         for(Class<? extends CommandRunner> classToSave : commandRunnersClasses){
-            Command annotation = this.getCommandAnnotationFromClass(classToSave);
+            Command annotation = getCommandAnnotationFromClass(classToSave);
 
             saveCommand(classToSave, annotation);
         }
@@ -76,17 +76,17 @@ public final class CommandMapper extends ClassMapper {
     }
 
     private void addCommandToRegistry(CommandRunner commandRunnerInstance, Command commandInfo){
-        String usageMessage = this.bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args());
+        String usageMessage = bukkitUsageMessageBuilder.build(commandInfo.value(), commandInfo.args());
 
-        this.commandRegistry.put(new CommandData(commandInfo.value(), commandInfo.permissions(), commandInfo.args(),
-                commandRunnerInstance, usageMessage, commandInfo.helperCommand(), commandInfo.explanation(),
-                commandInfo.isHelper(), commandInfo.isIO()));
+        this.commandRegistry.put(new CommandData(commandRunnerInstance, commandInfo.permissions(),
+                commandInfo.explanation(), commandInfo.value(), commandInfo.isHelper(), commandInfo.args(), usageMessage,
+                commandInfo.isAsync()));
     }
 
     private void registerCommandBukkit (String commandName) {
         try{
             //Just in case we are passing a subcommand
-            Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(this.commandExecutorEntrypoint);
+            Bukkit.getPluginCommand(commandName.split(" ")[0]).setExecutor(commandExecutorEntrypoint);
         }catch (Exception e) {
             throw new NullPointerException(String.format("Command: %s not found", commandName.split(" ")[0]));
         }
