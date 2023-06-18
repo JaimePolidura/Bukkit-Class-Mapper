@@ -58,8 +58,12 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             sendSubCommandHelpMessage(sender, commandName);
         }else if(!isSubcommand && isHelper) {
             sendMainCommandsHelpMessage(sender);
+        }else{
+            validateArgsCommandAndExecute(sender, commandName, args);
         }
+    }
 
+    private void validateArgsCommandAndExecute(CommandSender sender, String commandName, String[] args) {
         CommandData commandData = findCommand(commandName, args);
         ensureCorrectSenderType(sender);
         ensureCorrectPermissions(sender, commandData);
@@ -83,7 +87,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         commandRunnerNonArgs.execute((Player) sender);
     }
 
-    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) throws Exception {
+    private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) {
         Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
@@ -110,7 +114,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private boolean isHelper(String commandName, String[] args) {
         Optional<CommandData> mainCommand = commandRegistry.findMainCommandByName(commandName);
         Optional<CommandData> subCommand = commandRegistry.findSubcommandByMainCommandName(commandName, args);
-
+        
         return (mainCommand.isPresent() && mainCommand.get().isHelper()) ||
                 (subCommand.isPresent() && subCommand.get().isHelper());
     }
