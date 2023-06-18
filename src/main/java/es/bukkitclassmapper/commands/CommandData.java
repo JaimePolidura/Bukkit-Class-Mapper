@@ -21,7 +21,7 @@ public final class CommandData {
     }
 
     public boolean isMainCommand() {
-        return this.command.split(" ").length == 0;
+        return this.command.split(" ").length == 1;
     }
 
     public boolean isSubCommandHelper() {
