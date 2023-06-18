@@ -24,6 +24,10 @@ public final class CommandData {
         return this.command.split(" ").length == 1;
     }
 
+    public boolean isMainCommandHelper() {
+        return this.isMainCommand() && this.isHelper;
+    }
+
     public boolean isSubCommandHelper() {
         return this.isSubcommand() && this.isHelper;
     }

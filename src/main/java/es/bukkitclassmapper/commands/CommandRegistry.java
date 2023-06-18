@@ -13,7 +13,7 @@ public final class CommandRegistry {
         this.subcommands = new ConcurrentHashMap<>();
         this.mainCommands = new ConcurrentHashMap<>();
     }
-    
+
     public void put(CommandData commandData){
         String commandName = commandData.getCommand();
 
