@@ -22,6 +22,7 @@ public final class CommandRegistry {
         if(commandData.isSubcommand()) {
             addToSubCommandList(commandData);
         }
+        System.out.println("---> " + commandName + " " + commandData.isSubCommandHelper());
         if(commandData.isMainCommand() || commandData.isSubCommandHelper()){
             mainCommands.put(commandData.getCommand(), commandData);
         }
