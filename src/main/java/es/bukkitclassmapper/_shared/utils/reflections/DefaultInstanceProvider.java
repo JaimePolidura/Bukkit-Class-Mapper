@@ -11,8 +11,8 @@ public final class DefaultInstanceProvider implements BukkitClassMapperInstanceP
         return (O) baseClass.newInstance();
     }
 
-    @SneakyThrows
-    private static <T> T instanciateNoConstructor(Class<T> baseClass) {
-        return baseClass.newInstance();
+    @Override
+    public boolean isExcluded(Class<?> clazz) {
+        return false;
     }
 }

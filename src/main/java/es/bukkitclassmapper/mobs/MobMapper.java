@@ -76,6 +76,9 @@ public final class MobMapper extends ClassMapper {
     @SneakyThrows
     private void saveMobClassInstance(Class<? extends OnPlayerInteractMob> mobClass, Mob mobMeta,
                                       BukkitClassMapperInstanceProvider instanceProvider) {
+        if(configuartion.getInstanceProvider().isExcluded(mobClass)){
+            return;
+        }
         OnPlayerInteractMob mobClassInstance = instanceProvider.get(mobClass);
         if(mobClassInstance == null){
             throw new ResourceNotFound(String.format("Bukkit OnPlayerInteractMob %s provided by dependency provider is null", mobClass));

@@ -21,6 +21,9 @@ public final class EventListenerMapper extends ClassMapper {
         Set<Class<? extends Listener>> classImplemensListener = this.reflections.getSubTypesOf(Listener.class);
 
         for(Class<? extends Listener> classListener : classImplemensListener){
+            if(configuration.getInstanceProvider().isExcluded(classListener)){
+                return;
+            }
             Listener newInstance = this.configuration.getInstanceProvider().get(classListener);
             if(classListener.equals(MobMapper.DefaultEntrypointPlayerInteractEntity.class))
                 continue;

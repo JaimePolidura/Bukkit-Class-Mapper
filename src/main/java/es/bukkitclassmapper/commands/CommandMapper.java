@@ -62,7 +62,10 @@ public final class CommandMapper extends ClassMapper {
 
     @SneakyThrows
     private void saveCommand(Class<? extends CommandRunner> commandClass, Command commandInfoAnnotation) {
-        CommandRunner commandRunnerInstance = this.configuration.getInstanceProvider().get(commandClass);
+        if(configuration.getInstanceProvider().isExcluded(commandClass)){
+            return;
+        }
+        CommandRunner commandRunnerInstance = configuration.getInstanceProvider().get(commandClass);
         if(commandRunnerInstance == null){
             throw new RuntimeException(String.format("Bukkit command runner %s provided by dependency provider is null", commandClass));
         }

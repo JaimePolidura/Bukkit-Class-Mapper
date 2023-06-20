@@ -39,6 +39,9 @@ public final class TaskMapper extends ClassMapper {
 
     private void createInstancesAndAdd(Set<Class<? extends TaskRunner>> classes) {
         for(Class<? extends TaskRunner> classToAdd : classes){
+            if(configuration.getInstanceProvider().isExcluded(classToAdd)) {
+                return;
+            }
             Task annotation = this.getMobExecutorAnnotationFromClass(classToAdd);
             TaskRunner taskRunner = this.configuration.getInstanceProvider().get(classToAdd);
             if(taskRunner == null){
