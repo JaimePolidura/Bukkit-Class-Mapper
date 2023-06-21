@@ -1,6 +1,7 @@
 package es.bukkitclassmapper.commands;
 
 import es.bukkitclassmapper.ClassMapperConfiguration;
+import es.bukkitclassmapper._shared.utils.ClassMapperLogger;
 import es.bukkitclassmapper._shared.utils.FakeExecutor;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunnerArgs;
 import es.bukkitclassmapper.commands.commandrunners.CommandRunnerNonArgs;
@@ -26,10 +27,12 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     private final ClassMapperConfiguration configuration;
     private final CommandRegistry commandRegistry;
     private final String messageOnWrongSender;
+    private final ClassMapperLogger logger;
 
     private final FakeExecutor fakeExecutor;
 
-    public DefaultCommandExecutorEntrypoint(ClassMapperConfiguration configuration, CommandRegistry commandRegistry) {
+    public DefaultCommandExecutorEntrypoint(ClassMapperConfiguration configuration, ClassMapperLogger logger, CommandRegistry commandRegistry) {
+        this.logger = logger;
         this.commandArgsObjectBuilder = new CommandArgsObjectBuilder();
         this.messageOnWrongSender = "You need to be a player to execute this command";
         this.commandRegistry = commandRegistry;
@@ -73,7 +76,6 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         });
     }
 
-    @SneakyThrows
     private void executeCommand(CommandData commandData, CommandSender sender, String[] args) {
         if(commandData.isWithoutArgs())
             executeNonArgsCommnad(commandData, sender);
@@ -88,7 +90,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private void executeArgsCommand(CommandData commandData, CommandSender sender, String[] args) {
-        Object argsCommand = this.tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
+        Object argsCommand = tryToBuildArgObject(commandData, getActualArgsWithoutSubcommand(commandData, args));
         CommandRunnerArgs commandRunnerArgs = (CommandRunnerArgs) commandData.getRunner();
 
         commandRunnerArgs.execute(argsCommand, (Player) sender);
@@ -101,8 +103,9 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
 
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
-
         }catch (Exception e){
+            logger.error("Error while building arg comamdn of %s. Error %s", commandData.getCommand(), e.getMessage());
+
             String incorrectUsageMessage = !e.getMessage().equalsIgnoreCase("Player needs to be online") ?
                     String.format("Incorrect usage: %s", commandData.getUsage()) :
                     e.getMessage();

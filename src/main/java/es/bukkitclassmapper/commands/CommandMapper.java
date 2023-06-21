@@ -18,7 +18,7 @@ public final class CommandMapper extends ClassMapper {
     public CommandMapper(ClassMapperConfiguration configuration, ClassMapperLogger logger) {
         super(configuration, logger);
         this.commandRegistry = new CommandRegistry();
-        this.commandExecutorEntrypoint = new DefaultCommandExecutorEntrypoint(configuration, commandRegistry);
+        this.commandExecutorEntrypoint = new DefaultCommandExecutorEntrypoint(configuration, logger, commandRegistry);
         this.bukkitUsageMessageBuilder = new BukkitUsageMessageBuilder();
     }
 
