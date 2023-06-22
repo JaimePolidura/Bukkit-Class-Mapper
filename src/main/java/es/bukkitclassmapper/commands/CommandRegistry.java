@@ -26,9 +26,9 @@ public final class CommandRegistry {
             mainCommands.put(commandData.getCommand(), commandData);
         }
     }
-
+    
     public Optional<CommandData> findSubcommandByMainCommandName(String commandName, String[] args) {
-        return args.length > 0 ? subcommands.get(commandName).stream()
+        return args.length > 0 && subcommands.containsKey(commandName) ? subcommands.get(commandName).stream()
                 .filter(subcommand -> args[0].equalsIgnoreCase("help") ||
                                       subcommand.getSubCommand().equalsIgnoreCase(args[0]))
                 .findFirst() :
