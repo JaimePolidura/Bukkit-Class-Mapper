@@ -98,20 +98,15 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
 
     private Object tryToBuildArgObject(CommandData commandData, String[] args) {
         try{
-            System.out.println("A");
-
             CommandRunnerArgs<Object> commandRunnerArgs = (CommandRunnerArgs<Object>) commandData.getRunner();
-            System.out.println("B");
             ParameterizedType paramType = (ParameterizedType) commandRunnerArgs.getClass().getGenericInterfaces()[0];
-            System.out.println("C");
             Class<?> classObjectArg = (Class<?>) paramType.getActualTypeArguments()[0];
-            System.out.println("D");
 
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
         }catch (Exception e){
             logger.error("Error while building arg command of %s. Error %s. Exception %s", commandData.getCommand(), e.getMessage(), e.getClass().getName());
-
-            String incorrectUsageMessage = !e.getMessage().equalsIgnoreCase("Player needs to be online") ?
+            
+            String incorrectUsageMessage = e.getMessage() == null || !e.getMessage().equalsIgnoreCase("Player needs to be online") ?
                     String.format("Incorrect usage: %s", commandData.getUsage()) :
                     e.getMessage();
 
