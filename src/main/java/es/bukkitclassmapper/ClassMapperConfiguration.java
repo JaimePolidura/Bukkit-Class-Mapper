@@ -41,7 +41,7 @@ public final class ClassMapperConfiguration {
 
         CountDownLatch mappersCompleted = new CountDownLatch(this.mappers.size());
         ClassMapperLogger classMapperLogger = new ClassMapperLogger(this);
-        
+
         this.mappers.stream()
                 .map(mapperClass -> runAndGetOrTerminate(() -> mapperClass.getConstructors()[0].newInstance(this, classMapperLogger)))
                 .map(mapperInstance -> (ClassMapper) mapperInstance)
