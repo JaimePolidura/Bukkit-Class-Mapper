@@ -33,6 +33,7 @@ public final class ClassMapperConfiguration {
     @Getter private final String onCommandNotFound;
     @Getter private final boolean useDebugLogging;
     @Getter private final Reflections reflections;
+    @Getter private final boolean printExceptions;
 
     @SneakyThrows
     public void startScanning() {
@@ -40,7 +41,7 @@ public final class ClassMapperConfiguration {
 
         CountDownLatch mappersCompleted = new CountDownLatch(this.mappers.size());
         ClassMapperLogger classMapperLogger = new ClassMapperLogger(this);
-
+        
         this.mappers.stream()
                 .map(mapperClass -> runAndGetOrTerminate(() -> mapperClass.getConstructors()[0].newInstance(this, classMapperLogger)))
                 .map(mapperInstance -> (ClassMapper) mapperInstance)
@@ -67,6 +68,7 @@ public final class ClassMapperConfiguration {
         private Reflections reflections;
         private Executor threadPool;
         private final Plugin plugin;
+        private boolean printExceptions;
 
         public ClassMapperConfigurationBuilder(Plugin plugin, String commonPackage) {
             this.instanceProvider = BukkitClassMapperInstanceProvider.defaultProvider();
@@ -78,7 +80,7 @@ public final class ClassMapperConfiguration {
 
         public ClassMapperConfiguration build() {
             return new ClassMapperConfiguration(plugin, commonPackage, instanceProvider, mappers, threadPool, waitUntilCompletion,
-                    onWrongPermissions, onCommandNotFound, useDebugLogging, reflections);
+                    onWrongPermissions, onCommandNotFound, useDebugLogging, reflections, printExceptions);
         }
 
         public ClassMapperConfigurationBuilder reflections(Reflections reflections) {
@@ -122,6 +124,11 @@ public final class ClassMapperConfiguration {
 
         public ClassMapperConfigurationBuilder taskMapper () {
             this.mappers.add(TaskMapper.class);
+            return this;
+        }
+
+        public ClassMapperConfigurationBuilder printExceptions(boolean printExceptions) {
+            this.printExceptions = printExceptions;
             return this;
         }
 

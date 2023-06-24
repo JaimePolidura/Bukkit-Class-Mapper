@@ -3,15 +3,6 @@ package es.bukkitclassmapper._shared.utils;
 import java.util.concurrent.Callable;
 
 public final class ExceptionUtils {
-    public static void runOrTerminate(CheckedRunnable checkedRunnable) {
-        try {
-            checkedRunnable.run();
-        }catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
-
     public static <T> T runAndGetOrTerminate(Callable<T> callable) {
         try {
             return callable.call();

@@ -45,9 +45,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         try{
             execute(sender, command.getName(), args);
         }catch (Exception e) {
-            e.printStackTrace();
-
-            sender.sendMessage(ChatColor.DARK_RED + e.getMessage());
+            handleExpcetion(sender, e);
         }
 
         return true;
@@ -72,7 +70,11 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         ensureCorrectPermissions(sender, commandData);
 
         getCorrespondentThreadPool(commandData).execute(() -> {
-            executeCommand(commandData, sender, args);
+            try {
+                executeCommand(commandData, sender, args);
+            }catch (Exception e) {
+                handleExpcetion(sender, e);
+            }
         });
     }
 
@@ -105,7 +107,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
             return commandArgsObjectBuilder.build(commandData, args, classObjectArg);
         }catch (Exception e){
             logger.error("Error while building arg command of %s. Error %s. Exception %s", commandData.getCommand(), e.getMessage(), e.getClass().getName());
-            
+
             String incorrectUsageMessage = e.getMessage() == null || !e.getMessage().equalsIgnoreCase("Player needs to be online") ?
                     String.format("Incorrect usage: %s", commandData.getUsage()) :
                     e.getMessage();
@@ -170,6 +172,14 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         for (CommandData mainCommand : allMainCommands) {
             sender.sendMessage(buildHelpMessageForCommand(mainCommand));
             sender.sendMessage(" ");
+        }
+    }
+
+    private void handleExpcetion(CommandSender sender, Exception e) {
+        sender.sendMessage(ChatColor.DARK_RED + e.getMessage());
+
+        if(configuration.isPrintExceptions()){
+            e.printStackTrace();
         }
     }
 
