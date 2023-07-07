@@ -30,6 +30,12 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder amount(int amount) {
+        this.itemStack.setAmount(amount);
+
+        return this;
+    }
+
     public ItemBuilder lore(List<String> lore) {
         this.itemMeta.setLore(lore);
 
