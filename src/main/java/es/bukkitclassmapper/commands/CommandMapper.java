@@ -89,7 +89,7 @@ public final class CommandMapper extends ClassMapper {
                 commandInfo.args(),
                 usageMessage,
                 commandInfo.isAsync(),
-                commandInfo.needsOpPermissions()
+                commandInfo.needsOp()
         ));
     }
 
