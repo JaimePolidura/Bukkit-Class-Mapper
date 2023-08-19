@@ -140,7 +140,7 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
     }
 
     private void ensureCorrectPermissions(CommandSender sender, CommandData commandData) {
-        if(commandData.canExecute(sender))
+        if(!commandData.canExecute(sender))
             throw new InvalidPermissions(this.configuration.getOnWrongPermissions());
     }
 
