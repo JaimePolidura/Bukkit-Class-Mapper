@@ -90,8 +90,10 @@ public class CommandArgsObjectBuilder {
             return Float.parseFloat(argValue);
         }else if(fieldTypeName.equalsIgnoreCase("java.lang.String")){
             return String.valueOf(argValue);
-        }else if(fieldTypeName.equalsIgnoreCase("java.util.UUID")){
+        }else if(fieldTypeName.equalsIgnoreCase("java.util.UUID")) {
             return UUID.fromString(String.valueOf(argValue));
+        }else if(field.getType().isEnum()) {
+            return Enum.valueOf((Class<Enum>) field.getType(), argValue);
         }else if(fieldTypeName.equalsIgnoreCase("org.bukkit.entity.Player")){
             Player player = Bukkit.getPlayerExact(argValue);
 
