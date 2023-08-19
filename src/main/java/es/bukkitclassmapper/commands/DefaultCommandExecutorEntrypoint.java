@@ -138,9 +138,9 @@ public final class DefaultCommandExecutorEntrypoint implements CommandExecutor {
         if(!(sender instanceof Player))
             throw new InvalidSenderType(messageOnWrongSender);
     }
-
+    
     private void ensureCorrectPermissions(CommandSender sender, CommandData commandData) {
-        if(!commandData.getPermissions().equals("") && !sender.hasPermission(commandData.getPermissions()))
+        if(commandData.canExecute(sender))
             throw new InvalidPermissions(this.configuration.getOnWrongPermissions());
     }
 
