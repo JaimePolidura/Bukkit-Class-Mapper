@@ -33,10 +33,10 @@ public final class ClassMapperConfiguration {
     @Getter private final String onCommandNotFound;
     @Getter private final boolean useDebugLogging;
     @Getter private final Reflections reflections;
-    @Getter private final boolean printExceptions;
+    @Getter private       boolean printExceptions;
 
     @SneakyThrows
-    public void startScanning() {
+    public ClassMapperConfiguration startScanning() {
         INSTANCE = this;
 
         CountDownLatch mappersCompleted = new CountDownLatch(this.mappers.size());
@@ -50,7 +50,15 @@ public final class ClassMapperConfiguration {
                     mappersCompleted.countDown();
                 });
 
-        if(this.waitUntilCompletion) mappersCompleted.await();
+        if(this.waitUntilCompletion) {
+            mappersCompleted.await();
+        }
+        
+        return this;
+    }
+
+    public void setPrintExceptions(boolean printExceptions) {
+        this.printExceptions = printExceptions;
     }
 
     public static ClassMapperConfigurationBuilder builder(Plugin plugin, String commonPackage) {
