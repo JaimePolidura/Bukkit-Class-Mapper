@@ -113,9 +113,9 @@ public final class MobMapper extends ClassMapper {
             Location location = transformLocationToWorldNull(event.getRightClicked().getLocation());
             Optional<MobInfo> mobOptional = findByCords(location);
 
-            mobOptional.ifPresent(mobInfo -> configuartion.getThreadPool().execute(() -> {
+            mobOptional.ifPresent(mobInfo -> {
                 mobInfo.getListener().execute(event);
-            }));
+            });
         }
 
         // Needed to perform a search in the hashmap because we don't sabe world objects

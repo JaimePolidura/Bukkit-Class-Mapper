@@ -53,7 +53,7 @@ public final class ClassMapperConfiguration {
         if(this.waitUntilCompletion) {
             mappersCompleted.await();
         }
-        
+
         return this;
     }
 
